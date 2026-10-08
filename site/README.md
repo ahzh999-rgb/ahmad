@@ -12,10 +12,11 @@
 ## التشغيل لأول مرة (من المتصفح، بلا أوامر)
 1. **مفتاح Claude:** في console.anthropic.com أنشئ حساباً، واشحن رصيداً، وضع **حداً شهرياً للإنفاق** من إعدادات الفوترة، ثم أنشئ مفتاح API.
 2. **الاستضافة:** في dash.cloudflare.com أنشئ حساباً مجانياً، ثم: Workers & Pages ← Create ← Import a repository ← اختر المستودع `ahmad`.
-   - Root directory: `site`
+   - Root directory: `/` (الافتراضي)
    - Deploy command: `npx wrangler deploy`
+   - ملف الإعدادات `wrangler.toml` في جذر المستودع، واسم الـ Worker فيه `ahmad`.
 3. **إضافة المفتاح:** بعد أول نشر، من إعدادات الـ Worker ← Variables and Secrets ← أضف `ANTHROPIC_API_KEY` من نوع Secret، والصق المفتاح.
-4. يظهر رابط الموقع بصيغة `mustashar.<اسمك>.workers.dev`. ويمكن ربطه لاحقاً بنطاق خاص.
+4. يظهر رابط الموقع بصيغة `ahmad.<اسمك>.workers.dev`. ويمكن ربطه لاحقاً بنطاق خاص.
 
 بعدها، كل دمج في `main` يعيد نشر الموقع تلقائياً.
 
@@ -27,7 +28,7 @@ cd site
 python3 build_data.py ../مكتبة-التشريعات public
 ```
 
-## الإعدادات (`wrangler.toml`)
+## الإعدادات (`wrangler.toml` في جذر المستودع)
 - `ANSWER_MODEL`: نموذج كتابة الإجابة.
 - `QUICK_MODEL`: نموذج تحويل السؤال إلى مصطلحات بحث.
 - `ratelimits`: حد الطلبات لكل زائر.
