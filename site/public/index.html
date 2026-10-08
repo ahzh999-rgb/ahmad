@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>المستشار النظامي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#f6f7f4; --surface:#ffffff; --fg:#1c2420; --muted:#5b6a62; --line:#dde3dd;
+  --accent:#0f5c3f; --accent-fg:#ffffff; --accent-soft:#e6f0ea; --seal:#a8823a;
+  --quote:#f1f4ee; --warn-bg:#fbf5e8; --warn-fg:#6b5320; --err:#a23b2c;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121815; --surface:#1a221e; --fg:#e4ebe6; --muted:#9aaba1; --line:#2c3832;
+  --accent:#4fb486; --accent-fg:#0d1511; --accent-soft:#1f3329; --seal:#d0ac62;
+  --quote:#1f2924; --warn-bg:#2a2518; --warn-fg:#e1c88c; --err:#e07a68; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1a221e; --fg:#e4ebe6; --muted:#9aaba1; --line:#2c3832;
+  --accent:#4fb486; --accent-fg:#0d1511; --accent-soft:#1f3329; --seal:#d0ac62;
+  --quote:#1f2924; --warn-bg:#2a2518; --warn-fg:#e1c88c; --err:#e07a68; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.8;direction:rtl;padding-inline:16px;padding-block:28px 48px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+header{display:flex;gap:14px;align-items:center}
+.seal{flex:none;width:52px;height:52px;border-radius:50%;border:2px solid var(--seal);display:grid;place-items:center;color:var(--seal);font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:22px}
+h1{font-family:"Noto Naskh Arabic",serif;font-size:1.65rem;line-height:1.35;margin:0;text-wrap:balance}
+.sub{margin:0;color:var(--muted);font-size:.95rem}
+.notice{background:var(--warn-bg);color:var(--warn-fg);border-radius:10px;padding:12px 14px;font-size:.92rem;line-height:1.7}
+form{display:flex;flex-direction:column;gap:10px}
+textarea{width:100%;min-height:110px;resize:vertical;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transparent;padding:9px 20px}
+.primary{background:var(--accent);color:var(--accent-fg);font-weight:600}
+.primary:disabled{opacity:.55;cursor:default}
+.ghost{background:transparent;color:var(--muted);border-color:var(--line)}
+.examples{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--accent-soft);color:var(--fg);font-size:.88rem;padding:6px 12px;border-radius:999px;border:0;text-align:right}
+.label{font-size:.8rem;color:var(--muted);letter-spacing:.02em}
+.status{color:var(--muted);font-size:.92rem}
+.answer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-width:0;overflow-wrap:anywhere}
+.answer h2,.answer h3{font-family:"Noto Naskh Arabic",serif;font-size:1.12rem;margin:14px 0 4px}
+.answer p{margin:6px 0}
+.answer ul,.answer ol{margin:6px 0;padding-inline-start:22px}
+.answer blockquote{margin:8px 0;padding:8px 12px;background:var(--quote);border-inline-start:3px solid var(--seal);border-radius:6px}
+.answer table{border-collapse:collapse;font-size:.92rem}
+.answer td,.answer th{border:1px solid var(--line);padding:4px 8px}
+.tbl{overflow-x:auto}
+.err{color:var(--err)}
+details.sources{font-size:.9rem;color:var(--muted)}
+details.sources summary{cursor:pointer}
+details.sources li{margin:3px 0}
+footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style>
+
+</head>
+<body>
+<div class="wrap" dir="rtl">
+  <header>
+    <div class="seal" aria-hidden="true">§</div>
+    <div>
+      <h1>المستشار النظامي للمتعاملين مع الجهات الحكومية</h1>
+      <p class="sub">إجابة فورية من نصوص الأنظمة واللوائح السعودية: المنافسات والمشتريات، المالية العامة، الموارد البشرية، القضاء الإداري.</p>
+    </div>
+  </header>
+
+  <div class="notice"><strong>إجابة استرشادية:</strong> تُبنى من نسخة المكتبة الموجودة في الصفحة (72 نظاماً ولائحة وقراراً)، وليست رأياً قانونياً ملزماً. راجِع النص الأصلي أو مختصاً قبل أي إجراء.</div>
+
+  <form id="f">
+    <label class="label" for="q">اكتب سؤالك</label>
+    <textarea id="q" placeholder="مثال: ما مسوغات صرف المستخلص الختامي؟" maxlength="1500"></textarea>
+    <div class="row">
+      <button class="primary" id="ask" type="submit">اسأل</button>
+      <button class="ghost" id="stop" type="button" hidden>إيقاف</button>
+      <span class="status" id="status"></span>
+    </div>
+    <div class="examples" id="examples">
+      <button type="button" class="chip">ما مسوغات صرف المستخلص الختامي؟</button>
+      <button type="button" class="chip">كم نسبة الضمان الابتدائي والنهائي في نظام المنافسات الجديد؟</button>
+      <button type="button" class="chip">ماذا يحدث إذا تعطلت منصة اعتماد؟</button>
+      <button type="button" class="chip">ما مدة سريان العروض في المنافسات؟</button>
+    </div>
+  </form>
+
+  <section id="out" hidden>
+    <div class="answer" id="answer"></div>
+    <details class="sources" id="srcBox" hidden><summary>النصوص التي رُجع إليها</summary><ol id="srcList"></ol></details>
+  </section>
+
+  
+  <footer>الإجابات تُولَّد آلياً بواسطة Claude. نسخة المكتبة بتاريخ 8 أكتوبر 2026، ولم تصدر بعد اللائحة التنفيذية لنظام المنافسات الجديد (م/76).</footer>
+</div>
+
+<script>
+(function(){
+let LIB=null, SECS=[];
+const $ = id => document.getElementById(id);
+
+// ---------- Arabic normalization & index ----------
+const DIAC = /[ؐ-ًؚ-ٰٟۖ-ۭـ]/g;
+const STOP = new Set('في من على الى إلى عن او أو ان أن إن ما ماذا هل كم كيف متى لماذا هي هو التي الذي الذين هذا هذه ذلك تلك مع كل اي أي بعد قبل عند لا لم لن قد ثم بين حتى اذا إذا فيها فيه به بها له لها منها منه عليه عليها وفق وفقا وفقاً يكون تكون كان كانت غير ضمن خلال'.split(' ').map(w=>norm0(w)));
+function norm0(s){return s.replace(DIAC,'').replace(/[إأآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/ؤ/g,'و').replace(/ئ/g,'ي');}
+function stem(w){
+  if(w.length>4){for(const p of ['وال','بال','كال','فال','لل']){if(w.startsWith(p)&&w.length-p.length>=3){w=w.slice(p.length);break;}}}
+  if(w.length>3&&w.startsWith('ال'))w=w.slice(2);
+  if(w.length>4&&/^[وف]/.test(w)&&!/^(وزار|وظيف|وثيق|وقت|وصف|وقف|وضع|وجه|وحد|ورق|فتر|فحص|فقر|فئ)/.test(w))w=w.slice(1);
+  for(const s of ['ات','ون','ين','ها','يه','ه']){if(w.length-s.length>=3&&w.endsWith(s)){w=w.slice(0,-s.length);break;}}
+  return w;
+}
+function tokens(s){
+  const out=[];for(const raw of norm0(s).toLowerCase().split(/[^ء-ي0-9a-z]+/)){
+    if(!raw||raw.length<2||STOP.has(raw))continue;const t=stem(raw);if(t.length>=2)out.push(t);}
+  return out;
+}
+let IDX=null, DF=null, LEN=null, AVG=0;
+function buildIndex(){
+  if(IDX)return; IDX=new Map(); DF=new Map(); LEN=new Float32Array(SECS.length);
+  SECS.forEach(s=>{
+    const d=LIB.docs[s.doc];
+    const tf=new Map();
+    const add=(txt,w)=>{for(const t of tokens(txt))tf.set(t,(tf.get(t)||0)+w);};
+    add(s.b,1); add(s.h,3); add(d.title,2);
+    let n=0;tf.forEach((v,t)=>{n+=v;let a=IDX.get(t);if(!a){a=[];IDX.set(t,a);}a.push([s.id,v]);DF.set(t,(DF.get(t)||0)+1);});
+    LEN[s.id]=n;
+  });
+  AVG=LEN.reduce((a,b)=>a+b,0)/SECS.length;
+}
+function search(query,k){
+  buildIndex();
+  const q=[...new Set(tokens(query))]; const N=SECS.length; const score=new Map();
+  for(const t of q){
+    const post=IDX.get(t); if(!post)continue;
+    const idf=Math.log(1+(N-post.length+.5)/(post.length+.5));
+    for(const [id,tf] of post){const l=LEN[id];const s=idf*(tf*2.2)/(tf+1.2*(.25+.75*l/AVG));score.set(id,(score.get(id)||0)+s);}
+  }
+  // prefer newest procurement law and real text over cards slightly
+  const arr=[...score.entries()].map(([id,s])=>{const d=LIB.docs[SECS[id].doc];if(d.kind==='card')s*=.85;return [id,s];});
+  arr.sort((a,b)=>b[1]-a[1]);
+  return arr.slice(0,k).map(([id])=>SECS[id]);
+}
+function docLabel(d){return d.title+(d.meta['أداة الإصدار']?' — '+d.meta['أداة الإصدار']:'');}
+
+// ---------- rendering ----------
+function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function inline(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');}
+function md(src){
+  const lines=src.replace(/\r/g,'').split('\n');let html='',list=null,i=0;
+  const close=()=>{if(list){html+='</'+list+'>';list=null;}};
+  while(i<lines.length){
+    const l=lines[i];
+    if(/^\s*\|.*\|\s*$/.test(l)){close();const rows=[];while(i<lines.length&&/^\s*\|.*\|\s*$/.test(lines[i])){rows.push(lines[i]);i++;}
+      html+='<div class="tbl"><table>'+rows.filter(r=>!/^\s*\|[\s\-:|]+\|\s*$/.test(r)).map((r,ri)=>'<tr>'+r.trim().slice(1,-1).split('|').map(c=>ri?'<td>'+inline(c.trim())+'</td>':'<th>'+inline(c.trim())+'</th>').join('')+'</tr>').join('')+'</table></div>';continue;}
+    let m;
+    if(m=l.match(/^#{1,4}\s+(.*)/)){close();html+='<h3>'+inline(m[1])+'</h3>';}
+    else if(m=l.match(/^>\s?(.*)/)){close();html+='<blockquote>'+inline(m[1])+'</blockquote>';}
+    else if(m=l.match(/^\s*[-*•]\s+(.*)/)){if(list!=='ul'){close();html+='<ul>';list='ul';}html+='<li>'+inline(m[1])+'</li>';}
+    else if(m=l.match(/^\s*\d+[.)]\s+(.*)/)){if(list!=='ol'){close();html+='<ol>';list='ol';}html+='<li>'+inline(m[1])+'</li>';}
+    else if(!l.trim()){close();}
+    else{close();html+='<p>'+inline(l)+'</p>';}
+    i++;
+  }
+  close();return html;
+}
+
+// ---------- API ----------
+let ctrl=null;
+const ask=$('ask'), stop=$('stop'), status=$('status');
+ask.disabled=true; status.textContent='جارٍ تحميل المكتبة…';
+fetch('data.json').then(r=>r.json()).then(d=>{
+  LIB=d; LIB.docs.forEach((doc,di)=>doc.secs.forEach(([h,b])=>SECS.push({id:SECS.length,doc:di,h,b})));
+  ask.disabled=false; status.textContent='';
+}).catch(()=>{status.textContent='تعذر تحميل المكتبة. أعد تحميل الصفحة.';});
+
+async function post(path,body){
+  const r=await fetch(path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:ctrl.signal});
+  if(!r.ok){let e={};try{e=await r.json();}catch{}const err=new Error(e.error||'http');err.code=e.error||'http';throw err;}
+  return r;
+}
+async function expandQuery(q){
+  try{const r=await post('/api/expand',{question:q});const d=await r.json();return Array.isArray(d.queries)?d.queries:[];}
+  catch(e){if(e.name==='AbortError')throw e;return [];}
+}
+async function streamAnswer(q,ids,onText){
+  const r=await post('/api/ask',{question:q,ids});
+  const rd=r.body.getReader(), dec=new TextDecoder(); let buf='', text='', stopReason='';
+  for(;;){
+    const {done,value}=await rd.read(); if(done)break;
+    buf+=dec.decode(value,{stream:true});
+    let i; while((i=buf.indexOf('\n'))>=0){
+      const line=buf.slice(0,i).trim(); buf=buf.slice(i+1);
+      if(!line.startsWith('data:'))continue;
+      let ev; try{ev=JSON.parse(line.slice(5));}catch{continue;}
+      if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.type==='text_delta'){text+=ev.delta.text;onText(text);}
+      else if(ev.type==='message_delta'&&ev.delta)stopReason=ev.delta.stop_reason||stopReason;
+      else if(ev.type==='error'){const err=new Error('upstream');err.code=ev.error&&ev.error.type==='overloaded_error'?'busy':'upstream';throw err;}
+    }
+  }
+  return {text,truncated:stopReason==='max_tokens'};
+}
+
+function gather(q, extra){
+  const seen=new Map(); const push=(s,w)=>{seen.set(s.id,(seen.get(s.id)||0)+w);};
+  search(q,8).forEach((s,i)=>push(s,8-i));
+  extra.forEach(x=>search(x,5).forEach((s,i)=>push(s,(5-i)*0.9)));
+  return [...seen.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8).map(([id])=>SECS[id]);
+}
+
+$('f').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const q=$('q').value.trim(); if(!q||!LIB)return;
+  ctrl=new AbortController(); ask.disabled=true; stop.hidden=false;
+  $('out').hidden=false; $('srcBox').hidden=true; $('answer').innerHTML='';
+  try{
+    status.textContent='أبحث في الأنظمة…';
+    const extra=await expandQuery(q);
+    const secs=gather(q,extra);
+    if(!secs.length){ $('answer').innerHTML='<p>لم أجد نصاً متعلقاً بسؤالك في المكتبة. جرّب صياغة أخرى بمصطلح نظامي.</p>'; status.textContent=''; return; }
+    $('srcList').innerHTML=secs.map(s=>'<li>'+esc(docLabel(LIB.docs[s.doc]))+' — '+esc(s.h)+'</li>').join('');
+    status.textContent='أكتب الإجابة…';
+    const res=await streamAnswer(q,secs.map(s=>s.id),text=>{$('answer').innerHTML=md(text);});
+    $('answer').innerHTML=md(res.text)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
+    $('srcBox').hidden=false; status.textContent='';
+  }catch(err){
+    status.textContent='';
+    if(err.name==='AbortError'){status.textContent='أُوقفت.';}
+    else if(err.code==='rate_limited'){$('answer').innerHTML='<p class="err">أرسلت أسئلة كثيرة في وقت قصير. انتظر دقيقة ثم أعد المحاولة.</p>';}
+    else if(err.code==='busy'){$('answer').innerHTML='<p class="err">الخدمة مشغولة الآن. حاول بعد قليل.</p>';}
+    else {$('answer').innerHTML='<p class="err">تعذرت الإجابة الآن. حاول مرة أخرى.</p>';}
+  }finally{ ask.disabled=!LIB; stop.hidden=true; }
+});
+stop.addEventListener('click',()=>ctrl&&ctrl.abort());
+document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{$('q').value=b.textContent;$('q').focus();}));
+})();
+</script>
+</body>
+</html>
