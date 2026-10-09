@@ -21,8 +21,9 @@
   --accent:#4fb486; --accent-fg:#0d1511; --accent-soft:#1f3329; --seal:#d0ac62;
   --quote:#1f2924; --warn-bg:#3a3010; --warn-line:#c99a1e; --warn-fg:#f4dc8f; --err:#e07a68; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.8;direction:rtl;padding-inline:16px;padding-block:28px 48px}
-.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:30px}
 header{display:flex;gap:14px;align-items:center}
 header .titles{flex:1;min-width:0}
 .theme{flex:none;align-self:flex-start;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:6px 12px;font-size:.85rem}
@@ -33,7 +34,7 @@ h1{font-family:"Noto Naskh Arabic",serif;font-size:1.65rem;line-height:1.35;marg
 .notice{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-line);border-inline-start:5px solid var(--warn-line);border-radius:10px;padding:12px 14px;font-size:.95rem;line-height:1.7;display:flex;gap:10px}
 .notice .ico{flex:none;font-size:1.2rem;line-height:1.4}
 form{display:flex;flex-direction:column;gap:10px}
-textarea{width:100%;min-height:110px;resize:vertical;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+textarea{width:100%;min-height:150px;resize:vertical;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
 .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transparent;padding:9px 20px}
@@ -54,6 +55,17 @@ button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transpare
 .after{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-top:10px}
 .basis{margin:0;font-size:.88rem;color:var(--muted);flex:1;min-width:0}
 .basis strong{color:var(--fg);font-weight:600}
+.chip.on{background:var(--accent);color:var(--accent-fg)}
+.chip.on::before{content:"✓ "}
+.group h2 .gi{margin-inline-end:6px}
+.primary .spin{width:14px;height:14px;border-color:color-mix(in srgb,var(--accent-fg) 35%,transparent);border-top-color:var(--accent-fg);display:inline-block;vertical-align:-2px;margin-inline-end:8px}
+.hint{font-size:.82rem;color:var(--muted)}
+.msg{border:1px solid var(--line);border-inline-start:4px solid var(--err);background:var(--surface);border-radius:10px;padding:12px 14px}
+.msg strong{color:var(--err)}
+.msg.info{border-inline-start-color:var(--seal)}
+.msg.info strong{color:var(--fg)}
+.count{font-weight:600;color:var(--fg)}
+footer p{margin:0}
 .copy{background:var(--accent-soft);color:var(--fg);font-size:.85rem;padding:5px 14px}
 .answer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-width:0;overflow-wrap:anywhere}
 .answer h2,.answer h3{font-family:"Noto Naskh Arabic",serif;font-size:1.12rem;margin:14px 0 4px}
@@ -67,7 +79,7 @@ button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transpare
 details.sources{font-size:.9rem;color:var(--muted)}
 details.sources summary{cursor:pointer}
 details.sources li{margin:3px 0}
-footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:4px}
 </style>
 
 </head>
@@ -78,12 +90,12 @@ footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padd
     <div class="titles">
       <h1>المستشار النظامي للمتعاملين مع الجهات الحكومية</h1>
       <p class="sub">إجابة فورية من نصوص الأنظمة واللوائح السعودية: المنافسات والمشتريات، المالية العامة، الموارد البشرية، القضاء الإداري.</p>
-      <p class="updated">آخر تحديث للمكتبة: 8 أكتوبر 2026</p>
+      <p class="updated">آخر تحديث للمكتبة: 8 أكتوبر 2026<br>تحتوي المكتبة على <span class="count" id="count">59 نظاماً ولائحة وقراراً</span> بنصها الكامل</p>
     </div>
     <button type="button" class="theme" id="theme" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
   </header>
 
-  <div class="notice" role="note"><span class="ico" aria-hidden="true">⚠</span><div><strong>تنبيه: الإجابة استرشادية.</strong> تُبنى من نسخة المكتبة الموجودة في الصفحة (72 نظاماً ولائحة وقراراً)، وليست رأياً قانونياً ملزماً. راجِع النص الأصلي أو مختصاً قبل أي إجراء.</div></div>
+  <div class="notice" role="note"><span class="ico" aria-hidden="true">⚠</span><div><strong>تنبيه: الإجابة استرشادية.</strong> تُبنى من نصوص المكتبة، وليست رأياً قانونياً ملزماً. راجِع النص الأصلي أو مختصاً قبل أي إجراء.</div></div>
 
   <form id="f">
     <label class="label" for="q">اكتب سؤالك</label>
@@ -91,8 +103,10 @@ footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padd
     <div class="row">
       <button class="primary" id="ask" type="submit">اسأل</button>
       <button class="ghost" id="stop" type="button" hidden>إيقاف</button>
+      <button class="ghost" id="clear" type="button">سؤال جديد</button>
       <span class="status" id="status"></span>
     </div>
+    <span class="hint">اضغط Enter للإرسال، وShift+Enter لسطر جديد.</span>
   </form>
 
   <section id="out" hidden>
@@ -106,13 +120,16 @@ footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padd
 
   <div class="groups" id="examples">
     <p class="label" style="grid-column:1/-1;margin:0">أسئلة شائعة</p>
-    <div class="group"><h2>المنافسات والمشتريات</h2><div class="examples"><button type="button" class="chip">متى يجوز الشراء المباشر؟</button><button type="button" class="chip">كم نسبة الضمان الابتدائي والنهائي في نظام المنافسات الجديد؟</button><button type="button" class="chip">ما مدة سريان العروض في المنافسات؟</button><button type="button" class="chip">كيف أتظلم من قرار ترسية المنافسة؟</button></div></div>
-    <div class="group"><h2>العقود والمستخلصات</h2><div class="examples"><button type="button" class="chip">ما مسوغات صرف المستخلص الختامي؟</button><button type="button" class="chip">ما غرامة التأخير على المقاول؟</button><button type="button" class="chip">متى تصرف الدفعة المقدمة للمتعاقد وكم نسبتها؟</button><button type="button" class="chip">ماذا يحدث إذا تعطلت البوابة الإلكترونية (منصة اعتماد)؟</button></div></div>
-    <div class="group"><h2>الموظفون</h2><div class="examples"><button type="button" class="chip">كم مدة الإجازة الاضطرارية للموظف؟</button><button type="button" class="chip">متى يستحق الموظف بدل العمل خارج وقت الدوام؟</button><button type="button" class="chip">ما العقوبات التأديبية في نظام الانضباط الوظيفي؟</button></div></div>
-    <div class="group"><h2>التظلم والنزاهة</h2><div class="examples"><button type="button" class="chip">ما مدة رفع الدعوى أمام ديوان المظالم ضد قرار إداري؟</button><button type="button" class="chip">كيف أبلغ عن فساد وهل أحصل على حماية؟</button></div></div>
+    <div class="group"><h2><span class="gi" aria-hidden="true">📋</span>المنافسات والمشتريات</h2><div class="examples"><button type="button" class="chip">متى يجوز الشراء المباشر؟</button><button type="button" class="chip">كم نسبة الضمان الابتدائي والنهائي في نظام المنافسات الجديد؟</button><button type="button" class="chip">ما مدة سريان العروض في المنافسات؟</button><button type="button" class="chip">كيف أتظلم من قرار ترسية المنافسة؟</button></div></div>
+    <div class="group"><h2><span class="gi" aria-hidden="true">💰</span>العقود والمستخلصات</h2><div class="examples"><button type="button" class="chip">ما مسوغات صرف المستخلص الختامي؟</button><button type="button" class="chip">ما غرامة التأخير على المقاول؟</button><button type="button" class="chip">متى تصرف الدفعة المقدمة للمتعاقد وكم نسبتها؟</button><button type="button" class="chip">ماذا يحدث إذا تعطلت البوابة الإلكترونية (منصة اعتماد)؟</button></div></div>
+    <div class="group"><h2><span class="gi" aria-hidden="true">👤</span>الموظفون</h2><div class="examples"><button type="button" class="chip">كم مدة الإجازة الاضطرارية للموظف؟</button><button type="button" class="chip">متى يستحق الموظف بدل العمل خارج وقت الدوام؟</button><button type="button" class="chip">ما العقوبات التأديبية في نظام الانضباط الوظيفي؟</button></div></div>
+    <div class="group"><h2><span class="gi" aria-hidden="true">⚖️</span>التظلم والنزاهة</h2><div class="examples"><button type="button" class="chip">ما مدة رفع الدعوى أمام ديوان المظالم ضد قرار إداري؟</button><button type="button" class="chip">كيف أبلغ عن فساد وهل أحصل على حماية؟</button></div></div>
   </div>
 
-  <footer>الإجابات تُكتب آلياً بواسطة Claude من نصوص الأنظمة المنشورة رسمياً، وتظهر تحت كل إجابة النصوص التي بُنيت عليها.</footer>
+  <footer>
+    <p>الإجابات تُكتب آلياً بواسطة Claude من نصوص الأنظمة المنشورة رسمياً، وتظهر تحت كل إجابة النصوص التي بُنيت عليها.</p>
+    <p><strong>هذه الأداة لا تغني عن الرجوع إلى النص الرسمي المعتمد أو إلى جهة مختصة.</strong></p>
+  </footer>
 </div>
 
 <script>
@@ -165,6 +182,7 @@ function search(query,k){
 function docLabel(d){return d.title+(d.meta['أداة الإصدار']?' — '+d.meta['أداة الإصدار']:'');}
 
 // ---------- rendering ----------
+function msg(t,d,k){return '<div class="msg'+(k?' '+k:'')+'" role="alert"><strong>'+esc(t)+'</strong><br>'+esc(d)+'</div>';}
 function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function inline(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');}
 function md(src){
@@ -192,6 +210,7 @@ const ask=$('ask'), stop=$('stop'), status=$('status');
 ask.disabled=true; status.textContent='جارٍ تحميل المكتبة…';
 fetch('data.json').then(r=>r.json()).then(d=>{
   LIB=d; LIB.docs.forEach((doc,di)=>doc.secs.forEach(([h,b])=>SECS.push({id:SECS.length,doc:di,h,b})));
+  $('count').textContent=LIB.docs.filter(x=>x.kind!=='card').length+' نظاماً ولائحة وقراراً';
   ask.disabled=false; status.textContent='';
 }).catch(()=>{status.textContent='تعذر تحميل المكتبة. أعد تحميل الصفحة.';});
 
@@ -222,6 +241,26 @@ async function streamAnswer(q,ids,onText){
   return {text,truncated:stopReason==='max_tokens'};
 }
 
+// المصدر: اسم النظام ورقم المادة التي ذكرتها الإجابة من النصوص المرسلة
+const AR=d=>String(d).replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
+// اسم النظام، مع رقم المرسوم إن تكرر الاسم (مثل النظامين الجديد والسابق)
+function shortName(d){
+  const same=LIB.docs.filter(x=>x.title===d.title).length>1;
+  const m=(d.meta['أداة الإصدار']||'').match(/م\/\s*\d+/);
+  return same&&m?d.title+' ('+m[0].replace(/\s/g,'')+')':d.title;
+}
+function basisOf(text,secs){
+  const t=AR(text), by=new Map();
+  for(const s of secs){
+    const m=AR(s.h).match(/المادة\s*\(?(\d+)/); if(!m)continue;
+    if(!new RegExp('الماد[ةه]\\s*\\(?'+m[1]+'(?!\\d)').test(t))continue;
+    const name=shortName(LIB.docs[s.doc]); if(!by.has(name))by.set(name,new Set());
+    by.get(name).add(+m[1]);
+  }
+  if(!by.size)return [...new Set(secs.map(s=>shortName(LIB.docs[s.doc])))].slice(0,3);
+  return [...by].slice(0,4).map(([n,a])=>{a=[...a].sort((x,y)=>x-y);return n+'، '+(a.length>1?'المواد ':'المادة ')+a.join(' و');});
+}
+
 function gather(q, extra){
   const seen=new Map(); const push=(s,w)=>{seen.set(s.id,(seen.get(s.id)||0)+w);};
   search(q,8).forEach((s,i)=>push(s,8-i));
@@ -232,29 +271,30 @@ function gather(q, extra){
 $('f').addEventListener('submit', async e=>{
   e.preventDefault();
   const q=$('q').value.trim(); if(!q||!LIB)return;
-  ctrl=new AbortController(); ask.disabled=true; stop.hidden=false;
+  ctrl=new AbortController(); ask.disabled=true; stop.hidden=false; ask.innerHTML='<span class="spin"></span>جاري…';
   $('out').hidden=false; $('srcBox').hidden=true; $('after').hidden=true; lastText='';
   const loading=t=>{$('answer').innerHTML='<div class="loading" role="status"><span class="spin"></span>'+t+'</div>';};
   try{
     status.textContent=''; loading('جاري البحث في الأنظمة…');
     const extra=await expandQuery(q);
     const secs=gather(q,extra);
-    if(!secs.length){ $('answer').innerHTML='<p>لم أجد نصاً متعلقاً بسؤالك في المكتبة. جرّب صياغة أخرى بمصطلح نظامي.</p>'; status.textContent=''; return; }
+    if(!secs.length){ $('answer').innerHTML=msg('لم أجد نصاً متعلقاً بسؤالك في المكتبة.','جرّب صياغة أخرى بمصطلح نظامي، مثل «الضمان النهائي» بدل «التأمين»، أو اختر سؤالاً من الأسئلة الشائعة.','info'); status.textContent=''; return; }
     $('srcList').innerHTML=secs.map(s=>'<li>'+esc(docLabel(LIB.docs[s.doc]))+' — '+esc(s.h)+'</li>').join('');
     loading('جاري كتابة الإجابة…');
     const res=await streamAnswer(q,secs.map(s=>s.id),text=>{$('answer').innerHTML=md(text);});
     $('answer').innerHTML=md(res.text)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
-    const names=[...new Set(secs.map(s=>LIB.docs[s.doc].title))].slice(0,3);
-    $('basis').innerHTML='بناءً على: <strong>'+names.map(esc).join('، ')+'</strong>';
-    lastText=res.text.replace(/\*\*/g,'')+'\n\nبناءً على: '+names.join('، ')+'\n'+location.origin;
+    const names=basisOf(res.text,secs);
+    $('basis').innerHTML='بناءً على: <strong>'+names.map(esc).join('؛ ')+'</strong>';
+    lastText=res.text.replace(/\*\*/g,'')+'\n\nبناءً على: '+names.join('؛ ')+'\n'+location.origin;
     $('after').hidden=false; $('srcBox').hidden=false; status.textContent='';
   }catch(err){
     status.textContent='';
-    if(err.name==='AbortError'){status.textContent='أُوقفت.';}
-    else if(err.code==='rate_limited'){$('answer').innerHTML='<p class="err">أرسلت أسئلة كثيرة في وقت قصير. انتظر دقيقة ثم أعد المحاولة.</p>';}
-    else if(err.code==='busy'){$('answer').innerHTML='<p class="err">الخدمة مشغولة الآن. حاول بعد قليل.</p>';}
-    else {$('answer').innerHTML='<p class="err">تعذرت الإجابة الآن. حاول مرة أخرى.</p>';}
-  }finally{ ask.disabled=!LIB; stop.hidden=true; }
+    if(err.name==='AbortError'){$('answer').innerHTML=msg('أُوقفت الإجابة.','اضغط «اسأل» لإعادة المحاولة.','info');}
+    else if(err.code==='rate_limited'){$('answer').innerHTML=msg('أرسلت أسئلة كثيرة في وقت قصير.','انتظر دقيقة ثم أعد المحاولة.');}
+    else if(err.code==='busy'){$('answer').innerHTML=msg('الخدمة مشغولة الآن.','حاول بعد قليل.');}
+    else if(!navigator.onLine){$('answer').innerHTML=msg('لا يوجد اتصال بالإنترنت.','تحقق من الاتصال ثم أعد المحاولة.');}
+    else {$('answer').innerHTML=msg('تعذرت الإجابة الآن.','حاول مرة أخرى بعد قليل. وإن تكرر الخطأ فأعد تحميل الصفحة.');}
+  }finally{ ask.disabled=!LIB; stop.hidden=true; ask.textContent='اسأل'; }
 });
 stop.addEventListener('click',()=>ctrl&&ctrl.abort());
 let lastText='';
@@ -271,7 +311,11 @@ const paint=()=>{themeBtn.textContent=isDark()?'الوضع الفاتح':'الو
 try{const t=localStorage.getItem('theme');if(t)root.dataset.theme=t;}catch{}
 paint();
 themeBtn.addEventListener('click',()=>{root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme);}catch{}paint();});
-document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{$('q').value=b.textContent;$('q').focus();}));
+const chips=document.querySelectorAll('.chip');
+chips.forEach(b=>b.addEventListener('click',()=>{chips.forEach(c=>c.classList.remove('on'));b.classList.add('on');$('q').value=b.textContent;$('q').focus();}));
+$('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(!ask.disabled)$('f').requestSubmit();}});
+$('q').addEventListener('input',()=>chips.forEach(c=>c.classList.toggle('on',c.textContent===$('q').value)));
+$('clear').addEventListener('click',()=>{if(ctrl)ctrl.abort();$('q').value='';$('out').hidden=true;chips.forEach(c=>c.classList.remove('on'));$('q').focus();});
 })();
 </script>
 </body>
