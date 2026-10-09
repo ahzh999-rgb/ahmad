@@ -14,9 +14,9 @@
 2. **الاستضافة:** في dash.cloudflare.com أنشئ حساباً مجانياً، ثم: Workers & Pages ← Create ← Import a repository ← اختر المستودع `ahmad`.
    - Root directory: `/` (الافتراضي)
    - Deploy command: `npx wrangler deploy`
-   - ملف الإعدادات `wrangler.toml` في جذر المستودع، واسم الـ Worker فيه `ahmad`.
+   - ملف الإعدادات `wrangler.toml` في جذر المستودع، واسم الـ Worker فيه `ask`.
 3. **إضافة المفتاح:** بعد أول نشر، من إعدادات الـ Worker ← Variables and Secrets ← أضف `ANTHROPIC_API_KEY` من نوع Secret، والصق المفتاح.
-4. يظهر رابط الموقع بصيغة `ahmad.<اسمك>.workers.dev`. ويمكن ربطه لاحقاً بنطاق خاص.
+4. يظهر رابط الموقع بصيغة `ask.mustashar.workers.dev`. ويمكن ربطه لاحقاً بنطاق خاص.
 
 بعدها، كل دمج في `main` يعيد نشر الموقع تلقائياً.
 
