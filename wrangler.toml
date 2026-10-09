@@ -1,4 +1,4 @@
-name = "ahmad"
+name = "ask"
 main = "site/src/worker.js"
 compatibility_date = "2025-09-01"
 workers_dev = true
