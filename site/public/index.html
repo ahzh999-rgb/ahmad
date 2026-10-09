@@ -10,24 +10,28 @@
 :root{
   --bg:#f6f7f4; --surface:#ffffff; --fg:#1c2420; --muted:#5b6a62; --line:#dde3dd;
   --accent:#0f5c3f; --accent-fg:#ffffff; --accent-soft:#e6f0ea; --seal:#a8823a;
-  --quote:#f1f4ee; --warn-bg:#fbf5e8; --warn-fg:#6b5320; --err:#a23b2c;
+  --quote:#f1f4ee; --warn-bg:#fff4c7; --warn-line:#e0b52c; --warn-fg:#5c4508; --err:#a23b2c;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121815; --surface:#1a221e; --fg:#e4ebe6; --muted:#9aaba1; --line:#2c3832;
   --accent:#4fb486; --accent-fg:#0d1511; --accent-soft:#1f3329; --seal:#d0ac62;
-  --quote:#1f2924; --warn-bg:#2a2518; --warn-fg:#e1c88c; --err:#e07a68; color-scheme:dark}}
+  --quote:#1f2924; --warn-bg:#3a3010; --warn-line:#c99a1e; --warn-fg:#f4dc8f; --err:#e07a68; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121815; --surface:#1a221e; --fg:#e4ebe6; --muted:#9aaba1; --line:#2c3832;
   --accent:#4fb486; --accent-fg:#0d1511; --accent-soft:#1f3329; --seal:#d0ac62;
-  --quote:#1f2924; --warn-bg:#2a2518; --warn-fg:#e1c88c; --err:#e07a68; color-scheme:dark}
+  --quote:#1f2924; --warn-bg:#3a3010; --warn-line:#c99a1e; --warn-fg:#f4dc8f; --err:#e07a68; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.8;direction:rtl;padding-inline:16px;padding-block:28px 48px}
 .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
 header{display:flex;gap:14px;align-items:center}
+header .titles{flex:1;min-width:0}
+.theme{flex:none;align-self:flex-start;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:6px 12px;font-size:.85rem}
+.updated{margin:2px 0 0;color:var(--muted);font-size:.85rem}
 .seal{flex:none;width:52px;height:52px;border-radius:50%;border:2px solid var(--seal);display:grid;place-items:center;color:var(--seal);font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:22px}
 h1{font-family:"Noto Naskh Arabic",serif;font-size:1.65rem;line-height:1.35;margin:0;text-wrap:balance}
 .sub{margin:0;color:var(--muted);font-size:.95rem}
-.notice{background:var(--warn-bg);color:var(--warn-fg);border-radius:10px;padding:12px 14px;font-size:.92rem;line-height:1.7}
+.notice{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-line);border-inline-start:5px solid var(--warn-line);border-radius:10px;padding:12px 14px;font-size:.95rem;line-height:1.7;display:flex;gap:10px}
+.notice .ico{flex:none;font-size:1.2rem;line-height:1.4}
 form{display:flex;flex-direction:column;gap:10px}
 textarea{width:100%;min-height:110px;resize:vertical;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
 textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
@@ -36,10 +40,21 @@ button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transpare
 .primary{background:var(--accent);color:var(--accent-fg);font-weight:600}
 .primary:disabled{opacity:.55;cursor:default}
 .ghost{background:transparent;color:var(--muted);border-color:var(--line)}
-.examples{display:flex;flex-wrap:wrap;gap:8px}
+.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin-top:6px}
+.group{display:flex;flex-direction:column;gap:6px;min-width:0}
+.group h2{margin:0;font-size:.82rem;font-weight:600;color:var(--accent);letter-spacing:.02em}
+.examples{display:flex;flex-wrap:wrap;gap:6px}
 .chip{background:var(--accent-soft);color:var(--fg);font-size:.88rem;padding:6px 12px;border-radius:999px;border:0;text-align:right}
 .label{font-size:.8rem;color:var(--muted);letter-spacing:.02em}
 .status{color:var(--muted);font-size:.92rem}
+.loading{display:flex;gap:10px;align-items:center;color:var(--muted)}
+.spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+.after{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-top:10px}
+.basis{margin:0;font-size:.88rem;color:var(--muted);flex:1;min-width:0}
+.basis strong{color:var(--fg);font-weight:600}
+.copy{background:var(--accent-soft);color:var(--fg);font-size:.85rem;padding:5px 14px}
 .answer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-width:0;overflow-wrap:anywhere}
 .answer h2,.answer h3{font-family:"Noto Naskh Arabic",serif;font-size:1.12rem;margin:14px 0 4px}
 .answer p{margin:6px 0}
@@ -60,13 +75,15 @@ footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padd
 <div class="wrap" dir="rtl">
   <header>
     <div class="seal" aria-hidden="true">§</div>
-    <div>
+    <div class="titles">
       <h1>المستشار النظامي للمتعاملين مع الجهات الحكومية</h1>
       <p class="sub">إجابة فورية من نصوص الأنظمة واللوائح السعودية: المنافسات والمشتريات، المالية العامة، الموارد البشرية، القضاء الإداري.</p>
+      <p class="updated">آخر تحديث للمكتبة: 8 أكتوبر 2026</p>
     </div>
+    <button type="button" class="theme" id="theme" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
   </header>
 
-  <div class="notice"><strong>إجابة استرشادية:</strong> تُبنى من نسخة المكتبة الموجودة في الصفحة (72 نظاماً ولائحة وقراراً)، وليست رأياً قانونياً ملزماً. راجِع النص الأصلي أو مختصاً قبل أي إجراء.</div>
+  <div class="notice" role="note"><span class="ico" aria-hidden="true">⚠</span><div><strong>تنبيه: الإجابة استرشادية.</strong> تُبنى من نسخة المكتبة الموجودة في الصفحة (72 نظاماً ولائحة وقراراً)، وليست رأياً قانونياً ملزماً. راجِع النص الأصلي أو مختصاً قبل أي إجراء.</div></div>
 
   <form id="f">
     <label class="label" for="q">اكتب سؤالك</label>
@@ -76,21 +93,26 @@ footer{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padd
       <button class="ghost" id="stop" type="button" hidden>إيقاف</button>
       <span class="status" id="status"></span>
     </div>
-    <div class="examples" id="examples">
-      <button type="button" class="chip">ما مسوغات صرف المستخلص الختامي؟</button>
-      <button type="button" class="chip">كم نسبة الضمان الابتدائي والنهائي في نظام المنافسات الجديد؟</button>
-      <button type="button" class="chip">ماذا يحدث إذا تعطلت منصة اعتماد؟</button>
-      <button type="button" class="chip">ما مدة سريان العروض في المنافسات؟</button>
-    </div>
   </form>
 
   <section id="out" hidden>
     <div class="answer" id="answer"></div>
+    <div class="after" id="after" hidden>
+      <p class="basis" id="basis"></p>
+      <button type="button" class="copy" id="copy">نسخ</button>
+    </div>
     <details class="sources" id="srcBox" hidden><summary>النصوص التي رُجع إليها</summary><ol id="srcList"></ol></details>
   </section>
 
-  
-  <footer>الإجابات تُولَّد آلياً بواسطة Claude. نسخة المكتبة بتاريخ 8 أكتوبر 2026، ولم تصدر بعد اللائحة التنفيذية لنظام المنافسات الجديد (م/76).</footer>
+  <div class="groups" id="examples">
+    <p class="label" style="grid-column:1/-1;margin:0">أسئلة شائعة</p>
+    <div class="group"><h2>المنافسات والمشتريات</h2><div class="examples"><button type="button" class="chip">متى يجوز الشراء المباشر؟</button><button type="button" class="chip">كم نسبة الضمان الابتدائي والنهائي في نظام المنافسات الجديد؟</button><button type="button" class="chip">ما مدة سريان العروض في المنافسات؟</button><button type="button" class="chip">كيف أتظلم من قرار ترسية المنافسة؟</button></div></div>
+    <div class="group"><h2>العقود والمستخلصات</h2><div class="examples"><button type="button" class="chip">ما مسوغات صرف المستخلص الختامي؟</button><button type="button" class="chip">ما غرامة التأخير على المقاول؟</button><button type="button" class="chip">متى تصرف الدفعة المقدمة للمتعاقد وكم نسبتها؟</button><button type="button" class="chip">ماذا يحدث إذا تعطلت البوابة الإلكترونية (منصة اعتماد)؟</button></div></div>
+    <div class="group"><h2>الموظفون</h2><div class="examples"><button type="button" class="chip">كم مدة الإجازة الاضطرارية للموظف؟</button><button type="button" class="chip">متى يستحق الموظف بدل العمل خارج وقت الدوام؟</button><button type="button" class="chip">ما العقوبات التأديبية في نظام الانضباط الوظيفي؟</button></div></div>
+    <div class="group"><h2>التظلم والنزاهة</h2><div class="examples"><button type="button" class="chip">ما مدة رفع الدعوى أمام ديوان المظالم ضد قرار إداري؟</button><button type="button" class="chip">كيف أبلغ عن فساد وهل أحصل على حماية؟</button></div></div>
+  </div>
+
+  <footer>الإجابات تُكتب آلياً بواسطة Claude من نصوص الأنظمة المنشورة رسمياً، وتظهر تحت كل إجابة النصوص التي بُنيت عليها.</footer>
 </div>
 
 <script>
@@ -136,7 +158,7 @@ function search(query,k){
     for(const [id,tf] of post){const l=LEN[id];const s=idf*(tf*2.2)/(tf+1.2*(.25+.75*l/AVG));score.set(id,(score.get(id)||0)+s);}
   }
   // prefer newest procurement law and real text over cards slightly
-  const arr=[...score.entries()].map(([id,s])=>{const d=LIB.docs[SECS[id].doc];if(d.kind==='card')s*=.85;return [id,s];});
+  const arr=[...score.entries()].map(([id,s])=>{const d=LIB.docs[SECS[id].doc];if(d.kind==='card')s*=.85;if((d.meta['أداة الإصدار']||'').includes('1448'))s*=1.2;return [id,s];});
   arr.sort((a,b)=>b[1]-a[1]);
   return arr.slice(0,k).map(([id])=>SECS[id]);
 }
@@ -211,17 +233,21 @@ $('f').addEventListener('submit', async e=>{
   e.preventDefault();
   const q=$('q').value.trim(); if(!q||!LIB)return;
   ctrl=new AbortController(); ask.disabled=true; stop.hidden=false;
-  $('out').hidden=false; $('srcBox').hidden=true; $('answer').innerHTML='';
+  $('out').hidden=false; $('srcBox').hidden=true; $('after').hidden=true; lastText='';
+  const loading=t=>{$('answer').innerHTML='<div class="loading" role="status"><span class="spin"></span>'+t+'</div>';};
   try{
-    status.textContent='أبحث في الأنظمة…';
+    status.textContent=''; loading('جاري البحث في الأنظمة…');
     const extra=await expandQuery(q);
     const secs=gather(q,extra);
     if(!secs.length){ $('answer').innerHTML='<p>لم أجد نصاً متعلقاً بسؤالك في المكتبة. جرّب صياغة أخرى بمصطلح نظامي.</p>'; status.textContent=''; return; }
     $('srcList').innerHTML=secs.map(s=>'<li>'+esc(docLabel(LIB.docs[s.doc]))+' — '+esc(s.h)+'</li>').join('');
-    status.textContent='أكتب الإجابة…';
+    loading('جاري كتابة الإجابة…');
     const res=await streamAnswer(q,secs.map(s=>s.id),text=>{$('answer').innerHTML=md(text);});
     $('answer').innerHTML=md(res.text)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
-    $('srcBox').hidden=false; status.textContent='';
+    const names=[...new Set(secs.map(s=>LIB.docs[s.doc].title))].slice(0,3);
+    $('basis').innerHTML='بناءً على: <strong>'+names.map(esc).join('، ')+'</strong>';
+    lastText=res.text.replace(/\*\*/g,'')+'\n\nبناءً على: '+names.join('، ')+'\n'+location.origin;
+    $('after').hidden=false; $('srcBox').hidden=false; status.textContent='';
   }catch(err){
     status.textContent='';
     if(err.name==='AbortError'){status.textContent='أُوقفت.';}
@@ -231,6 +257,20 @@ $('f').addEventListener('submit', async e=>{
   }finally{ ask.disabled=!LIB; stop.hidden=true; }
 });
 stop.addEventListener('click',()=>ctrl&&ctrl.abort());
+let lastText='';
+$('copy').addEventListener('click',async()=>{
+  const b=$('copy');
+  try{await navigator.clipboard.writeText(lastText);}
+  catch{const t=document.createElement('textarea');t.value=lastText;document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch{}t.remove();}
+  b.textContent='نُسخت ✓';setTimeout(()=>{b.textContent='نسخ';},1800);
+});
+// الوضع الداكن
+const root=document.documentElement, themeBtn=$('theme');
+const isDark=()=>root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+const paint=()=>{themeBtn.textContent=isDark()?'الوضع الفاتح':'الوضع الداكن';};
+try{const t=localStorage.getItem('theme');if(t)root.dataset.theme=t;}catch{}
+paint();
+themeBtn.addEventListener('click',()=>{root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme);}catch{}paint();});
 document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>{$('q').value=b.textContent;$('q').focus();}));
 })();
 </script>
