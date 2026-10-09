@@ -66,6 +66,22 @@ button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transpare
 .msg.info strong{color:var(--fg)}
 .count{font-weight:600;color:var(--fg)}
 footer p{margin:0}
+.howto{font-size:.9rem;color:var(--muted)}
+.howto summary{cursor:pointer;color:var(--accent);font-weight:600}
+.howto ol{margin:8px 0 0;padding-inline-start:22px;display:flex;flex-direction:column;gap:4px}
+.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted);margin-top:8px}
+.tag{display:inline-block;font-size:.75rem;font-weight:600;border-radius:999px;padding:1px 9px;margin-inline-start:6px;vertical-align:1px}
+.tag.new{background:var(--accent);color:var(--accent-fg)}
+.tag.old{background:var(--line);color:var(--fg)}
+.basis ul{margin:4px 0 0;padding-inline-start:18px}
+.basis li{margin:2px 0}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.fb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:10px}
+.fb button{background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:3px 12px;font-size:.85rem}
+.follow{margin-top:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.answer details.q{margin:8px 0}
+.answer details.q summary{cursor:pointer;font-size:.88rem;color:var(--accent)}
+.recent{display:flex;flex-direction:column;gap:6px}
 @media (max-width:560px){
   body{padding-block:18px 36px}
   .wrap{gap:24px}
@@ -111,6 +127,15 @@ footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padd
 
   <div class="notice" role="note"><span class="ico" aria-hidden="true">⚠</span><div><strong>تنبيه: الإجابة استرشادية.</strong> تُبنى من نصوص المكتبة، وليست رأياً قانونياً ملزماً. راجِع النص الأصلي أو مختصاً قبل أي إجراء.</div></div>
 
+  <details class="howto">
+    <summary>كيف تستخدم الأداة؟</summary>
+    <ol>
+      <li>اكتب سؤالك بكلماتك، أو اختر سؤالاً من الأسئلة الشائعة.</li>
+      <li>اضغط «اسأل» أو Enter، وانتظر ثوانيَ حتى تُكتب الإجابة.</li>
+      <li>راجع السند والمادة المذكورة، ثم انسخ الإجابة أو شاركها.</li>
+    </ol>
+  </details>
+
   <form id="f">
     <label class="label" for="q">اكتب سؤالك</label>
     <textarea id="q" placeholder="مثال: ما مسوغات صرف المستخلص الختامي؟" maxlength="1500"></textarea>
@@ -126,11 +151,26 @@ footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padd
   <section id="out" hidden>
     <div class="answer" id="answer"></div>
     <div class="after" id="after" hidden>
-      <p class="basis" id="basis"></p>
-      <button type="button" class="copy" id="copy">نسخ</button>
+      <div class="basis" id="basis"></div>
+      <div class="actions">
+        <button type="button" class="copy" id="copy">نسخ</button>
+        <button type="button" class="copy" id="share">مشاركة</button>
+      </div>
     </div>
+    <div class="follow" id="follow" hidden></div>
+    <div class="fb" id="fb" hidden>
+      <span>هل كانت الإجابة مفيدة؟</span>
+      <button type="button" data-v="yes">نعم 👍</button>
+      <button type="button" data-v="no">لا 👎</button>
+    </div>
+    <div class="meta" id="meta" hidden></div>
     <details class="sources" id="srcBox" hidden><summary>النصوص التي رُجع إليها</summary><ol id="srcList"></ol></details>
   </section>
+
+  <div class="recent" id="recentBox" hidden>
+    <p class="label" style="margin:0">أسئلتك الأخيرة</p>
+    <div class="examples" id="recent"></div>
+  </div>
 
   <div class="groups" id="examples">
     <p class="label" style="grid-column:1/-1;margin:0">أسئلة شائعة</p>
@@ -226,7 +266,10 @@ fetch('data.json').then(r=>r.json()).then(d=>{
   LIB=d; LIB.docs.forEach((doc,di)=>doc.secs.forEach(([h,b])=>SECS.push({id:SECS.length,doc:di,h,b})));
   $('count').textContent=LIB.docs.filter(x=>x.kind!=='card').length+' نظاماً ولائحة وقراراً';
   ask.disabled=false; status.textContent='';
-}).catch(()=>{status.textContent='تعذر تحميل المكتبة. أعد تحميل الصفحة.';});
+  const sq=new URLSearchParams(location.search).get('q');
+  if(sq){$('q').value=sq.slice(0,1500);grow();$('f').requestSubmit();}
+}).catch(()=>{status.textContent='';$('out').hidden=false;
+  $('answer').innerHTML=msg('تعذر الوصول إلى مكتبة الأنظمة.','تحقق من اتصالك بالإنترنت، ثم اضغط «إعادة المحاولة».')+'<p><button type="button" class="ghost" onclick="location.reload()">إعادة المحاولة</button></p>';});
 
 async function post(path,body){
   const r=await fetch(path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:ctrl.signal});
@@ -263,16 +306,49 @@ function shortName(d){
   const m=(d.meta['أداة الإصدار']||'').match(/م\/\s*\d+/);
   return same&&m?d.title+' ('+m[0].replace(/\s/g,'')+')':d.title;
 }
+// نظام المنافسات الجديد (م/76) أم السابق (م/128) ولائحته وتعديلاتها
+function era(d){
+  const tool=d.meta['أداة الإصدار']||'';
+  if(/م\/\s*76/.test(tool))return 'new';
+  if(/م\/\s*128/.test(tool)||/المنافسات والمشتريات الحكومية/.test(d.title))return 'old';
+  return '';
+}
 function basisOf(text,secs){
   const t=AR(text), by=new Map();
   for(const s of secs){
     const m=AR(s.h).match(/المادة\s*\(?(\d+)/); if(!m)continue;
     if(!new RegExp('الماد[ةه]\\s*\\(?'+m[1]+'(?!\\d)').test(t))continue;
-    const name=shortName(LIB.docs[s.doc]); if(!by.has(name))by.set(name,new Set());
-    by.get(name).add(+m[1]);
+    const d=LIB.docs[s.doc], name=shortName(d); if(!by.has(name))by.set(name,{era:era(d),arts:new Set()});
+    by.get(name).arts.add(+m[1]);
   }
-  if(!by.size)return [...new Set(secs.map(s=>shortName(LIB.docs[s.doc])))].slice(0,3);
-  return [...by].slice(0,4).map(([n,a])=>{a=[...a].sort((x,y)=>x-y);return n+'، '+(a.length>1?'المواد ':'المادة ')+a.join(' و');});
+  for(const [n,o] of [...by])if(o.era==='old'&&/\(م\/128\)$/.test(n)&&[...by].some(([k,x])=>x.era==='new')&&!/128|السابق/.test(t))by.delete(n);
+  if(!by.size){const seen=new Map();secs.forEach(s=>{const d=LIB.docs[s.doc];seen.set(shortName(d),era(d));});
+    return [...seen].slice(0,3).map(([n,e])=>({label:n,era:e}));}
+  return [...by].slice(0,4).map(([n,o])=>{const a=[...o.arts].sort((x,y)=>x-y);return {label:n+'، '+(a.length>1?'المواد ':'المادة ')+a.join(' و'),era:o.era};});
+}
+const count=(n,one,two,few,many)=>n===1?one:n===2?two:n+' '+(n<=10?few:many);
+const TAG={new:'<span class="tag new">النظام الجديد</span>',old:'<span class="tag old">النظام السابق</span>'};
+// سؤال المتابعة المقترح يأتي في آخر سطر من الإجابة
+function splitFollow(text){
+  const m=text.match(/\n[\s*_>-]*سؤال\s*(?:ال)?متابعة[^:\n]*[:：][*_\s]*(.+?)[*_\s]*$/);
+  if(m)return {body:text.slice(0,m.index),follow:m[1].trim()};
+  return {body:text.replace(/\n[\s*_>-]*سؤال(?:\s*م(?:ت(?:ا(?:ب(?:ع(?:ة)?)?)?)?)?)?[^\n]*$/,''),follow:''};
+}
+// النصوص المقتبسة الطويلة تُطوى
+function foldQuotes(el){
+  el.querySelectorAll('blockquote').forEach(b=>{
+    if(b.textContent.length<160)return;
+    const d=document.createElement('details');d.className='q';
+    d.innerHTML='<summary>عرض النص النظامي ('+b.textContent.trim().split(/\s+/).length+' كلمة)</summary>';
+    b.replaceWith(d);d.appendChild(b);
+  });
+}
+// الجلسة: العداد وآخر الأسئلة
+const ss={get(k,d){try{const v=sessionStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}},set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v));}catch{}}};
+function renderRecent(){
+  const r=ss.get('recent',[]);$('recentBox').hidden=!r.length;
+  $('recent').innerHTML=r.map(q=>'<button type="button" class="chip">'+esc(q)+'</button>').join('');
+  $('recent').querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>pick(b)));
 }
 
 function gather(q, extra){
@@ -286,7 +362,8 @@ $('f').addEventListener('submit', async e=>{
   e.preventDefault();
   const q=$('q').value.trim(); if(!q||!LIB)return;
   ctrl=new AbortController(); ask.disabled=true; stop.hidden=false; ask.innerHTML='<span class="spin"></span>جاري…';
-  $('out').hidden=false; $('srcBox').hidden=true; $('after').hidden=true; lastText='';
+  $('out').hidden=false; ['srcBox','after','follow','fb','meta'].forEach(id=>$(id).hidden=true); lastText=''; lastQ=q;
+  const t0=performance.now();
   const loading=t=>{$('answer').innerHTML='<div class="loading" role="status"><span class="spin"></span>'+t+'</div>';};
   try{
     status.textContent=''; loading('جاري البحث في الأنظمة…');
@@ -295,12 +372,22 @@ $('f').addEventListener('submit', async e=>{
     if(!secs.length){ $('answer').innerHTML=msg('لم أجد نصاً متعلقاً بسؤالك في المكتبة.','جرّب صياغة أخرى بمصطلح نظامي، مثل «الضمان النهائي» بدل «التأمين»، أو اختر سؤالاً من الأسئلة الشائعة.','info'); status.textContent=''; return; }
     $('srcList').innerHTML=secs.map(s=>'<li>'+esc(docLabel(LIB.docs[s.doc]))+' — '+esc(s.h)+'</li>').join('');
     loading('جاري كتابة الإجابة…');
-    const res=await streamAnswer(q,secs.map(s=>s.id),text=>{$('answer').innerHTML=md(text);});
-    $('answer').innerHTML=md(res.text)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
-    const names=basisOf(res.text,secs);
-    $('basis').innerHTML='بناءً على: <strong>'+names.map(esc).join('؛ ')+'</strong>';
-    lastText=res.text.replace(/\*\*/g,'')+'\n\nبناءً على: '+names.join('؛ ')+'\n'+location.origin;
-    $('after').hidden=false; $('srcBox').hidden=false; status.textContent='';
+    const res=await streamAnswer(q,secs.map(s=>s.id),text=>{$('answer').innerHTML=md(splitFollow(text).body);});
+    const {body,follow}=splitFollow(res.text);
+    $('answer').innerHTML=md(body)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
+    foldQuotes($('answer'));
+    const names=basisOf(body,secs);
+    $('basis').innerHTML='بناءً على:<ul>'+names.map(n=>'<li><strong>'+esc(n.label)+'</strong>'+(TAG[n.era]||'')+'</li>').join('')+'</ul>';
+    lastBasis=names.map(n=>n.label).join('؛ ');
+    lastText=body.replace(/\*\*/g,'').trim()+'\n\nبناءً على: '+lastBasis+'\n'+location.origin;
+    if(follow){$('follow').innerHTML='<span class="label">قد يهمك أيضاً</span><button type="button" class="chip">'+esc(follow)+'</button>';
+      $('follow').querySelector('.chip').addEventListener('click',e=>{pick(e.target);$('f').requestSubmit();});$('follow').hidden=false;}
+    const n=ss.get('n',0)+1; ss.set('n',n);
+    ss.set('recent',[q,...ss.get('recent',[]).filter(x=>x!==q)].slice(0,3)); renderRecent();
+    const secsTook=Math.max(1,Math.round((performance.now()-t0)/1000));
+    $('meta').innerHTML='<span>تم الرد خلال '+count(secsTook,'ثانية واحدة','ثانيتين','ثوانٍ','ثانية')+'</span><span>أجبت عن '+count(n,'سؤال واحد','سؤالين','أسئلة','سؤالاً')+' في هذه الجلسة</span>';
+    $('fb').querySelectorAll('button').forEach(b=>{b.disabled=false;b.hidden=false;}); $('fb').firstElementChild.textContent='هل كانت الإجابة مفيدة؟';
+    ['after','srcBox','fb','meta'].forEach(id=>$(id).hidden=false); status.textContent='';
   }catch(err){
     status.textContent='';
     if(err.name==='AbortError'){$('answer').innerHTML=msg('أُوقفت الإجابة.','اضغط «اسأل» لإعادة المحاولة.','info');}
@@ -311,7 +398,21 @@ $('f').addEventListener('submit', async e=>{
   }finally{ ask.disabled=!LIB; stop.hidden=true; ask.textContent='اسأل'; }
 });
 stop.addEventListener('click',()=>ctrl&&ctrl.abort());
-let lastText='';
+let lastText='', lastQ='', lastBasis='';
+// المشاركة: رابط يفتح الموقع بالسؤال نفسه، أو نص جاهز
+$('share').addEventListener('click',async()=>{
+  const url=location.origin+'/?q='+encodeURIComponent(lastQ), b=$('share');
+  const text='سؤال: '+lastQ+'\n\n'+lastText.replace(location.origin,'').trim();
+  if(navigator.share){try{await navigator.share({title:'المستشار النظامي',text,url});return;}catch(e){if(e.name==='AbortError')return;}}
+  try{await navigator.clipboard.writeText(text+'\n'+url);}catch{}
+  b.textContent='نُسخ الرابط والنص ✓';setTimeout(()=>{b.textContent='مشاركة';},2000);
+});
+// هل كانت الإجابة مفيدة؟
+$('fb').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  fetch('/api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({question:lastQ,vote:b.dataset.v,basis:lastBasis})}).catch(()=>{});
+  $('fb').querySelectorAll('button').forEach(x=>x.hidden=true);
+  $('fb').firstElementChild.textContent=b.dataset.v==='yes'?'شكراً لك.':'شكراً، سنراجع هذه الإجابة لتحسينها.';
+}));
 $('copy').addEventListener('click',async()=>{
   const b=$('copy');
   try{await navigator.clipboard.writeText(lastText);}
@@ -326,7 +427,9 @@ try{const t=localStorage.getItem('theme');if(t)root.dataset.theme=t;}catch{}
 paint();
 themeBtn.addEventListener('click',()=>{root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme);}catch{}paint();});
 const chips=document.querySelectorAll('.chip');
-chips.forEach(b=>b.addEventListener('click',()=>{chips.forEach(c=>c.classList.remove('on'));b.classList.add('on');$('q').value=b.textContent;grow();$('q').focus();}));
+function pick(b){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));b.classList.add('on');$('q').value=b.textContent;grow();$('q').focus();}
+chips.forEach(b=>b.addEventListener('click',()=>pick(b)));
+renderRecent();
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(!ask.disabled)$('f').requestSubmit();}});
 // الحقل يتمدد مع الكتابة الطويلة
 const grow=()=>{const q=$('q');q.style.height='auto';q.style.height=Math.min(q.scrollHeight+2,innerHeight*0.6)+'px';};
