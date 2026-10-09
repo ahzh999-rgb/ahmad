@@ -66,6 +66,20 @@ button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transpare
 .msg.info strong{color:var(--fg)}
 .count{font-weight:600;color:var(--fg)}
 footer p{margin:0}
+@media (max-width:560px){
+  body{padding-block:18px 36px}
+  .wrap{gap:24px}
+  header{gap:10px;align-items:flex-start}
+  .seal{width:38px;height:38px;font-size:17px}
+  h1{font-size:1.2rem;line-height:1.45}
+  .sub{font-size:.85rem;line-height:1.6;margin-top:4px}
+  .updated{font-size:.78rem;line-height:1.6}
+  .theme{padding:4px 10px;font-size:.78rem}
+  .notice{font-size:.88rem;padding:10px 12px}
+  .answer{padding:14px 16px}
+  .groups{gap:18px}
+  .chip{font-size:.85rem}
+}
 .copy{background:var(--accent-soft);color:var(--fg);font-size:.85rem;padding:5px 14px}
 .answer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-width:0;overflow-wrap:anywhere}
 .answer h2,.answer h3{font-family:"Noto Naskh Arabic",serif;font-size:1.12rem;margin:14px 0 4px}
@@ -312,10 +326,12 @@ try{const t=localStorage.getItem('theme');if(t)root.dataset.theme=t;}catch{}
 paint();
 themeBtn.addEventListener('click',()=>{root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme);}catch{}paint();});
 const chips=document.querySelectorAll('.chip');
-chips.forEach(b=>b.addEventListener('click',()=>{chips.forEach(c=>c.classList.remove('on'));b.classList.add('on');$('q').value=b.textContent;$('q').focus();}));
+chips.forEach(b=>b.addEventListener('click',()=>{chips.forEach(c=>c.classList.remove('on'));b.classList.add('on');$('q').value=b.textContent;grow();$('q').focus();}));
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(!ask.disabled)$('f').requestSubmit();}});
-$('q').addEventListener('input',()=>chips.forEach(c=>c.classList.toggle('on',c.textContent===$('q').value)));
-$('clear').addEventListener('click',()=>{if(ctrl)ctrl.abort();$('q').value='';$('out').hidden=true;chips.forEach(c=>c.classList.remove('on'));$('q').focus();});
+// الحقل يتمدد مع الكتابة الطويلة
+const grow=()=>{const q=$('q');q.style.height='auto';q.style.height=Math.min(q.scrollHeight+2,innerHeight*0.6)+'px';};
+$('q').addEventListener('input',()=>{grow();chips.forEach(c=>c.classList.toggle('on',c.textContent===$('q').value));});
+$('clear').addEventListener('click',()=>{if(ctrl)ctrl.abort();$('q').value='';grow();$('out').hidden=true;chips.forEach(c=>c.classList.remove('on'));$('q').focus();});
 })();
 </script>
 </body>
