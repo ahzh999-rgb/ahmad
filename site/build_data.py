@@ -25,10 +25,18 @@ for dp, dn, fn in sorted(os.walk(root)):
         txt = re.sub(r'<!--\s*ص\s*(\d+)\s*-->', r'(ص \1)', txt)
         txt = re.sub(r'<!--.*?-->', '', txt, flags=re.S)
         secs = []
+        chapter = ''  # عنوان الباب أو الفصل الذي تقع فيه المادة، يساعد البحث
         for part in re.split(r'(?m)^(?=### )', txt):
             part = part.strip()
             if not part: continue
             h = part.split('\n', 1)[0].lstrip('#').strip()
+            if part.startswith('### ') and chapter:
+                h += ' · ' + chapter
+            chs = re.findall(r'(?m)^##? (?!#)(.+)$', part)
+            if chs:
+                c = chs[-1].strip()
+                chapter = c.split(':', 1)[1].strip() if ':' in c else c
+                if chapter == title: chapter = ''
             body = part
             # تقسيم الأقسام الطويلة جداً
             while len(body) > 6000:
