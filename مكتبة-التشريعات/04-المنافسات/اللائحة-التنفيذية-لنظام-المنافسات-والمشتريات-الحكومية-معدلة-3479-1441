@@ -1,1 +1,46 @@
-
+{
+  "id": "SA-REG-GTP-1441-001",
+  "title": "اللائحة التنفيذية لنظام المنافسات والمشتريات الحكومية (المعدلة)",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "document_type": "executive_regulation",
+  "instrument": {
+    "type": "ministerial_decision",
+    "number": "3479",
+    "issue_date_hijri": "1441/08/11",
+    "issue_date_gregorian": "2020-04-04",
+    "issuing_authority": "وزارة المالية"
+  },
+  "legal_status": {
+    "status": "in_force",
+    "is_verified": true,
+    "effective_from": "2020-04-24",
+    "effective_to": null,
+    "verification_date": "2026-10-10"
+  },
+  "source": {
+    "type": "official",
+    "url": "",
+    "text_verified": true,
+    "verification_method": "article_by_article"
+  },
+  "repository_notes": {
+    "parent_law": "نظام المنافسات والمشتريات الحكومية الصادر بالمرسوم الملكي رقم (م/128) وتاريخ 13/11/1440هـ",
+    "original_decision": "صادرة أصلاً بالقرار الوزاري رقم (1242) وتاريخ 21/3/1441هـ",
+    "amending_decision": "معدلة بالقرار الوزاري رقم (3479) وتاريخ 11/8/1441هـ، والمعمول بها اعتباراً من 1/9/1441هـ الموافق 24/4/2020م",
+    "review_status": "تمت مراجعة ونقل كامل مواد اللائحة من المادة الأولى وحتى المادة السابعة والستين بعد المائة بدقة تامة ودون أي نقص."
+  },
+  "relationships": {
+    "amends": [],
+    "amended_by": [],
+    "related_documents": [
+      "SA-LAW-GTP-1440-001"
+    ],
+    "implementing_regulations": []
+  },
+  "maintenance": {
+    "added_at": "2026-10-10",
+    "updated_at": "2026-10-10",
+    "last_verified_at": "2026-10-10"
+  }
+}
