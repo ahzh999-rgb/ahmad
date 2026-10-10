@@ -32,7 +32,20 @@
   },
   "relationships": {
     "amends": [],
-    "amended_by": [],
+    "amended_by": [
+      {
+        "type": "ministerial_decision",
+        "number": "451",
+        "issue_date_hijri": "1444/04/07",
+        "description": "تعديل المادتين (111) و(127)"
+      },
+      {
+        "type": "ministerial_decision",
+        "number": "1090",
+        "issue_date_hijri": "1445/09/21",
+        "description": "تعديل المواد (4، 5، 20، 47، 74، 96، 111، 154)"
+      }
+    ],
     "related_documents": [
       "SA-LAW-GTP-1440-001"
     ],
