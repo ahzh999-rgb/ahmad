@@ -1,0 +1,35 @@
+{
+  "id": "SL-discipline-law",
+  "title": "نظام الانضباط الوظيفي",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "مرسوم ملكي",
+    "number": "م/18",
+    "issue_date_hijri": "1443/02/08"
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": true,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.hrsd.gov.sa/sites/default/files/2022-10/08102022.pdf",
+    "text_verified": true,
+    "verification_method": "visual_match_original"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/discipline-law",
+    "article_headings": 25,
+    "notes": [
+      "أضيف المصدر كاملاً دون تغيير.",
+      "قوبلت جميع مواد الأصل25 بصرياً؛ لم يستنفد حصر التعديلات ولم يثبت النشر الأصلي مباشرة أو يوم النفاذ تقويمياً.",
+      "تاريخ مجلد الموقع تاريخ رفع للملف، وليس دليلاً مستقلاً على النشر النظامي أو النفاذ."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}

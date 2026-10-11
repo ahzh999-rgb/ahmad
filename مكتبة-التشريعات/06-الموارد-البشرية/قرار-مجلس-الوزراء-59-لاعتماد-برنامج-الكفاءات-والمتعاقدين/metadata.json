@@ -1,0 +1,34 @@
+{
+  "id": "SL-talent-contract-adoption-59",
+  "title": "قرار مجلس الوزراء59 لاعتماد برنامج الكفاءات والمتعاقدين",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "",
+    "number": "",
+    "issue_date_hijri": ""
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": false,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.uqn.gov.sa/details?p=19976",
+    "text_verified": false,
+    "verification_method": "official_page_transcription"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/talent-contract-adoption-59",
+    "article_headings": 0,
+    "notes": [
+      "نص من HTML رسمي محفوظ بالكامل؛ استخراج محتوى الأقسام دون اجتهاد في إعادة الصياغة.",
+      "لم يغلق حصر جميع قرارات التعديل والنفاذ لهذه الوثيقة."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}

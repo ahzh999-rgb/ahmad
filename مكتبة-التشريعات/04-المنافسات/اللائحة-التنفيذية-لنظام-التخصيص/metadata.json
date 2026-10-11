@@ -1,0 +1,33 @@
+{
+  "id": "SL-privatization-executive-2024",
+  "title": "اللائحة التنفيذية لنظام التخصيص — منشور2024 المعدل",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "",
+    "number": "",
+    "issue_date_hijri": ""
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": false,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.uqn.gov.sa/details?p=24451",
+    "text_verified": false,
+    "verification_method": "official_page_transcription"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/privatization-executive-2024",
+    "article_headings": 169,
+    "notes": [
+      "حفظ النص الأصلي دون تصحيح الصياغة؛ لا اعتماد نهائي ولا افتراض نفاذ اللائحة من تاريخ نشرها."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}
