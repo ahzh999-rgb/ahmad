@@ -1,0 +1,38 @@
+{
+  "id": "SL-procurement-ethics",
+  "title": "لائحة تنظيم سلوكيات وأخلاقيات القائمين على تطبيق نظام المنافسات والمشتريات الحكومية ولائحته التنفيذية",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "قرار مجلس الوزراء",
+    "number": "537",
+    "issue_date_hijri": "1441/08/21"
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": true,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.mu.edu.sa/sites/default/files/2024-10/%D8%A7%D8%A6%D8%AD%D8%A9%20%D8%AA%D9%86%D8%B8%D9%8A%D9%85%20%D8%B3%D9%84%D9%88%D9%83%D9%8A%D8%A7%D8%AA%20%D9%88%D8%A3%D8%AE%D9%84%D8%A7%D9%82%D9%8A%D8%A7%D8%AA%20%D8%A7%D9%84%D9%82%D8%A7%D8%A6%D9%85%D9%8A%D9%86%20%D8%B9%D9%84%D9%89%20%D8%AA%D8%B7%D8%A8%D9%8A%D9%82%20%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D9%86%D8%A7%D9%81%D8%B3%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D9%85%D8%B4%D8%AA%D8%B1%D9%8A%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AD%D9%83%D9%88%D9%85%D9%8A%D8%A9%20%D9%88%D9%84%D8%A7%D8%A6%D8%AD%D8%AA%D9%87%20%D8%A7%D9%84%D8%AA%D9%86%D9%81%D9%8A%D8%B0%D9%8A%D8%A9.pdf",
+    "text_verified": true,
+    "verification_method": "visual_match_original"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/procurement-ethics",
+    "article_headings": 8,
+    "notes": [
+      "أضيف المصدر كاملاً دون تغيير.",
+      "اكتملت المقابلة البصرية للمواد الأصلية؛ لا يزال استنفاد حصر التعديلات وتاريخ النشر الرسمي غير محسومين.",
+      "تاريخ مجلد الموقع تاريخ رفع للملف، وليس دليلاً مستقلاً على النشر النظامي أو النفاذ.",
+      "آخر مادة تربط العمل باللائحة بتاريخ نشرها في الجريدة الرسمية؛ لم يوثق العدد هنا.",
+      "استمرار اللائحتين ورد في خامساً/1 من قرار مجلس الوزراء199؛ وخامساً/2 يوجب فحص توافقهما. الإحالة موثقة في ملف السياق، ولا تعني صدور لائحة جديدة.",
+      "استمرار اللائحتين ورد في خامساً/1 من قرار مجلس الوزراء199؛ وخامساً/2 يوجب فحص توافقهما. الإحالة موثقة في ملف السياق، ولا تعني صدور لائحة جديدة."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "id": "SL-revenue-sharing-model-amendments-1118",
+  "title": "ملحق1118 — النصوص المعدلة لكراسات الشروط والعقود والاتفاقيات الإطارية",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "",
+    "number": "",
+    "issue_date_hijri": ""
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": false,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.uqn.gov.sa/decisions-and-regulations/4001239",
+    "text_verified": false,
+    "verification_method": "official_page_transcription"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/revenue-sharing-model-amendments-1118",
+    "article_headings": 0,
+    "notes": [
+      "نطاق الملحق مجموعات نماذج وليس15مادة من اللائحة.",
+      "لم تتوافر النصوص السابقة المباشرة للنماذج1171 و977 و1156؛ لا يعوض عنها نموذج835 لعام2023.",
+      "حصر التعديلات اللاحقة غير مكتمل؛ لا اعتماد قانوني نهائي."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}

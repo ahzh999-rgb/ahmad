@@ -1,0 +1,35 @@
+{
+  "id": "SL-civil-retirement",
+  "title": "نظام التقاعد المدني — النص المنشور لدى التأمينات",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "",
+    "number": "",
+    "issue_date_hijri": ""
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": false,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://beta.gosi.gov.sa/civil",
+    "text_verified": false,
+    "verification_method": "official_page_transcription"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/civil-retirement",
+    "article_headings": 39,
+    "notes": [
+      "نص من HTML رسمي محفوظ بالكامل؛ استخراج محتوى الأقسام دون اجتهاد في إعادة الصياغة.",
+      "لم يغلق حصر جميع قرارات التعديل والنفاذ لهذه الوثيقة.",
+      "ليس إدراج النظام الجديد تقريراً بإلغاء تطبيق النظام القديم على جميع المشتركين؛ تحديد الفئة وتاريخ الالتحاق والمدد السابقة ضروري."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}

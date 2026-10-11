@@ -1,0 +1,38 @@
+{
+  "id": "SL-conflicts-of-interest",
+  "title": "لائحة تنظيم تعارض المصالح في تطبيق نظام المنافسات والمشتريات الحكومية ولائحته التنفيذية",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "قرار مجلس الوزراء",
+    "number": "537",
+    "issue_date_hijri": "1441/08/21"
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": true,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.mof.gov.sa/docslibrary/RegulationsInstructions/Documents/التشريعات/لائحة تنظيم تعارض المصالح.pdf",
+    "text_verified": true,
+    "verification_method": "visual_match_original"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/conflicts-of-interest",
+    "article_headings": 12,
+    "notes": [
+      "أضيف المصدر كاملاً دون تغيير.",
+      "اكتملت المقابلة البصرية للمواد الأصلية؛ لا يزال استنفاد حصر التعديلات وتاريخ النشر الرسمي غير محسومين.",
+      "تاريخ مجلد الموقع تاريخ رفع للملف، وليس دليلاً مستقلاً على النشر النظامي أو النفاذ.",
+      "آخر مادة تربط العمل باللائحة بتاريخ نشرها في الجريدة الرسمية؛ لم يوثق العدد هنا.",
+      "استمرار اللائحتين ورد في خامساً/1 من قرار مجلس الوزراء199؛ وخامساً/2 يوجب فحص توافقهما. الإحالة موثقة في ملف السياق، ولا تعني صدور لائحة جديدة.",
+      "استمرار اللائحتين ورد في خامساً/1 من قرار مجلس الوزراء199؛ وخامساً/2 يوجب فحص توافقهما. الإحالة موثقة في ملف السياق، ولا تعني صدور لائحة جديدة."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}

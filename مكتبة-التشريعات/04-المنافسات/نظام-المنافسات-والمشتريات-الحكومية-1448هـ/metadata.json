@@ -1,0 +1,31 @@
+{
+  "id": "SL-SA-LAW-GTP-1448-001",
+  "title": "نظام المنافسات والمشتريات الحكومية (1448هـ)",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "royal_decree",
+    "number": "م/76",
+    "issue_date_hijri": "1448/03/22"
+  },
+  "legal_status": {
+    "status": "enacted_not_yet_effective",
+    "is_verified": false,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.uqn.gov.sa/decisions-and-regulations/4001762",
+    "text_verified": false,
+    "verification_method": "official_page_transcription"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/laws/SA-LAW-GTP-1448-001",
+    "article_headings": 101,
+    "notes": []
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}

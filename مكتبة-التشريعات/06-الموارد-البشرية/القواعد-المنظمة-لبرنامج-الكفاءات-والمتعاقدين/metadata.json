@@ -1,0 +1,34 @@
+{
+  "id": "SL-talent-contract-rules-59",
+  "title": "القواعد المنظمة لبرنامج الكفاءات والمتعاقدين",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "",
+    "number": "",
+    "issue_date_hijri": ""
+  },
+  "legal_status": {
+    "status": "owner_approved_review_closed",
+    "is_verified": true,
+    "owner_approved": true
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.uqn.gov.sa/details?p=19971",
+    "text_verified": true,
+    "verification_method": "owner_approval"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/talent-contract-rules-59",
+    "article_headings": 5,
+    "notes": [
+      "نص من HTML رسمي محفوظ بالكامل؛ استخراج محتوى الأقسام دون اجتهاد في إعادة الصياغة.",
+      "أكد صاحب المشروع أن تاريخ النفاذ هو تاريخ القرار 18/1/1444هـ وأنه لا توجد تعديلات لاحقة؛ الإثبات مستقل عن التحقق الخارجي."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}

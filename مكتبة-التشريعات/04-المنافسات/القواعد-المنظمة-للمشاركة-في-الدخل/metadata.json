@@ -1,0 +1,34 @@
+{
+  "id": "SL-revenue-sharing-rules-1877",
+  "title": "القواعد المنظمة للمشاركة في الدخل",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "",
+    "number": "",
+    "issue_date_hijri": ""
+  },
+  "legal_status": {
+    "status": "owner_approved_review_closed",
+    "is_verified": true,
+    "owner_approved": true
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.uqn.gov.sa/details?p=19855",
+    "text_verified": true,
+    "verification_method": "owner_approval"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/revenue-sharing-rules-1877",
+    "article_headings": 31,
+    "notes": [
+      "نص من HTML رسمي محفوظ بالكامل؛ استخراج محتوى الأقسام دون اجتهاد في إعادة الصياغة.",
+      "لم يغلق حصر جميع قرارات التعديل والنفاذ لهذه الوثيقة."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-11",
+    "updated_at": "2026-10-11"
+  }
+}
