@@ -8,6 +8,31 @@
 """
 import os, re, json, sys, shutil
 
+ONES = {'الأول': 1, 'الأولى': 1, 'الحادي': 1, 'الحادية': 1, 'الثاني': 2, 'الثانية': 2,
+        'الثالث': 3, 'الثالثة': 3, 'الرابع': 4, 'الرابعة': 4, 'الخامس': 5, 'الخامسة': 5,
+        'السادس': 6, 'السادسة': 6, 'السابع': 7, 'السابعة': 7, 'الثامن': 8, 'الثامنة': 8,
+        'التاسع': 9, 'التاسعة': 9, 'العاشر': 10, 'العاشرة': 10}
+TENS = {'عشر': 10, 'عشرة': 10, 'العشرون': 20, 'الثلاثون': 30, 'الأربعون': 40, 'الخمسون': 50,
+        'الستون': 60, 'السبعون': 70, 'الثمانون': 80, 'التسعون': 90}
+TENS.update({k[:-2] + 'ين': v for k, v in TENS.items() if k.endswith('ون')})  # «الستين»
+
+
+def ordinal(words):
+    """«الثانية والثلاثون بعد المائة» ← 132. يعيد None إن لم يفهم الصيغة."""
+    n = 0
+    w = words.replace('بعد المائة', '').replace('بعد المئة', '').strip()
+    if w != words.strip(): n = 100
+    if w in ('المائة', 'المئة'): return 100
+    if not w: return n or None
+    got = False
+    for t in re.split(r'\s+و?', w):
+        t = t.strip()
+        if not t: continue
+        if t in ONES: n += ONES[t]; got = True
+        elif t in TENS: n += TENS[t]; got = True
+        else: return None
+    return n if got else None
+
 root = sys.argv[1]; out = sys.argv[2]
 docs = []
 for dp, dn, fn in sorted(os.walk(root)):
@@ -22,6 +47,30 @@ for dp, dn, fn in sorted(os.walk(root)):
         for k in ('أداة الإصدار', 'الحالة'):
             mm = re.search(r'\*\*' + k + r':\*\*\s*(.+)', txt)
             if mm: meta[k] = mm.group(1).strip()[:200]
+        # الصيغة الموثقة: مجلد فيه full_text.md و metadata.json، والمواد بعناوين «#### المادة …»
+        mp = os.path.join(dp, 'metadata.json')
+        verified = f == 'full_text.md' and os.path.exists(mp)
+        if verified:
+            md = json.load(open(mp, encoding='utf-8'))
+            title = md.get('title') or title
+            ins = md.get('instrument', {})
+            num = ins.get('number', '')
+            if num:
+                kind = 'مرسوم ملكي رقم' if ins.get('type') == 'royal_decree' else 'قرار وزاري رقم'
+                meta['أداة الإصدار'] = f"{kind} ({num}) وتاريخ {ins.get('issue_date_hijri', '')}هـ"
+            ls = md.get('legal_status', {})
+            st = {'in_force': 'ساري', 'repealed': 'ملغى'}.get(ls.get('status'), ls.get('status', ''))
+            if ls.get('is_verified'): st += '، نص موثق مادة بمادة'
+            if st: meta['الحالة'] = st
+            # توحيد العناوين مع بقية المكتبة: «### المادة 32 (الثانية والثلاثون)»، والباب والفصل «## …»
+            def head(m):
+                lvl, h = m.group(1), m.group(2).strip().rstrip(':').strip()
+                a = re.match(r'المادة\s+(.+)$', h)
+                if lvl == '####' and a:
+                    k = ordinal(a.group(1))
+                    return f'### المادة {k} ({a.group(1)})' if k else '### ' + h
+                return '## ' + h
+            txt = re.sub(r'(?m)^(#{2,4}) (.+?)\s*$', head, txt)
         txt = re.sub(r'<!--\s*ص\s*(\d+)\s*-->', r'(ص \1)', txt)
         txt = re.sub(r'<!--.*?-->', '', txt, flags=re.S)
         secs = []
