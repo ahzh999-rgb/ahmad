@@ -1,0 +1,36 @@
+{
+  "id": "SL-labour-executive-adoption",
+  "title": "قرار اعتماد اللائحة التنفيذية لنظام العمل وملحقاتها115921",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "",
+    "number": "",
+    "issue_date_hijri": ""
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": true,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.hrsd.gov.sa/sites/default/files/2025-02/%D9%82%D8%B1%D8%A7%D8%B1%20%D8%A7%D8%B9%D8%AA%D9%85%D8%A7%D8%AF%20%D8%A7%D9%84%D9%84%D8%A7%D8%A6%D8%AD%D8%A9%20%D8%A7%D9%84%D8%AA%D9%86%D9%81%D9%8A%D8%B0%D9%8A%D8%A9%20%D9%84%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D8%B9%D9%85%D9%84%20%D9%88%D9%85%D9%84%D8%AD%D9%82%D8%A7%D8%AA%D9%87%D8%A7%20%D8%B1%D9%82%D9%85%20115921.pdf",
+    "text_verified": true,
+    "verification_method": "visual_match_original"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/labour-executive-adoption",
+    "article_headings": 0,
+    "notes": [
+      "أضيف المصدر كاملاً دون تغيير.",
+      "لم يكتمل حصر جميع التعديلات ولا المطابقة النصية لكل مادة؛ لا يقرر هذا السجل النفاذ الحالي.",
+      "تاريخ مجلد الموقع تاريخ رفع للملف، وليس دليلاً مستقلاً على النشر النظامي أو النفاذ.",
+      "أضيف OFFICIAL_TEXT.md بتاريخ 2026-10-12: النص كاملاً منسوخ بصرياً من صورة PDF المحفوظ وروجع سطراً بسطر؛ لم تُحصر التعديلات اللاحقة."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-12",
+    "updated_at": "2026-10-12"
+  }
+}
