@@ -229,7 +229,7 @@ function search(query,k){
     for(const [id,tf] of post){const l=LEN[id];const s=idf*(tf*2.2)/(tf+1.2*(.25+.75*l/AVG));score.set(id,(score.get(id)||0)+s);}
   }
   // prefer newest procurement law and real text over cards slightly
-  const arr=[...score.entries()].map(([id,s])=>{const d=LIB.docs[SECS[id].doc];if(d.kind==='card')s*=.85;if((d.meta['أداة الإصدار']||'').includes('1448'))s*=1.2;return [id,s];});
+  const arr=[...score.entries()].map(([id,s])=>{const d=LIB.docs[SECS[id].doc];if(d.kind==='card')s*=.85;return [id,s];});
   arr.sort((a,b)=>b[1]-a[1]);
   return arr.slice(0,k).map(([id])=>SECS[id]);
 }
