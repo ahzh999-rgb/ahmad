@@ -51,7 +51,7 @@ CHAPTERS_FROM = {'SA-LAW-GTP-1440-001': 'full_text.md'}
 FIX = str.maketrans({'ی': 'ي', 'ھ': 'ه', 'ک': 'ك', 'ە': 'ه'})
 ART = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*(\(\s*\d+\s*\)|\d+|\(?ال[^:：*()]*?\)?)\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
 # «المادة 15 مكرر» مادة مستقلة
-BIS = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*\(?\s*(\d+)\s*\)?\s*مكرر\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
+BIS = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*\(?\s*(\d+)\s*\)?\s*مكرر\s*\(?\s*(\d*)\s*\)?\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
 NOISE = re.compile(r'^(صفحات? PDF:|حالة النص:|المصدر: PDF صفحة|\[?!?\[?(Shrink|Enlarge) Font|\[(PDF|المصدر الرسمي)\b|>)')
 
 
@@ -91,8 +91,8 @@ def normalize(txt, title):
         if NOISE.match(s): continue
         b = BIS.match(s)
         if b:
-            out += ['', f'#### المادة {b.group(1)} مكرر:']
-            if b.group(2): out.append(b.group(2).strip())
+            out += ['', f"#### المادة {b.group(1)} مكرر{' ' + b.group(2) if b.group(2) else ''}:"]
+            if b.group(3): out.append(b.group(3).strip())
             continue
         m = ART.match(s)
         if m:
