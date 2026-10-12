@@ -10,14 +10,14 @@
   },
   "legal_status": {
     "status": "requires_currentness_and_amendment_review",
-    "is_verified": false,
+    "is_verified": true,
     "owner_approved": false
   },
   "source": {
     "type": "official",
     "url": "https://www.hrsd.gov.sa/sites/default/files/2025-11/labor-law.pdf",
-    "text_verified": false,
-    "verification_method": "official_page_transcription"
+    "text_verified": true,
+    "verification_method": "visual_match_original"
   },
   "repository_notes": {
     "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/labour-law",
@@ -26,7 +26,7 @@
       "أضيف المصدر كاملاً دون تغيير.",
       "لم يكتمل حصر جميع التعديلات ولا المطابقة النصية لكل مادة؛ لا يقرر هذا السجل النفاذ الحالي.",
       "تاريخ مجلد الموقع تاريخ رفع للملف، وليس دليلاً مستقلاً على النشر النظامي أو النفاذ.",
-      "أضيف OFFICIAL_TEXT.md بتاريخ 2026-10-12: نقل كامل لـ245 مادة و4 مواد مكررة (11، 79، 131، 229) أعده صاحب المشروع، وقوبل آلياً بنص PDF المضمن؛ لم يطابق بصرياً مادة بمادة."
+      "أضيف OFFICIAL_TEXT.md بتاريخ 2026-10-12: نقل كامل لـ245 مادة و4 مواد مكررة (11، 79، 131، 229) أعده صاحب المشروع، وطوبق نص كل مادة حرفاً بحرف مع النص المضمن في PDF الوزارة المحفوظ، وصُححت 8 مواضع؛ لم تُحصر التعديلات اللاحقة للتجميع."
     ]
   },
   "maintenance": {
