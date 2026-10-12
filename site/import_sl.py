@@ -48,7 +48,9 @@ TEXT_FILE = {'executive-1441': 'CONSOLIDATED_RESEARCH_DRAFT.md'}
 
 FIX = str.maketrans({'ی': 'ي', 'ھ': 'ه', 'ک': 'ك', 'ە': 'ه'})
 ART = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*(\(\s*\d+\s*\)|\d+|\(?ال[^:：*()]*?\)?)\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
-NOISE = re.compile(r'^(صفحات? PDF:|\[?!?\[?(Shrink|Enlarge) Font|\[(PDF|المصدر الرسمي)\b|>)')
+# «المادة 15 مكرر» مادة مستقلة
+BIS = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*\(?\s*(\d+)\s*\)?\s*مكرر\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
+NOISE = re.compile(r'^(صفحات? PDF:|حالة النص:|\[?!?\[?(Shrink|Enlarge) Font|\[(PDF|المصدر الرسمي)\b|>)')
 
 
 def art_no(tok):
@@ -76,6 +78,11 @@ def normalize(txt, title):
     for s in lines:
         if s.startswith('# ') and not out[2:]: continue  # عنوان الملف الأصلي
         if NOISE.match(s): continue
+        b = BIS.match(s)
+        if b:
+            out += ['', f'#### المادة {b.group(1)} مكرر:']
+            if b.group(2): out.append(b.group(2).strip())
+            continue
         m = ART.match(s)
         if m:
             n = art_no(m.group(1))
