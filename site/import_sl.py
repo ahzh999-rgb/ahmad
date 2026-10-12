@@ -45,6 +45,8 @@ SKIP = {'privatization-executive'}  # حلت محلها نسخة 2024 المعد
 
 # مصدر النص لوثائق ليس نصها في OFFICIAL_TEXT.md
 TEXT_FILE = {'executive-1441': 'CONSOLIDATED_RESEARCH_DRAFT.md'}
+# النص من OFFICIAL_TEXT.md (المصحح)، وعناوين الأبواب والفصول من نسخة النقل الأصلية، فهي تساعد البحث
+CHAPTERS_FROM = {'SA-LAW-GTP-1440-001': 'full_text.md'}
 
 FIX = str.maketrans({'ی': 'ي', 'ھ': 'ه', 'ک': 'ك', 'ە': 'ه'})
 ART = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*(\(\s*\d+\s*\)|\d+|\(?ال[^:：*()]*?\)?)\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
@@ -64,6 +66,15 @@ def normalize(txt, title):
     """يوحد العناوين: «#### المادة N:» لكل مادة، ويحذف ملاحظات النقل وبقايا الصفحات."""
     out = [f'# {title}', '']
     lines = [l.strip() for l in txt.translate(FIX).split('\n')]
+    # عنوان باب أو فصل بخط عريض، وعنوانه في سطر بعده: «**الفصل الثاني: **» ثم «**الضمان الابتدائي**»
+    for i, l in enumerate(lines):
+        m = re.fullmatch(r'\*\*\s*((?:الباب|الفصل)\s+[^*:：]{2,30}?)\s*[:：]?\s*\*\*', l)
+        if not m: continue
+        j = i + 1
+        while j < len(lines) and not lines[j]: j += 1
+        t = re.fullmatch(r'\*\*\s*([^*]{2,60}?)\s*\*\*', lines[j]) if j < len(lines) else None
+        if t and not ART.match(t.group(1)) and not re.match(r'(?:الباب|الفصل)\s', t.group(1)):
+            lines[i], lines[j] = f'{m.group(1)}: {t.group(1)}', ''
     # عنوان مادة مقسوم على سطرين في المصدر: «المادة» ثم «الرابعة:»، أو «المادة الثالثة» ثم «عشرة:»
     for i in range(len(lines) - 1):
         if re.fullmatch(r'(?:ال)?مادة(?:\s+\S+)?', lines[i]) and re.fullmatch(r'[^\s:：]+(?:\s+[^\s:：]+)?\s*[:：]\s*', lines[i + 1]):
@@ -99,6 +110,23 @@ def normalize(txt, title):
         out.append(s)
     t = '\n'.join(out)
     return re.sub(r'\n{3,}', '\n\n', t).strip() + '\n'
+
+
+def add_chapters(body, src):
+    """ينقل عناوين «## الباب/الفصل» من نص src إلى body قبل المادة نفسها."""
+    heads, cur = {}, []
+    for l in src.split('\n'):
+        if l.startswith('## '): cur.append(l)
+        m = re.match(r'#### المادة (\d+)', l)
+        if m:
+            if cur: heads[m.group(1)] = cur
+            cur = []
+    out = []
+    for l in body.split('\n'):
+        m = re.match(r'#### المادة (\d+)', l)
+        if m and m.group(1) in heads: out += heads[m.group(1)] + ['']
+        out.append(l)
+    return '\n'.join(out)
 
 
 def slug(title):
@@ -173,6 +201,8 @@ for mp in sorted(glob.glob(os.path.join(SL, 'legislation', '**', 'metadata.json'
     else:
         skipped.append((key, 'نص مستخرج آلياً فقط')); continue
     body = normalize(raw, title)
+    if key in CHAPTERS_FROM:
+        body = add_chapters(body, normalize(open(os.path.join(d, CHAPTERS_FROM[key]), encoding='utf-8').read(), title))
     if len(re.sub(r'\s+', '', body)) < 400:
         skipped.append((key, 'نص قصير أو فارغ')); continue
     n = len(re.findall(r'(?m)^#### المادة', body))
