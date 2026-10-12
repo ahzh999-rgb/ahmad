@@ -1,0 +1,31 @@
+{
+  "id": "SL-SA-REG-GTP-1441-3479",
+  "title": "اللائحة التنفيذية لنظام المنافسات والمشتريات الحكومية — أساس3479 وتعديلاته",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "ministerial_decision",
+    "number": "3479",
+    "issue_date_hijri": "1441/08/11"
+  },
+  "legal_status": {
+    "status": "",
+    "is_verified": true,
+    "owner_approved": true
+  },
+  "source": {
+    "type": "official",
+    "url": "https://ncar.gov.sa/document-details/eyJpdiI6IjVrd2JIZXRtZnJ3b1lMRVNHK3p2cnc9PSIsInZhbHVlIjoid1VIVkhDK3hWb3VPWWJ2dU5RYVJ4QT09IiwibWFjIjoiNWU0MzlhOWQ2YjE2N2QwNzNmOGQ1NjA1N2ZjZTI5NGRlYmU5MTY1MWQ1MzM4ZGJjNDcxZGU5YzM3MzQ0YzkxMCIsInRhZyI6IiJ9",
+    "text_verified": true,
+    "verification_method": "owner_approval"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/executive-1441",
+    "article_headings": 157,
+    "notes": []
+  },
+  "maintenance": {
+    "added_at": "2026-10-12",
+    "updated_at": "2026-10-12"
+  }
+}
