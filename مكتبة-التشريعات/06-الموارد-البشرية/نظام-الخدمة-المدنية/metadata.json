@@ -1,0 +1,37 @@
+{
+  "id": "SL-civil-service",
+  "title": "نظام الخدمة المدنية",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "",
+    "number": "",
+    "issue_date_hijri": ""
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": true,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://www.hrsd.gov.sa/sites/default/files/2021-01/15012021.pdf",
+    "text_verified": true,
+    "verification_method": "visual_match_original"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/civil-service",
+    "article_headings": 44,
+    "notes": [
+      "أضيف المصدر كاملاً دون تغيير.",
+      "لم يكتمل حصر جميع التعديلات ولا المطابقة النصية لكل مادة؛ لا يقرر هذا السجل النفاذ الحالي.",
+      "تاريخ مجلد الموقع تاريخ رفع للملف، وليس دليلاً مستقلاً على النشر النظامي أو النفاذ.",
+      "الملف تجميع1442؛ لا يقدم بوصفه آخر نسخة مدققة حتى2026.",
+      "طوبقت جميع المواد بصرياً مع ملف PDF المحفوظ بتاريخ 2026-10-12؛ لم تُحصر التعديلات اللاحقة لعام 1442هـ."
+    ]
+  },
+  "maintenance": {
+    "added_at": "2026-10-12",
+    "updated_at": "2026-10-12"
+  }
+}

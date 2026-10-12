@@ -13,7 +13,7 @@ import os, re, json, sys, shutil, glob
 from build_data import ordinal
 
 SL, LIB = sys.argv[1], sys.argv[2]
-TODAY = '2026-10-11'
+TODAY = '2026-10-12'
 MARK = 'imported_from'  # يميز مجلدات الاستيراد في metadata.json
 
 # المجال في المكتبة حسب مجلد المصدر
@@ -22,6 +22,7 @@ def domain(rel):
     if rel.startswith('legislation/human-resources/'): return '06-الموارد-البشرية'
     if name.startswith('administrative-execution'): return '08-القضائية'
     if name.startswith('state-property'): return '03-المالية-العامة'
+    if name == 'executive-1441': return '04-المنافسات'
     return '04-المنافسات'
 
 # ما يحل محل ملف قديم في المكتبة
@@ -34,14 +35,22 @@ REPLACES = {
     'social-insurance-1445': '06-الموارد-البشرية/نظام-التأمينات-الاجتماعية-م273.md',
     'privatization-law': '04-المنافسات/نظام-التخصيص-م63.md',
     'administrative-execution-law': '08-القضائية/نظام-التنفيذ-أمام-ديوان-المظالم-م15.md',
+    'SA-LAW-GTP-1440-001': '04-المنافسات/نظام-المنافسات-والمشتريات-الحكومية-م128-1440',
+    'executive-1441': '04-المنافسات/اللائحة-التنفيذية-لنظام-المنافسات-والمشتريات-الحكومية-معدلة-3479-1441',
+    'civil-service': '06-الموارد-البشرية/نظام-الخدمة-المدنية-م49.md',
+    'financial-rights': '06-الموارد-البشرية/لائحة-الحقوق-والمزايا-المالية-أ28.md',
 }
 # موجودة في المكتبة بنص وثّقه صاحب المشروع، فلا تُستورد
-SKIP = {'SA-LAW-GTP-1440-001',
-        'privatization-executive'}  # حلت محلها نسخة 2024 المعدلة
+SKIP = {'privatization-executive'}  # حلت محلها نسخة 2024 المعدلة
+
+# مصدر النص لوثائق ليس نصها في OFFICIAL_TEXT.md
+TEXT_FILE = {'executive-1441': 'CONSOLIDATED_RESEARCH_DRAFT.md'}
 
 FIX = str.maketrans({'ی': 'ي', 'ھ': 'ه', 'ک': 'ك', 'ە': 'ه'})
 ART = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*(\(\s*\d+\s*\)|\d+|\(?ال[^:：*()]*?\)?)\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
-NOISE = re.compile(r'^(صفحات? PDF:|\[?!?\[?(Shrink|Enlarge) Font|\[(PDF|المصدر الرسمي)\b|>)')
+# «المادة 15 مكرر» مادة مستقلة
+BIS = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*\(?\s*(\d+)\s*\)?\s*مكرر\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
+NOISE = re.compile(r'^(صفحات? PDF:|حالة النص:|\[?!?\[?(Shrink|Enlarge) Font|\[(PDF|المصدر الرسمي)\b|>)')
 
 
 def art_no(tok):
@@ -69,6 +78,11 @@ def normalize(txt, title):
     for s in lines:
         if s.startswith('# ') and not out[2:]: continue  # عنوان الملف الأصلي
         if NOISE.match(s): continue
+        b = BIS.match(s)
+        if b:
+            out += ['', f'#### المادة {b.group(1)} مكرر:']
+            if b.group(2): out.append(b.group(2).strip())
+            continue
         m = ART.match(s)
         if m:
             n = art_no(m.group(1))
@@ -145,7 +159,7 @@ for mp in sorted(glob.glob(os.path.join(SL, 'legislation', '**', 'metadata.json'
     if key in SKIP: skipped.append((key, 'موثق في المكتبة')); continue
     title = (m.get('title') or key).split(' — ')[0].strip()
     title = re.sub(r'([\u0621-\u064A])(\d)', r'\1 \2', title)  # «الاجتماعية1445هـ» ← «الاجتماعية 1445هـ»
-    ap = os.path.join(d, 'articles.json'); op = os.path.join(d, 'OFFICIAL_TEXT.md')
+    ap = os.path.join(d, 'articles.json'); op = os.path.join(d, TEXT_FILE.get(key, 'OFFICIAL_TEXT.md'))
     if os.path.exists(ap) and not os.path.exists(op):
         ft = os.path.join(d, 'full_text.md')
         arts = json.load(open(ap, encoding='utf-8'))['articles']
@@ -168,9 +182,11 @@ for mp in sorted(glob.glob(os.path.join(SL, 'legislation', '**', 'metadata.json'
     open(os.path.join(out, 'full_text.md'), 'w', encoding='utf-8').write(body)
     json.dump(meta_for(rel, m, n), open(os.path.join(out, 'metadata.json'), 'w', encoding='utf-8'),
               ensure_ascii=False, indent=2)
-    old = REPLACES.get(key)
-    if old and os.path.exists(os.path.join(LIB, old)):
-        os.remove(os.path.join(LIB, old))
+    old = REPLACES.get(key) and os.path.join(LIB, REPLACES[key])
+    if old and os.path.isdir(old):
+        shutil.rmtree(old)
+    elif old and os.path.exists(old):
+        os.remove(old)
     done.append((key, n, os.path.relpath(out, LIB)))
 
 for k, n, p in done: print(f'{n:4d}  {k}  ->  {p}')
