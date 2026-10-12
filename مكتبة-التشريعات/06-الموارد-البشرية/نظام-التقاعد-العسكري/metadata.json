@@ -1,0 +1,31 @@
+{
+  "id": "SL-military-retirement",
+  "title": "نظام التقاعد العسكري — النص المنشور لدى التأمينات",
+  "jurisdiction": "SA",
+  "language": "ar",
+  "instrument": {
+    "type": "royal_decree",
+    "number": "م/24",
+    "issue_date_hijri": "1395/04/05"
+  },
+  "legal_status": {
+    "status": "requires_currentness_and_amendment_review",
+    "is_verified": true,
+    "owner_approved": false
+  },
+  "source": {
+    "type": "official",
+    "url": "https://beta.gosi.gov.sa/ar/military",
+    "text_verified": true,
+    "verification_method": "visual_match_original"
+  },
+  "repository_notes": {
+    "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/military-retirement",
+    "article_headings": 37,
+    "notes": []
+  },
+  "maintenance": {
+    "added_at": "2026-10-12",
+    "updated_at": "2026-10-12"
+  }
+}

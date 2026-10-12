@@ -45,7 +45,9 @@ REPLACES = {
 SKIP = {'privatization-executive'}  # حلت محلها نسخة 2024 المعدلة
 
 # مصدر النص لوثائق ليس نصها في OFFICIAL_TEXT.md
-TEXT_FILE = {'executive-1441': 'CONSOLIDATED_RESEARCH_DRAFT.md'}
+TEXT_FILE = {'executive-1441': 'CONSOLIDATED_RESEARCH_DRAFT.md',
+             'privatization-organizing-rules': 'VISUALLY_REVIEWED_TEXT.md',
+             'public-money-base-law': 'ORIGINAL_VISUALLY_REVIEWED_TEXT.md'}
 # النص من OFFICIAL_TEXT.md (المصحح)، وعناوين الأبواب والفصول من نسخة النقل الأصلية، فهي تساعد البحث
 CHAPTERS_FROM = {'SA-LAW-GTP-1440-001': 'full_text.md'}
 
@@ -53,7 +55,8 @@ FIX = str.maketrans({'ی': 'ي', 'ھ': 'ه', 'ک': 'ك', 'ە': 'ه'})
 ART = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*(\(\s*\d+\s*\)|\d+|\(?ال[^:：*()]*?\)?)\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
 # «المادة 15 مكرر» مادة مستقلة
 BIS = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*\(?\s*(\d+)\s*\)?\s*مكرر\s*\(?\s*(\d*)\s*\)?\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
-NOISE = re.compile(r'^(صفحات? PDF:|حالة النص:|المصدر: PDF صفحة|\[?!?\[?(Shrink|Enlarge) Font|\[(PDF|المصدر الرسمي)\b|>)')
+ANNEX = re.compile(r'^#+\s*(?:ال)?(?:ملحق|ملاحق|العقد الموحد|نموذج)')
+NOISE = re.compile(r'^(صفحات? PDF:|المصدر: صفحات ?PDF|حالة النص:|المصدر: PDF صفحة|\[?!?\[?(Shrink|Enlarge) Font|\[(PDF|المصدر الرسمي)\b|>)')
 
 
 def art_no(tok):
@@ -87,9 +90,14 @@ def normalize(txt, title):
         if re.fullmatch(r'(?:الباب|الفصل)\s+[^:：]{2,40}[:：]?', lines[i]) and 0 < len(lines[i + 1]) < 60 \
                 and not ART.match(lines[i + 1]) and not re.match(r'(?:الباب|الفصل)\s', lines[i + 1]):
             lines[i], lines[i + 1] = lines[i].rstrip(':：') + ': ' + lines[i + 1], ''
+    annex = False  # بعد عنوان ملحق أو نموذج: «مادة (1)» غير المعنونة بند في العقد، لا مادة في اللائحة
     for s in lines:
         if s.startswith('# ') and not out[2:]: continue  # عنوان الملف الأصلي
         if NOISE.match(s): continue
+        if s.startswith('#'): annex = bool(ANNEX.match(s)) or (annex and not ART.match(s))
+        if annex and not s.startswith('#') and ART.match(s):
+            out.append('**' + s + '**')
+            continue
         b = BIS.match(s)
         if b:
             out += ['', f"#### المادة {b.group(1)} مكرر{' ' + b.group(2) if b.group(2) else ''}:"]
@@ -137,7 +145,8 @@ def slug(title):
 
 def meta_for(rel, m, n_arts):
     approved = m.get('legal_approval') is True
-    wfw = m.get('word_for_word_verified') is True
+    # المقروء بصرياً مادة مادة من صورة الأصل يعد موثقاً
+    wfw = m.get('word_for_word_verified') is True or bool(m.get('original_articles_visually_reviewed'))
     ls = m.get('legal_status')
     status = ls.get('status') if isinstance(ls, dict) else ls
     ins = m.get('instrument') if isinstance(m.get('instrument'), dict) else {}

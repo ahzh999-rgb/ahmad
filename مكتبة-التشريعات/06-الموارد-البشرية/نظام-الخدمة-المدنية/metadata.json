@@ -4,9 +4,9 @@
   "jurisdiction": "SA",
   "language": "ar",
   "instrument": {
-    "type": "",
-    "number": "",
-    "issue_date_hijri": ""
+    "type": "royal_decree",
+    "number": "م/49",
+    "issue_date_hijri": "1397/07/10"
   },
   "legal_status": {
     "status": "requires_currentness_and_amendment_review",
