@@ -9,15 +9,15 @@
     "issue_date_hijri": ""
   },
   "legal_status": {
-    "status": "requires_currentness_and_amendment_review",
+    "status": "owner_approved_review_closed",
     "is_verified": true,
-    "owner_approved": false
+    "owner_approved": true
   },
   "source": {
     "type": "official",
     "url": "https://ncp.gov.sa/ar/Laws-Regulations/Documents/A3-%D8%A7%D9%84%D9%82%D9%88%D8%A7%D8%B9%D8%AF-%D8%A7%D9%84%D9%85%D9%86%D8%B8%D9%85%D8%A9-%D9%84%D9%84%D8%AA%D8%AE%D8%B5%D9%8A%D8%B5.pdf",
     "text_verified": true,
-    "verification_method": "visual_match_original"
+    "verification_method": "owner_approval"
   },
   "repository_notes": {
     "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/privatization-organizing-rules",
@@ -26,7 +26,8 @@
       "النشر المثبت في صفحة أم القرى خاص بقرار الاعتماد؛ لم يدع أنه تاريخ مستقل تم التحقق منه لنشر المرفق.",
       "عناوين المواد21–24 بصيغة «والعشرين» محفوظة كما في الصورة.",
       "القواعد مادة7 تحسب القيمة بالالتزامات المالية السنوية؛ قرار225 ينفذ مادة7 من النظام بمقاييس مستقلة؛ لا يخلط بينهما.",
-      "المصدر الكامل متاح الآن؛ سجل تعذر تنزيل المركز HTTP503 محفوظ تاريخياً."
+      "المصدر الكامل متاح الآن؛ سجل تعذر تنزيل المركز HTTP503 محفوظ تاريخياً.",
+      "اعتمد المالك الوثيقة بحدود معلنة بتاريخ 2026-10-15؛ انظر analysis/OWNER_APPROVAL_PRIVATIZATION_ORGANIZING_RULES_2026-10-15.md."
     ]
   },
   "maintenance": {

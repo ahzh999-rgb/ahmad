@@ -9,15 +9,15 @@
     "issue_date_hijri": ""
   },
   "legal_status": {
-    "status": "requires_currentness_and_amendment_review",
-    "is_verified": false,
-    "owner_approved": false
+    "status": "owner_approved_review_closed",
+    "is_verified": true,
+    "owner_approved": true
   },
   "source": {
     "type": "official",
     "url": "https://beta.gosi.gov.sa/ar/new-system",
-    "text_verified": false,
-    "verification_method": "official_page_transcription"
+    "text_verified": true,
+    "verification_method": "owner_approval"
   },
   "repository_notes": {
     "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/social-insurance-1445",
@@ -25,7 +25,8 @@
     "notes": [
       "نص من HTML رسمي محفوظ بالكامل؛ استخراج محتوى الأقسام دون اجتهاد في إعادة الصياغة.",
       "لم يغلق حصر جميع قرارات التعديل والنفاذ لهذه الوثيقة.",
-      "ليس إدراج النظام الجديد تقريراً بإلغاء تطبيق النظام القديم على جميع المشتركين؛ تحديد الفئة وتاريخ الالتحاق والمدد السابقة ضروري."
+      "ليس إدراج النظام الجديد تقريراً بإلغاء تطبيق النظام القديم على جميع المشتركين؛ تحديد الفئة وتاريخ الالتحاق والمدد السابقة ضروري.",
+      "اعتمد المالك الوثيقة بحدود معلنة (دون جداول الغرامات) بتاريخ 2026-10-12؛ انظر analysis/OWNER_APPROVAL_SOCIAL_INSURANCE_1445_2026-10-12.md."
     ]
   },
   "maintenance": {

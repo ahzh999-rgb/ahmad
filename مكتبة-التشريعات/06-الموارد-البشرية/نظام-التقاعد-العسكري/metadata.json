@@ -9,20 +9,22 @@
     "issue_date_hijri": "1395/04/05"
   },
   "legal_status": {
-    "status": "requires_currentness_and_amendment_review",
+    "status": "owner_approved_review_closed",
     "is_verified": true,
-    "owner_approved": false
+    "owner_approved": true
   },
   "source": {
     "type": "official",
     "url": "https://beta.gosi.gov.sa/ar/military",
     "text_verified": true,
-    "verification_method": "visual_match_original"
+    "verification_method": "owner_approval"
   },
   "repository_notes": {
     "imported_from": "ahzh999-rgb/saudi-legislation/legislation/human-resources/military-retirement",
     "article_headings": 37,
-    "notes": []
+    "notes": [
+      "اعتمد المالك الوثيقة بحدود معلنة بتاريخ 2026-10-12؛ انظر analysis/OWNER_APPROVAL_MILITARY_RETIREMENT_2026-10-12.md."
+    ]
   },
   "maintenance": {
     "added_at": "2026-10-12",

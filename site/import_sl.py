@@ -51,6 +51,10 @@ TEXT_FILE = {'executive-1441': 'CONSOLIDATED_RESEARCH_DRAFT.md',
 # النص من OFFICIAL_TEXT.md (المصحح)، وعناوين الأبواب والفصول من نسخة النقل الأصلية، فهي تساعد البحث
 CHAPTERS_FROM = {'SA-LAW-GTP-1440-001': 'full_text.md'}
 
+# تصحيحات جوهرية اعتمدها صاحب المشروع (مسجلة في VERIFICATION_DOSSIER.json لكل وثيقة)؛ تُطبَّق على العرض فقط ولا يُعدَّل بها المستودع المصدر
+CORRECTIONS = {'privatization-law': [('أكثر من (05%) من رأس مالها', 'أكثر من (50%) من رأس مالها'),
+                                      ('وانفاذ ما يلزم من إجراءات', 'واتخاذ ما يلزم من إجراءات')]}
+
 FIX = str.maketrans({'ی': 'ي', 'ھ': 'ه', 'ک': 'ك', 'ە': 'ه'})
 ART = re.compile(r'^(?:#{1,6}\s*)?(?:\*\*)?\s*(?:ال)?مادة\s*(\(\s*\d+\s*\)|\d+|\(?ال[^:：*()]*?\)?)\s*(?:\*\*)?\s*(?:[:：]\s*(?:\*\*)?\s*(.*))?$')
 # «المادة 15 مكرر» مادة مستقلة
@@ -210,6 +214,9 @@ for mp in sorted(glob.glob(os.path.join(SL, 'legislation', '**', 'metadata.json'
         raw = open(op, encoding='utf-8').read()
     else:
         skipped.append((key, 'نص مستخرج آلياً فقط')); continue
+    for old_s, new_s in CORRECTIONS.get(key, []):
+        assert raw.count(old_s) == 1, (key, old_s)
+        raw = raw.replace(old_s, new_s)
     body = normalize(raw, title)
     if key in CHAPTERS_FROM:
         body = add_chapters(body, normalize(open(os.path.join(d, CHAPTERS_FROM[key]), encoding='utf-8').read(), title))

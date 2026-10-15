@@ -10,14 +10,14 @@
   },
   "legal_status": {
     "status": "in_force",
-    "is_verified": false,
-    "owner_approved": false
+    "is_verified": true,
+    "owner_approved": true
   },
   "source": {
     "type": "official",
     "url": "https://etimad.sa/Content/img/files/CompetationContent/%D9%85%D9%84%D9%81%20%D8%B1%D8%A8%D8%B7%20%D9%86%D8%B8%D8%A7%D9%85%20%D8%A7%D9%84%D9%85%D9%86%D8%A7%D9%81%D8%B3%D8%A7%D8%AA%20%D9%88%D8%A7%D9%84%D9%85%D8%B4%D8%AA%D8%B1%D9%8A%D8%A7%D8%AA%20%D8%A7%D9%84%D8%AD%D9%83%D9%88%D9%85%D9%8A%D8%A9%20%D8%A7%D9%84%D8%AC%D8%AF%D9%8A%D8%AF%20%D8%A8%D9%84%D8%A7%D8%A6%D8%AD%D8%AA%D9%87%20%D8%A7%D9%84%D8%AA%D9%86%D9%81%D9%8A%D8%B0%D9%8A%D8%A9.pdf",
-    "text_verified": false,
-    "verification_method": "official_page_transcription"
+    "text_verified": true,
+    "verification_method": "owner_approval"
   },
   "repository_notes": {
     "imported_from": "ahzh999-rgb/saudi-legislation/legislation/laws/SA-LAW-GTP-1440-001",
