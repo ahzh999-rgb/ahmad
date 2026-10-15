@@ -9,20 +9,22 @@
     "issue_date_hijri": ""
   },
   "legal_status": {
-    "status": "requires_currentness_and_amendment_review",
-    "is_verified": false,
-    "owner_approved": false
+    "status": "owner_approved_review_closed",
+    "is_verified": true,
+    "owner_approved": true
   },
   "source": {
     "type": "official",
     "url": "https://www.uqn.gov.sa/details?p=17029",
-    "text_verified": false,
-    "verification_method": "official_page_transcription"
+    "text_verified": true,
+    "verification_method": "owner_approval"
   },
   "repository_notes": {
     "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/expro-organization",
     "article_headings": 14,
-    "notes": []
+    "notes": [
+      "اعتمد المالك الوثيقة بحدود معلنة بتاريخ 2026-10-15؛ انظر analysis/OWNER_APPROVAL_EXPRO_ORGANIZATION_2026-10-15.md."
+    ]
   },
   "maintenance": {
     "added_at": "2026-10-12",

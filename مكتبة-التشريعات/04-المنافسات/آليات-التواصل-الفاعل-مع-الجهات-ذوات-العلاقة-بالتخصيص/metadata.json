@@ -9,22 +9,23 @@
     "issue_date_hijri": ""
   },
   "legal_status": {
-    "status": "requires_currentness_and_amendment_review",
-    "is_verified": false,
-    "owner_approved": false
+    "status": "owner_approved_review_closed",
+    "is_verified": true,
+    "owner_approved": true
   },
   "source": {
     "type": "official",
     "url": "https://www.uqn.gov.sa/details?p=21585",
-    "text_verified": false,
-    "verification_method": "official_page_transcription"
+    "text_verified": true,
+    "verification_method": "owner_approval"
   },
   "repository_notes": {
     "imported_from": "ahzh999-rgb/saudi-legislation/legislation/regulations/privatization-communication-rules",
     "article_headings": 12,
     "notes": [
       "حفظ النص الأصلي دون تصحيح الصياغة؛ لا اعتماد نهائي ولا افتراض نفاذ اللائحة من تاريخ نشرها.",
-      "نفاذ الآليات من النشر لا يثبت بدء تشغيل المنصة الرقمية؛ المادة10 تتطلب قراراً مستقلاً."
+      "نفاذ الآليات من النشر لا يثبت بدء تشغيل المنصة الرقمية؛ المادة10 تتطلب قراراً مستقلاً.",
+      "اعتمد المالك الوثيقة بحدود معلنة بتاريخ 2026-10-15؛ انظر analysis/OWNER_APPROVAL_PRIVATIZATION_COMMUNICATION_RULES_2026-10-15.md."
     ]
   },
   "maintenance": {
