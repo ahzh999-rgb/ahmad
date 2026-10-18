@@ -1,0 +1,36 @@
+name: Validate canonical source assets
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches: [main, 'fix/**', 'sync/**']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - id: source
+        run: |
+          python - <<'PY'
+          import json,os,re
+          lock=json.load(open('site/source-lock.json'))
+          assert lock['repository']=='ahzh999-rgb/saudi-legislation'
+          assert re.fullmatch('[a-f0-9]{40}',lock['commit'])
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:f.write('sha='+lock['commit']+'\n')
+          PY
+      - uses: actions/checkout@v4
+        with:
+          repository: ahzh999-rgb/saudi-legislation
+          ref: ${{ steps.source.outputs.sha }}
+          path: .tmp/source
+      - run: python site/export_source.py .tmp/source --check
+      - run: python -m unittest discover -s site/tests -p 'test_*.py'
+      - run: npm test

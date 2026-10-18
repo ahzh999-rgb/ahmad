@@ -1,9 +1,10 @@
+import { checkedSection } from './source_guard.js';
 // خادم المستشار النظامي: يحفظ مفتاح Claude ويبني الطلب من نصوص المكتبة.
 // المتصفح يبحث في المكتبة ويرسل السؤال وأرقام الأقسام فقط؛ والخادم يقرأ الأقسام من ملفاته هو،
 // فلا يستطيع أحد استعمال المفتاح لغير الإجابة من المكتبة.
 
 const API = 'https://api.anthropic.com/v1/messages';
-const MAX_Q = 1500, MAX_IDS = 8, SEC_CHARS = 2600;
+const MAX_Q = 1500, MAX_IDS = 8, MAX_CONTEXT_CHARS = 30000;
 
 export default {
   async fetch(req, env) {
@@ -23,7 +24,7 @@ export default {
     if (!question) return json({ error: 'empty' }, 400);
 
     if (url.pathname === '/api/expand') return expand(question, env);
-    if (url.pathname === '/api/ask') return ask(question, body.ids, req, env);
+    if (url.pathname === '/api/ask') return ask(question, body.ids, body.snapshot, req, env);
     if (url.pathname === '/api/feedback') return feedback(question, body);
     return json({ error: 'not_found' }, 404);
   },
@@ -47,27 +48,38 @@ async function expand(question, env) {
 }
 
 // يكتب الإجابة من الأقسام المختارة، ويعيدها متدفقة (SSE من Claude كما هي)
-async function ask(question, ids, req, env) {
+async function ask(question, ids, snapshot, req, env) {
   if (!Array.isArray(ids)) return json({ error: 'ids' }, 400);
   ids = [...new Set(ids.filter(n => Number.isInteger(n) && n >= 0 && n < 100000))].slice(0, MAX_IDS);
   if (!ids.length) return json({ error: 'ids' }, 400);
 
   const origin = new URL(req.url).origin;
   const get = p => env.ASSETS.fetch(new Request(origin + p));
-  const [rulesRes, ...secRes] = await Promise.all([get('/rules.txt'), ...ids.map(n => get(`/s/${n}.json`))]);
+  const [manifestRes, rulesRes, ...secRes] = await Promise.all([get('/source-manifest.json'), get('/rules.txt'), ...ids.map(n => get(`/s/${n}.json`))]);
+  if (!manifestRes.ok || !rulesRes.ok) return json({ error: 'source_unavailable' }, 503);
+  let manifest, secs;
+  try {
+    manifest = await manifestRes.json();
+    if (manifest.repository !== 'ahzh999-rgb/saudi-legislation') return json({ error: 'source_unavailable' }, 503);
+    if (snapshot !== manifest.commit) return json({ error: 'source_snapshot_changed' }, 409);
+    secs = await Promise.all(secRes.map(async (r, i) => {
+      if (!r.ok) throw new Error('ineligible_source');
+      return checkedSection(await r.text(), manifest, ids[i]);
+    }));
+  } catch (error) {
+    return json({ error: error.message === 'ineligible_source' ? 'ineligible_source' : 'source_integrity' }, 422);
+  }
+  if (secs.reduce((total, s) => total + s.b.length, 0) > MAX_CONTEXT_CHARS) return json({ error: 'context_too_large' }, 413);
   const rules = await rulesRes.text();
-  const secs = [];
-  for (const r of secRes) if (r.ok) secs.push(await r.json());
-  if (!secs.length) return json({ error: 'ids' }, 400);
 
   let ctx = '';
   secs.forEach((s, i) => {
     const tool = s.m['أداة الإصدار'] ? ' — ' + s.m['أداة الإصدار'] : '';
     const state = s.m['الحالة'] ? ` (الحالة: ${s.m['الحالة']})` : '';
-    ctx += `\n\n[مقتطف ${i + 1}] ${s.t}${tool}${state}\nالعنوان: ${s.h}\n${s.b.slice(0, SEC_CHARS)}`;
+    ctx += `\n\n[مقتطف ${i + 1}] ${s.t}${tool}${state}\nالعنوان: ${s.h}\n${s.b}\nحدود التحقق: ${JSON.stringify(s.verification_summary)}\nالتواريخ المسجلة وحدودها: ${JSON.stringify(s.metadata_view)}\nالمصدر: ${s.source_url}\nنطاق النسخة: ${s.version_scope}`;
   });
 
-  const system = `أنت مستشار نظامي يجيب متعاملاً مع الجهات الحكومية في السعودية (مقاول، مورد، موظف). تجيب من المقتطفات المرفقة فقط، وهي مأخوذة من مكتبة تشريعات موثقة.
+  const system = `أنت مستشار نظامي يجيب متعاملاً مع الجهات الحكومية في السعودية (مقاول، مورد، موظف). تجيب من المقتطفات المرفقة فقط، وهي مواد مؤهلة للبحث ضمن نسخة محددة من المستودع الأساسي. أهلية النص لا تثبت حداثته أو تطبيقه الزمني على الواقعة.
 
 قواعد الوكيل (التزم بها):
 ${rules}
@@ -75,7 +87,7 @@ ${rules}
 قواعد إضافية لهذا الموقع:
 - اكتب بالعربية الفصحى المبسطة، بإيجاز لا يتجاوز 300 كلمة: الجواب المباشر أولاً، ثم «السند» مع اقتباس قصير حرفي بين «» واسم النظام ورقم المادة كما هو في المقتطف.
 - لا تذكر رقم مادة أو مدة أو نسبة غير موجودة في المقتطفات. إن لم تكفِ المقتطفات فقل: «لم أجد نصاً صريحاً في المكتبة» واقترح صياغة أدق للسؤال.
-- نظام المنافسات الجديد (م/76، 1448هـ) صدر ولم يبدأ العمل به بعد (يُعمل به بعد 120 يوماً من نشره في 22/3/1448هـ، نحو 2 يناير 2027). فأجب من النظام النافذ م/128 ولائحته، ثم اذكر في سطر ما يتغير في م/76 إن كان الحكم مختلفاً. ولائحة النظام الجديد لم تصدر بعد.
+- تاريخ اليوم: ${new Date().toISOString().slice(0, 10)}. لا تحسم السريان أو القانون الواجب التطبيق اعتماداً على تاريخ اليوم وحده. اتبع الأدلة وحدودها واطلب تاريخ الواقعة والطرح والترسية عند الحاجة. لا تحول تاريخاً محسوباً إلى نفاذ مؤكد ولا غياب لائحة عن المكتبة إلى إثبات أنها لم تصدر.
 - ميّز الاستنتاج بكتابة «(استنتاج)».
 - لا تشر إلى «المقتطفات» أو أرقامها في الإجابة؛ اذكر اسم النظام والمادة.
 - اختم بسطر: «هذه إجابة استرشادية وليست رأياً قانونياً.» ثم سطر أخير بالشكل: «سؤال متابعة: …» يقترح سؤالاً قصيراً واحداً مفيداً للسائل (مثل الإجراءات العملية أو المدد) تجيب عنه المكتبة.
