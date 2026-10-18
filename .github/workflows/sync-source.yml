@@ -1,0 +1,65 @@
+name: Propose canonical source update
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '30 4 * * *'
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: canonical-source-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require private source read access
+        env:
+          SOURCE_READ_TOKEN: ${{ secrets.SOURCE_READ_TOKEN }}
+        run: |
+          if [ -z "$SOURCE_READ_TOKEN" ]; then
+            echo '::error::Configure SOURCE_READ_TOKEN with Contents: read for saudi-legislation before synchronization.'
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          repository: ahzh999-rgb/saudi-legislation
+          ref: main
+          token: ${{ secrets.SOURCE_READ_TOKEN }}
+          persist-credentials: false
+          path: .tmp/source
+      - run: python site/export_source.py .tmp/source --update-lock
+      - run: python -m unittest discover -s site/tests -p 'test_*.py'
+      - run: npm test
+      - name: Open or update review request without deploying
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if git diff --quiet -- site/source-lock.json site/public; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -C sync/canonical-source
+          git add site/source-lock.json site/public/data.json site/public/source-manifest.json site/public/rules.txt site/public/s
+          git commit -m 'Update eligible articles from pinned canonical source'
+          if git ls-remote --exit-code --heads origin sync/canonical-source >/dev/null 2>&1; then
+            git fetch origin refs/heads/sync/canonical-source:refs/remotes/origin/sync/canonical-source
+          fi
+          git push --force-with-lease origin sync/canonical-source
+          python - <<'PY'
+          import json
+          lock=json.load(open('site/source-lock.json'))
+          open('.tmp/pr-body.md','w').write('Update eligible article assets from '+lock['repository']+' at '+lock['commit']+'.\n\nRaw witnesses, unverified text and conflicts remain excluded. Review before merging: main may trigger existing Cloudflare deployment.\n')
+          PY
+          if ! gh pr view sync/canonical-source --json number >/dev/null 2>&1; then
+            gh pr create --base main --head sync/canonical-source --title 'Update canonical legislation snapshot' --body-file .tmp/pr-body.md
+          fi

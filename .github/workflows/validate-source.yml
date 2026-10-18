@@ -1,0 +1,55 @@
+name: Validate canonical source assets
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches: [main, 'fix/**', 'sync/**']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m unittest discover -s site/tests -p 'test_*.py'
+      - run: npm test
+  reproduce-source:
+    name: Reproduce pinned source when read access is configured
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - id: source
+        env:
+          SOURCE_READ_TOKEN: ${{ secrets.SOURCE_READ_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json,os,re
+          lock=json.load(open('site/source-lock.json'))
+          assert lock['repository']=='ahzh999-rgb/saudi-legislation'
+          assert re.fullmatch('[a-f0-9]{40}',lock['commit'])
+          available=bool(os.environ.get('SOURCE_READ_TOKEN'))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+            f.write('sha='+lock['commit']+'\n')
+            f.write('available='+str(available).lower()+'\n')
+          if not available:
+            print('::notice::Source reproduction NOT RUN: private source requires SOURCE_READ_TOKEN (Contents: read for saudi-legislation). Asset integrity and server tests run separately.')
+          PY
+      - uses: actions/checkout@v4
+        if: steps.source.outputs.available == 'true'
+        with:
+          repository: ahzh999-rgb/saudi-legislation
+          ref: ${{ steps.source.outputs.sha }}
+          token: ${{ secrets.SOURCE_READ_TOKEN }}
+          persist-credentials: false
+          path: .tmp/source
+      - if: steps.source.outputs.available == 'true'
+        run: python site/export_source.py .tmp/source --check

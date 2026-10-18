@@ -263,8 +263,9 @@ let ctrl=null;
 const ask=$('ask'), stop=$('stop'), status=$('status');
 ask.disabled=true; status.textContent='جارٍ تحميل المكتبة…';
 fetch('data.json').then(r=>r.json()).then(d=>{
+  if(!/^[a-f0-9]{40}$/.test(d.snapshot||''))throw new Error('source_unavailable');
   LIB=d; LIB.docs.forEach((doc,di)=>doc.secs.forEach(([h,b])=>SECS.push({id:SECS.length,doc:di,h,b})));
-  $('count').textContent=LIB.docs.filter(x=>x.kind!=='card').length+' نظاماً ولائحة وقراراً';
+  $('count').textContent=LIB.docs.filter(x=>x.kind!=='card').length+' وثيقة تتضمن مواد مؤهلة للبحث';
   ask.disabled=false; status.textContent='';
   const sq=new URLSearchParams(location.search).get('q');
   if(sq){$('q').value=sq.slice(0,1500);grow();$('f').requestSubmit();}
@@ -281,7 +282,7 @@ async function expandQuery(q){
   catch(e){if(e.name==='AbortError')throw e;return [];}
 }
 async function streamAnswer(q,ids,onText){
-  const r=await post('/api/ask',{question:q,ids});
+  const r=await post('/api/ask',{question:q,ids,snapshot:LIB.snapshot});
   const rd=r.body.getReader(), dec=new TextDecoder(); let buf='', text='', stopReason='';
   for(;;){
     const {done,value}=await rd.read(); if(done)break;
@@ -392,6 +393,9 @@ $('f').addEventListener('submit', async e=>{
     status.textContent='';
     if(err.name==='AbortError'){$('answer').innerHTML=msg('أُوقفت الإجابة.','اضغط «اسأل» لإعادة المحاولة.','info');}
     else if(err.code==='rate_limited'){$('answer').innerHTML=msg('أرسلت أسئلة كثيرة في وقت قصير.','انتظر دقيقة ثم أعد المحاولة.');}
+    else if(err.code==='source_snapshot_changed'){$('answer').innerHTML=msg('تحدّثت مكتبة النصوص.','أعد تحميل الصفحة للبحث في النسخة الجديدة.');}
+    else if(err.code==='ineligible_source'||err.code==='source_integrity'||err.code==='source_unavailable'){$('answer').innerHTML=msg('تعذر التحقق من النصوص المختارة.','لم تُنشأ إجابة. أعد تحميل الصفحة وحاول مجدداً.');}
+    else if(err.code==='context_too_large'){$('answer').innerHTML=msg('النصوص المرتبطة واسعة.','حدد المسألة أو رقم المادة في سؤال أقصر.');}
     else if(err.code==='busy'){$('answer').innerHTML=msg('الخدمة مشغولة الآن.','حاول بعد قليل.');}
     else if(!navigator.onLine){$('answer').innerHTML=msg('لا يوجد اتصال بالإنترنت.','تحقق من الاتصال ثم أعد المحاولة.');}
     else {$('answer').innerHTML=msg('تعذرت الإجابة الآن.','حاول مرة أخرى بعد قليل. وإن تكرر الخطأ فأعد تحميل الصفحة.');}
