@@ -120,7 +120,7 @@ footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padd
     <div class="titles">
       <h1>المستشار النظامي للمتعاملين مع الجهات الحكومية</h1>
       <p class="sub">إجابة فورية من نصوص الأنظمة واللوائح السعودية: المنافسات والمشتريات، المالية العامة، الموارد البشرية، القضاء الإداري.</p>
-      <p class="updated">آخر تحديث للمكتبة: 12 أكتوبر 2026<br>تحتوي المكتبة على <span class="count" id="count">59 نظاماً ولائحة وقراراً</span> بنصها الكامل</p>
+      <p class="updated">يغطي هذا الموقع أكثر من <span class="count" id="count">20</span> وثيقة رسمية في مجالات: المنافسات والمشتريات الحكومية، الخدمة المدنية وشؤون العاملين، التخصيص والمحتوى المحلي، أملاك الدولة والعقار، التنفيذ والمرافعات أمام ديوان المظالم، التقاعد.</p>
     </div>
     <button type="button" class="theme" id="theme" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
   </header>
@@ -265,7 +265,7 @@ ask.disabled=true; status.textContent='جارٍ تحميل المكتبة…';
 fetch('data.json').then(r=>r.json()).then(d=>{
   if(!/^[a-f0-9]{40}$/.test(d.snapshot||''))throw new Error('source_unavailable');
   LIB=d; LIB.docs.forEach((doc,di)=>doc.secs.forEach(([h,b])=>SECS.push({id:SECS.length,doc:di,h,b})));
-  $('count').textContent=LIB.docs.filter(x=>x.kind!=='card').length+' وثيقة تتضمن مواد مؤهلة للبحث';
+  $('count').textContent=Math.floor((LIB.docs.filter(x=>x.kind!=='card').length-1)/5)*5;
   ask.disabled=false; status.textContent='';
   const sq=new URLSearchParams(location.search).get('q');
   if(sq){$('q').value=sq.slice(0,1500);grow();$('f').requestSubmit();}
