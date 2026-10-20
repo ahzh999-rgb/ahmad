@@ -43,6 +43,9 @@ def collect(root):
     from retrieve_legislation import retrieve
     from search_legislation import text_quality_issues
     records=instruments();docs=[];sections=[];excluded=Counter()
+    registry=load('indexes/file_registry.json');formats={d['id']:d['formats'] for d in registry['documents']}
+    related={}
+    for r in registry['relations']:related.setdefault(r['from'],[]).append({k:r[k] for k in ('to','type','direction','time_chain')})
     for selection in load('indexes/display_sources.json')['records']:
         ident=selection['id'];rec=records[ident];meta=rec['data'];kept=[]
         for article in articles(ident,display=True):
@@ -56,7 +59,8 @@ def collect(root):
         doc={'id':ident,'path':rec['metadata'] or rec['index'],'title':rec['title'],
              'meta':{'أداة الإصدار':tool,'الحالة':'نسخة مؤهلة للبحث؛ السريان والتطبيق الزمني يحتاجان تحققاً مستقلاً'},
              'kind':'text','verification':kept[0][1]['verification_summary'],
-             'metadata_view':kept[0][1]['metadata_view'],'secs':[]}
+             'metadata_view':kept[0][1]['metadata_view'],
+             'registry':{'file_counts':{k:len(v) for k,v in formats.get(ident,{}).items()},'related':related.get(ident,[])},'secs':[]}
         for article,result in kept:
             h='المادة '+result['legal_key'];body=result['body'];doc['secs'].append([h,body])
             sections.append({'t':doc['title'],'m':doc['meta'],'h':h,'b':body,
