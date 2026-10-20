@@ -82,6 +82,21 @@ def build_inventory(root, records, docs, snapshot):
     for ident, record in records.items():
         for path in source_paths(record['data']):
             file_to_documents.setdefault(path, set()).add(ident)
+    # Explicit per-document evidence files can link an issue to an amendment
+    # witness, even when the main metadata only links the review register.
+    for ident, record in records.items():
+        folder = str(Path(record['metadata']).parent)+'/' if record.get('metadata') else None
+        for evidence in evidence_files:
+            if not folder or not evidence.startswith(folder) or not evidence.endswith('.json'):
+                continue
+            try:
+                evidence_data = json.loads((root/evidence).read_text())
+            except (ValueError, UnicodeError):
+                continue
+            for path in source_paths(evidence_data):
+                file_to_documents.setdefault(path, set()).add(ident)
+        for path in source_paths(record['verification']):
+            file_to_documents.setdefault(path, set()).add(ident)
     digest_cache = {}
 
     def file_record(path, relation=None):
@@ -102,9 +117,15 @@ def build_inventory(root, records, docs, snapshot):
         source = file_record(meta.get('source_path', ''))
         number = instrument.get('number') or meta.get('instrument_number') or meta.get('decision_number')
         date = instrument.get('issue_date_hijri') or meta.get('issue_date_hijri')
+        number_basis = 'metadata' if number else None
+        if not number:
+            match = re.search(r'م/\d+', record['title']) if record['title'].startswith('مرسوم') else re.search(r'(?<!\d)(\d{3,6})(?=\s|$)', record['title'])
+            if match:
+                number = match.group(0)
+                number_basis = 'title_transcription'
         decisions.append(dict(id=ident, title=record['title'],
             kind='مرسوم' if record['title'].startswith('مرسوم') else 'قرار أو تعديل قرار',
-            number=str(number) if number is not None else None, issue_date_hijri=date,
+            number=str(number) if number is not None else None, number_basis=number_basis, issue_date_hijri=date,
             metadata_path=record['metadata'] or record['index'],
             sources=[source] if source else [], official_url=https(meta.get('official_source_url')),
             verification={k:{key:v for key,v in dims.get(k, {}).items() if key in ('status','scope','as_of','evidence')}
@@ -118,11 +139,16 @@ def build_inventory(root, records, docs, snapshot):
             continue
         # A PDF without a page/extract label is a candidate issue file, NOT proof of completeness.
         pdf = any(s['format']=='pdf' and not re.search(r'extract|pages?\d|page[-_]\d', s['path'], re.I) for s in sources)
-        related = sorted({i for path in files for i in file_to_documents.get(path, set()) if i in records})
+        related_set = {i for path in files for i in file_to_documents.get(path, set()) if i in records}
+        for ident, record in records.items():
+            publication = record['data'].get('publication')
+            if isinstance(publication, dict) and str(publication.get('issue_number')) == number:
+                related_set.add(ident)
+        related = sorted(related_set)
         issues.append(dict(id=number, title='أم القرى · العدد '+number, issue_number=number,
             archive_kind='ISSUE_PDF_COMPLETENESS_UNVERIFIED' if pdf else 'PAGES_OR_WITNESSES',
             full_issue_verified=False, all_contents_indexed=False, sources=sources,
-            related_documents=[dict(id=i, title=records[i]['title'], eligible_article_count=eligible.get(i,0)) for i in related]))
+            related_documents=[dict(id=i, title=records[i]['title'], metadata_path=records[i]['metadata'] or records[i]['index'], relation_scope='linked_archive_witness_not_exhaustive_issue_contents', eligible_article_count=eligible.get(i,0)) for i in related]))
     return dict(schema_version=1, repository='ahzh999-rgb/saudi-legislation', snapshot=snapshot,
         coverage='archived_decision_records_and_identifiable_gazette_witnesses; not_all_decisions_or_issues',
         answer_eligibility_changed=False, decisions=decisions, gazette_issues=issues)

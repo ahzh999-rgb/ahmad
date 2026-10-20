@@ -118,6 +118,7 @@ footer{margin-top:auto;font-size:.85rem;color:var(--muted);border-top:1px solid 
 .policy-close{background:var(--accent-soft);color:var(--fg);padding:4px 12px}
 button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 body:has(dialog[open]){overflow:hidden}
+.library-menu{display:inline-block;position:relative;margin-top:8px;font-size:.9rem;color:var(--accent)}.library-menu summary{cursor:pointer;list-style:none;font-weight:500;padding:4px 0}.library-menu summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.library-menu nav{position:absolute;inset-inline-start:0;top:100%;z-index:10;min-width:270px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.1);display:flex;flex-direction:column;gap:2px}.library-menu nav a{padding:8px 12px;text-decoration:none;color:var(--fg);border-radius:7px;font-size:.85rem}.library-menu nav a:hover{background:var(--accent-soft)}
 </style>
 
 </head>
@@ -129,7 +130,7 @@ body:has(dialog[open]){overflow:hidden}
       <h1>المستشار النظامي للمتعاملين مع الجهات الحكومية</h1>
       <p class="sub">إجابة فورية من نصوص الأنظمة واللوائح السعودية: المنافسات والمشتريات، المالية العامة، الموارد البشرية، القضاء الإداري.</p>
       <p class="updated">المصدر: مكتبة التشريعات السعودية · <span class="count" id="count">جارٍ تحميل التغطية…</span></p>
-      <a class="library-link" href="/library.html">تصفّح المكتبة النظامية ←</a>
+      <details class="library-menu"><summary>المكتبة النظامية ▾</summary><nav aria-label="أنواع وثائق المكتبة"><a href="/library.html?type=law">الأنظمة</a><a href="/library.html?type=regulation">اللوائح</a><a href="/library.html?view=decisions&type=decision">القرارات</a><a href="/library.html?view=decisions&type=decree">المراسيم الملكية</a><a href="/library.html?view=gazette&type=gazette">أعداد أم القرى والتشريعات المرتبطة</a><a href="/library.html">عرض المكتبة كاملة</a></nav></details>
     </div>
     <button type="button" class="theme" id="theme" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
   </header>
@@ -203,8 +204,9 @@ const $ = id => document.getElementById(id);
 
 // ---------- rendering ----------
 function msg(t,d,k){return '<div class="msg'+(k?' '+k:'')+'" role="alert"><strong>'+esc(t)+'</strong><br>'+esc(d)+'</div>';}
+function displayText(s){return String(s).replace(/[٠-٩۰-۹]/g,c=>String(c.charCodeAt(0)-(c>='۰'?1776:1632))).replace(/(\d+)-bis(?:-(\d+))?/g,(_,n,r)=>n+' مكرر'+(r?' '+r:''));}
 function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-function inline(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');}
+function inline(s){return esc(displayText(s)).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');}
 function md(src){
   const lines=src.replace(/\r/g,'').split('\n');let html='',list=null,i=0;
   const close=()=>{if(list){html+='</'+list+'>';list=null;}};
@@ -234,7 +236,7 @@ fetch('source-manifest.json').then(r=>{if(!r.ok)throw new Error('source_unavaila
   $('count').textContent=d.document_count+' وثيقة تتضمن مواد مؤهلة للبحث';
   ask.disabled=false; status.textContent='';
   const sq=new URLSearchParams(location.search).get('q');
-  if(sq){$('q').value=sq.slice(0,1500);grow();if(new URLSearchParams(location.search).get('draft')!=='1')$('f').requestSubmit();else $('q').focus();}
+  if(sq){$('q').value=displayText(sq.slice(0,1500));grow();if(new URLSearchParams(location.search).get('draft')!=='1')$('f').requestSubmit();else $('q').focus();}
 }).catch(()=>{status.textContent='';$('out').hidden=false;
   $('answer').innerHTML=msg('تعذر الوصول إلى مكتبة الأنظمة.','تحقق من اتصالك بالإنترنت، ثم اضغط «إعادة المحاولة».')+'<p><button type="button" class="ghost" onclick="location.reload()">إعادة المحاولة</button></p>';});
 
@@ -291,9 +293,9 @@ $('f').addEventListener('submit', async e=>{
     $('answer').innerHTML=md(body)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
     foldQuotes($('answer'));
     const sources=res.evidence?.sources||[];
-    $('basis').innerHTML=sources.length?'المواد المرفقة للإجابة:<ul>'+sources.map(source=>'<li><strong>'+esc(source.title+'، '+source.heading)+'</strong>'+(source.temporal?.state==='FUTURE_RECORDED'?'<span class="tag new">لم يبدأ نفاذه بعد وفق التاريخ المسجل</span>':'')+'</li>').join('')+'</ul>':'';
-    lastBasis=sources.map(source=>source.title+'، '+source.heading).join('؛ ');
-    lastText=body.replace(/\*\*/g,'').trim()+(lastBasis?'\n\nالمواد المرفقة للإجابة: '+lastBasis:'')+'\n'+location.origin;
+    $('basis').innerHTML=sources.length?'المواد المرفقة للإجابة:<ul>'+sources.map(source=>'<li><strong>'+esc(displayText(source.title+'، '+source.heading))+'</strong>'+(source.temporal?.state==='FUTURE_RECORDED'?'<span class="tag new">لم يبدأ نفاذه بعد وفق التاريخ المسجل</span>':'')+'</li>').join('')+'</ul>':'';
+    lastBasis=displayText(sources.map(source=>source.title+'، '+source.heading).join('؛ '));
+    lastText=displayText(body).replace(/\*\*/g,'').trim()+(lastBasis?'\n\nالمواد المرفقة للإجابة: '+lastBasis:'')+'\n'+location.origin;
     $('after').hidden=false; status.textContent='';
   }catch(err){
     status.textContent='';
@@ -312,7 +314,7 @@ let lastText='', lastQ='', lastBasis='';
 // المشاركة: رابط يفتح الموقع بالسؤال نفسه، أو نص جاهز
 $('share').addEventListener('click',async()=>{
   const url=location.origin+'/?q='+encodeURIComponent(lastQ), b=$('share');
-  const text='سؤال: '+lastQ+'\n\n'+lastText.replace(location.origin,'').trim();
+  const text='سؤال: '+displayText(lastQ)+'\n\n'+lastText.replace(location.origin,'').trim();
   if(navigator.share){try{await navigator.share({title:'المستشار النظامي',text,url});return;}catch(e){if(e.name==='AbortError')return;}}
   try{await navigator.clipboard.writeText(text+'\n'+url);}catch{}
   b.textContent='نُسخ الرابط والنص ✓';setTimeout(()=>{b.textContent='مشاركة';},2000);

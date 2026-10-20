@@ -59,3 +59,20 @@ class LibraryInventoryTests(unittest.TestCase):
         for collection in ['decisions','gazette_issues']:
             ids=[r['id'] for r in inventory[collection]]
             self.assertEqual(len(ids),len(set(ids)))
+
+
+class GazetteRelationsTests(unittest.TestCase):
+    def test_archived_issue_records_show_explicit_legislation_connections(self):
+        path=Path(__file__).resolve().parents[1]/'public/library-inventory.json'
+        inventory=json.loads(path.read_text())
+        issues={r['id']:r for r in inventory['gazette_issues']}
+        expected={'5180':['SA-LAW-GTP-1448-001'],'5186':['SA-REG-GTP-1441-3479'],
+                  '4847':['labour-law'],'4828':['conflicts-of-interest','procurement-ethics']}
+        for number,ids in expected.items():
+            actual={d['id'] for d in issues[number]['related_documents']}
+            self.assertTrue(set(ids).issubset(actual))
+            for d in issues[number]['related_documents']:
+                self.assertEqual(d['relation_scope'],'linked_archive_witness_not_exhaustive_issue_contents')
+        record=next(r for r in inventory['decisions'] if r['id']=='public-money-cabinet-835')
+        self.assertEqual(record['number'],'835')
+        self.assertEqual(record['number_basis'],'title_transcription')

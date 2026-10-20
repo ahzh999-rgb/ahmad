@@ -19,16 +19,15 @@
 <main id="main">
  <div id="catalog-view">
   <section class="intro" aria-labelledby="page-title">
-   <div><p class="eyebrow">اقرأ النص، واعرف مصدره</p><h1 id="page-title">المكتبة النظامية</h1><p class="lead">أنظمة ولوائح وقرارات وشواهد أم القرى، في مكان واحد. اقرأ النص، وتحقق من نطاقه ومصدره.</p></div>
+   <div><h1 id="page-title">المكتبة النظامية</h1><p class="lead">تصفّح التشريعات والقرارات وأعداد أم القرى المرتبطة بها.</p></div>
    <div class="statistics" id="statistics" aria-label="تغطية المكتبة"><span>جارٍ تحميل التغطية…</span></div>
   </section>
-  <nav class="library-tabs" aria-label="أقسام المكتبة"><a href="/library.html" data-view="articles">الأنظمة واللوائح</a><a href="/library.html?view=decisions" data-view="decisions">القرارات وأدوات الإصدار</a><a href="/library.html?view=gazette" data-view="gazette">إصدارات أم القرى</a></nav>
-  <aside class="coverage-note"><span aria-hidden="true">ⓘ</span><p id="collection-note"><strong>هذه مكتبة المواد المؤهلة في نسخة الموقع.</strong> لا تشمل كل ملفات المستودع، وعدد المواد المتاحة لا يثبت اكتمال الوثيقة أو حداثتها أو سريانها على واقعتك.</p></aside>
   <section class="search-panel" aria-label="البحث في المكتبة">
+   <div class="search-tools"><div class="type-picker"><label for="document-type">نوع الوثيقة</label><select id="document-type"><optgroup label="النصوص النظامية"><option value="all">جميع الأنظمة واللوائح</option><option value="law">الأنظمة</option><option value="regulation">اللوائح</option><option value="rules">القواعد والضوابط</option><option value="organization">التنظيمات</option></optgroup><optgroup label="أدوات الإصدار"><option value="instruments">جميع القرارات والمراسيم</option><option value="decision">القرارات</option><option value="decree">المراسيم الملكية</option></optgroup><optgroup label="الجريدة الرسمية"><option value="gazette">أعداد أم القرى</option></optgroup></select></div><div class="filter-row" id="category-row"><label for="category">المجال</label><select id="category"><option value="all">جميع المجالات</option></select></div></div>
    <label for="search" id="search-label">ابحث باسم الوثيقة أو في نصوص المواد</label>
    <div class="search-row"><input id="search" type="search" maxlength="200" placeholder="مثل: الشراء المباشر، الإعارة، المادة 32" autocomplete="off"><button id="reset" type="button" class="quiet">مسح البحث</button></div>
-   <div class="filter-row" id="category-row"><label for="category">المجال</label><select id="category"><option value="all">جميع المجالات</option></select></div>
   </section>
+  <details class="coverage-disclosure"><summary>عن تغطية المكتبة</summary><p id="collection-note"></p></details>
   <div class="result-heading"><h2 id="collection-heading">الوثائق المتاحة</h2><p id="result-count" role="status" aria-live="polite"></p></div>
   <div class="cards" id="documents"></div>
   <div class="empty" id="empty" hidden><h3>لم تظهر نتائج مطابقة</h3><p>جرّب كلمة أخرى أو اختر جميع المجالات. عدم ظهور نتيجة لا يعني عدم وجود حكم نظامي أو مصدر آخر للمسألة.</p><button id="reset-empty" class="primary" type="button">عرض جميع الوثائق</button></div>
@@ -37,7 +36,6 @@
   <a href="/library.html" id="back" class="back">← العودة إلى المكتبة</a>
   <div class="document-heading"><p class="eyebrow" id="document-category"></p><h1 id="document-title" tabindex="-1"></h1><div id="document-badges" class="badges"></div></div>
   <aside class="coverage-note"><span aria-hidden="true">ⓘ</span><p id="document-coverage"></p></aside>
-  <details class="verification"><summary>بيانات الوثيقة وحدود التحقق</summary><div id="document-metadata"></div><p class="muted">هذه بيانات التحقق المسجلة في المصدر. قبول صاحب المشروع لا يعادل مقابلة مستقلة، وتاريخ المراجعة ليس شهادة بحداثة النص.</p></details>
   <div class="reader-layout">
    <aside class="article-navigation" aria-label="مواد الوثيقة"><label for="article-search">ابحث داخل هذه الوثيقة</label><input id="article-search" type="search" maxlength="200" placeholder="كلمة أو رقم مادة" autocomplete="off"><p id="article-count" role="status" aria-live="polite"></p><div id="article-list" class="article-list"></div></aside>
    <article class="article-reader" id="reader" aria-labelledby="article-title">
@@ -48,6 +46,8 @@
     <p class="muted small">الاستفسار يفتح في صفحة المساعد للمراجعة قبل الإرسال. قراءتك للمادة لا تحسم انطباقها على الواقعة.</p>
    </article>
   </div>
+  <details class="verification"><summary>بيانات الوثيقة وحدود التحقق</summary><div id="document-metadata"></div><p class="muted">هذه بيانات التحقق المسجلة في المصدر. قبول صاحب المشروع لا يعادل مقابلة مستقلة، وتاريخ المراجعة ليس شهادة بحداثة النص.</p></details>
+
  </section>
  <section id="record-view" hidden aria-labelledby="record-title"><a href="/library.html" id="record-back" class="back">← العودة إلى المكتبة</a><div class="document-heading"><p class="eyebrow" id="record-category"></p><h1 id="record-title" tabindex="-1"></h1><div id="record-badges" class="badges"></div></div><aside class="coverage-note"><span aria-hidden="true">ⓘ</span><p id="record-note"></p></aside><div id="record-content" class="record-content"></div></section>
  <div class="load-state" id="load-state" role="status" aria-live="polite">جارٍ تحميل المكتبة والتحقق من بياناتها…</div>

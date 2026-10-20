@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {buildCatalog,filterCatalog,matchingArticles,normalize,futureDate,sourceLink} from '../public/library-core.js';
+import {buildCatalog,filterCatalog,matchingArticles,normalize,futureDate,sourceLink,latinDigits,articleLabel,fileLabel,documentType} from '../public/library-core.js';
 import {checkedCatalog,checkedSection,checkedInventory} from '../public/source-guard.js';
 const root=new URL('../public/',import.meta.url);
 const raw=fs.readFileSync(new URL('data.json',root),'utf8');
@@ -67,4 +67,25 @@ test('discovery inventory is pinned and cannot be substituted or treated as answ
  await assert.rejects(checkedInventory(raw+' ',manifest),/source_integrity/);
  assert.equal(inventory.gazette_issues.find(r=>r.id==='4835').archive_kind,'PAGES_OR_WITNESSES');
  assert.ok(!inventory.gazette_issues.some(r=>r.id==='2026'));
+});
+
+test('Arabic labels and Latin digits affect presentation only, including repeated article keys',()=>{
+ assert.equal(latinDigits('١٢٣ ۴۵۶'),'123 456');
+ assert.equal(articleLabel('المادة 15-bis'),'المادة 15 مكرر');
+ assert.equal(articleLabel('المادة 37-bis-2'),'المادة 37 مكرر 2');
+ assert.equal(fileLabel({path:'sources/gazette/article85-disputed-span.png',format:'png'},'5180'),'مقتطف مصوّر من المادة 85');
+ assert.equal(fileLabel({path:'sources/page-5-pdf-10.pdf',format:'pdf'}),'نسخة القرار المؤرشفة');
+ const doc=docs.find(d=>d.id==='civil-service');
+ assert.deepEqual(matchingArticles(doc,'المادة ١٥ مكرر').map(a=>a.key),['15-bis']);
+ assert.ok(doc.articles.some(a=>a.heading==='المادة 15-bis'));
+});
+test('document-type filter separates laws, regulations, rules and organizations',()=>{
+ for(const type of ['law','regulation','rules','organization']){
+  const found=filterCatalog(docs,{type});assert.ok(found.length>0);assert.ok(found.every(r=>documentType(r.doc)===type));
+ }
+});
+test('ordinary question wording finds the governing direct-purchase article',()=>{
+ const found=filterCatalog(docs,{query:'ما شروط الشراء المباشر؟',type:'law'});
+ const law=found.find(r=>r.doc.id==='SA-LAW-GTP-1440-001');
+ assert.ok(law);assert.equal(law.matches[0].key,'32');
 });
