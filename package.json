@@ -2,6 +2,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node site/tests/source.test.js"
+    "test": "node --test site/tests/*.test.js"
   }
 }
