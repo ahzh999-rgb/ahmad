@@ -5,8 +5,8 @@ Open `/library.html` to browse the eligible documents already published in
 
 - Search matches document titles or all query terms in an individual article.
   Arabic diacritics and letter/digit variants are normalized for search only.
-  Numeric queries match article keys exactly. Displayed and copied bodies are
-  unchanged.
+  Numeric queries match article keys exactly. Canonical source bodies and hashes remain unchanged. Displayed and copied
+  text uses Latin digits; repeated-article labels are shown in Arabic.
 - Category labels are navigation aids, not a legal classification.
 - `/library.html?doc=civil-service&article=29` opens a material directly.
   These URLs resolve against the current site snapshot, whose ID is displayed;
@@ -50,3 +50,19 @@ manifest and checked by the browser. The source synchronization workflow stages
 this new asset alongside the ordinary article export. Source-file links point to
 the pinned canonical repository and may require repository read access; binaries
 are not republished by this change.
+
+
+## Presentation and document types
+
+The document-type dropdown separates laws, regulations, rules, organizations,
+decisions and royal decrees, and gazette issues. Existing deep links remain valid.
+Arabic-Indic and Persian digits are converted to Latin digits in displayed text
+and clipboard output, while the canonical bodies, source offsets, hashes and URL
+keys are unchanged. `15-bis` displays as `15 مكرر`.
+
+Gazette cards and issue pages show linked legislation first, with reverse links
+from legislation to issues. Associations include explicit publication metadata
+and source references in tracked per-document evidence registers; these are
+witness relationships, not a certified table of issue contents. Raw source file
+names are replaced with Arabic descriptions. Review details remain available
+without dominating the reading layout.

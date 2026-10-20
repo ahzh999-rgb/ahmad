@@ -1,12 +1,18 @@
 import { checkedCatalog, checkedSection, checkedInventory } from './source-guard.js';
-import { buildCatalog, filterCatalog, matchingArticles, normalize, CATEGORIES, futureDate, sourceLink } from './library-core.js';
+import { buildCatalog, filterCatalog, matchingArticles, normalize, CATEGORIES, futureDate, sourceLink, latinDigits, articleLabel, fileLabel } from './library-core.js';
 
 const $=id=>document.getElementById(id), day=new Date().toISOString().slice(0,10);
-const number=n=>new Intl.NumberFormat('ar-SA').format(n);
+const number=n=>new Intl.NumberFormat('en-US').format(n);
 const categoryName=id=>CATEGORIES.find(([key])=>key===id)?.[1]||'تنظيمات أخرى';
 let manifest,inventory,docs=[],currentDoc=null,currentArticle=null,requestSerial=0,catalogScroll=0;
 const sectionCache=new Map();
-function el(tag,text,className){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(className)e.className=className;return e;}
+function el(tag,text,className){
+ const e=document.createElement(tag);
+ if(text!==undefined)for(const part of articleLabel(text).split(/(\d{4}[-/]\d{2}[-/]\d{2})/)){
+  if(/^\d{4}[-/]\d{2}[-/]\d{2}$/.test(part)){const date=document.createElement('bdi');date.dir='ltr';date.textContent=part;e.append(date);}else e.append(document.createTextNode(part));
+ }
+ if(className)e.className=className;return e;
+}
 function link(text,href,className){const e=el('a',text,className);e.href=href;return e;}
 function external(text,href){const a=link(text,href);a.target='_blank';a.rel='noopener noreferrer';return a;}
 function badge(text,future=false){return el('span',text,'badge'+(future?' future':''));}
@@ -18,7 +24,7 @@ function appendBadges(parent,doc){parent.append(badge(number(doc.articles.length
 function renderCards(){
  if(collectionView()!=='articles'){renderCollectionCards();return;}
  const query=$('search').value,category=$('category').value;
- const rows=filterCatalog(docs,{query,category}),container=$('documents');container.replaceChildren();
+ const rows=filterCatalog(docs,{query,category,type:currentType()}),container=$('documents');container.replaceChildren();
  $('result-count').textContent=number(rows.length)+' من '+number(docs.length)+' وثيقة';$('empty').hidden=rows.length>0;
  for(const {doc,matches,titleMatch} of rows){
   const a=link('',urlFor({doc:doc.id,article:query.trim()&&!titleMatch?matches[0]?.key:null,within:query.trim()&&!titleMatch?query:null}),'card');a.dataset.internal='';
@@ -43,9 +49,7 @@ function renderMetadata(doc){
  }
  const path=sourceLink(manifest.commit,doc.path);if(path){const b=metadataItem('سجل بيانات الوثيقة',[]);b.append(external('فتح السجل المؤرشف',path));grid.append(b);}
  $('document-metadata').replaceChildren(grid);
- const details=el('details');details.append(el('summary','نطاقات التحقق كما سجّلها المصدر'));
- for(const [key,title] of [['official_match','المقابلة'],['amendments','التعديلات'],['effectiveness','النفاذ'],['owner_approval','قبول المالك']])if(verified[key]?.scope){details.append(el('p',title,'small'),el('p',verified[key].scope,'raw-scope'));}
- $('document-metadata').append(details);
+ $('document-metadata').append(el('p','راجع سجل المصدر لمعرفة النطاق التفصيلي للمقابلة والتعديلات؛ حالة التحقق تخص النسخة الموثقة فقط.','muted small'));
 }
 function renderArticleList(){
  const matches=matchingArticles(currentDoc,$('article-search').value);$('article-count').textContent=number(matches.length)+' من '+number(currentDoc.articles.length)+' مادة متاحة';
@@ -54,10 +58,10 @@ function renderArticleList(){
  if(!matches.length)list.append(el('p','لا توجد مواد مطابقة ضمن المتاح.','small muted'));
 }
 function sourceDetails(section){
- const details=el('details',undefined,'source-details');details.append(el('summary','نطاق النسخة وبصمة المادة'));
- const dl=el('dl');for(const [title,value] of [['نطاق النسخة كما سجّله المصدر',section.version_scope],['بصمة النص SHA-256',section.body_sha256],['موضع النص المؤرشف',section.source_path]]){dl.append(el('dt',title),el('dd',value||'غير مسجل'));}
- for(const limitation of section.limitations||[])dl.append(el('dt','حد مسجل'),el('dd',limitation));
- details.append(dl);return details;
+ const details=el('details',undefined,'source-details');details.append(el('summary','معلومات التوثيق'));
+ details.append(el('p','تم التحقق من مطابقة النص لنسخة الموقع. لا يثبت ذلك اكتمال التعديلات أو انطباق الحكم على واقعة.'));
+ const record=sourceLink(manifest.commit,section.body_record_path);if(record)details.append(external('فتح سجل المادة في الأرشيف',record));
+ return details;
 }
 async function loadSection(doc,article){
  const serial=++requestSerial,source=$('article-source');source.replaceChildren(el('p','جارٍ التحقق من مصدر المادة…','muted'));
@@ -91,19 +95,20 @@ function render(focus=false){
  if(!doc){requestSerial++;currentDoc=null;currentArticle=null;$('document-view').hidden=true;$('catalog-view').hidden=false;$('load-error').hidden=false;$('load-error-message').textContent='الوثيقة المطلوبة غير متاحة في هذه النسخة. يمكنك البحث في الوثائق المتاحة أدناه.';renderCards();return;}
  const changed=currentDoc?.id!==doc.id;currentDoc=doc;
  $('catalog-view').hidden=true;$('document-view').hidden=false;$('load-error').hidden=true;
- $('back').href=urlFor({doc:null,article:null,within:null});$('document-title').textContent=doc.title;$('document-category').textContent=categoryName(doc.category);
+ $('back').href=urlFor({doc:null,article:null,within:null});$('document-title').textContent=articleLabel(doc.title);$('document-category').textContent=categoryName(doc.category);
  $('document-badges').replaceChildren();appendBadges($('document-badges'),doc);
+ renderDocumentGazettes(doc);
  const future=futureDate(doc,day);
- $('document-coverage').textContent='المتاح هنا '+number(doc.articles.length)+' مادة مؤهلة فقط. قد تكون الوثيقة جزئية أو من نسخة تاريخية؛ لا تفترض اكتمالها أو حداثتها من هذا العدد.'+(future?' لم يدخل النص حيز النفاذ بعد وفق التاريخ المسجل '+future+'؛ عرضه هنا للقراءة والمقارنة.':' السريان والتطبيق على واقعة يحتاجان تحققًا مستقلاً.');
+ $('document-coverage').textContent='المعروض '+number(doc.articles.length)+' مادة من النسخة المؤرشفة؛ اكتمال الوثيقة وحداثتها يحتاجان مراجعة.'+(future?' لم يدخل النص حيز النفاذ بعد وفق التاريخ المسجل '+future+'؛ عرضه هنا للقراءة والمقارنة.':' السريان والتطبيق على واقعة يحتاجان تحققًا مستقلاً.');
  if(changed)renderMetadata(doc);
  $('article-search').value=(params.get('within')||'').slice(0,200);
  const key=params.get('article'),article=key?doc.articles.find(a=>a.key===key):doc.articles[0];currentArticle=article||null;
  renderArticleList();
  $('reader').hidden=!article;
  if(article){
-  $('article-title').textContent=article.heading;$('article-body').textContent=article.body;
-  const q='ما أحكام '+article.heading+' من '+doc.title+'، وما شروط تطبيقها؟';$('ask-article').href='/?q='+encodeURIComponent(q)+'&draft=1';
-  loadSection(doc,article);document.title=article.heading+' · '+doc.title+' | المكتبة النظامية';
+  $('article-title').textContent=articleLabel(article.heading);$('article-body').textContent=latinDigits(article.body);
+  const q='ما أحكام '+articleLabel(article.heading)+' من '+doc.title+'، وما شروط تطبيقها؟';$('ask-article').href='/?q='+encodeURIComponent(q)+'&draft=1';
+  loadSection(doc,article);document.title=articleLabel(article.heading+' · '+doc.title)+' | المكتبة النظامية';
  }else{
   requestSerial++;$('article-count').textContent='المادة المطلوبة غير متاحة في هذه النسخة. اختر مادة من القائمة.';
  }
@@ -121,6 +126,7 @@ document.addEventListener('click',event=>{
 });
 addEventListener('popstate',()=>{if(manifest)render(true);});
 async function copy(button,value,original){
+ value=articleLabel(value);
  try{await navigator.clipboard.writeText(value);button.textContent='تم النسخ ✓';}catch{button.textContent='تعذّر النسخ؛ انسخ النص يدويًا';}
  setTimeout(()=>{button.textContent=original;},2000);
 }
@@ -133,10 +139,13 @@ function paintTheme(){$('theme').textContent=isDark()?'الوضع الفاتح':
 paintTheme();$('theme').onclick=()=>{root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme);}catch{}paintTheme();};
 
 function collectionView(){const v=new URLSearchParams(location.search).get('view');return ['decisions','gazette'].includes(v)?v:'articles';}
-function collectionRecords(){return collectionView()==='gazette'?inventory.gazette_issues:inventory.decisions;}
+function currentType(){const p=new URLSearchParams(location.search);if(collectionView()==='gazette')return 'gazette';if(collectionView()==='decisions')return ['decision','decree'].includes(p.get('type'))?p.get('type'):'instruments';return ['law','regulation','rules','organization'].includes(p.get('type'))?p.get('type'):'all';}
+function collectionRecords(){if(collectionView()==='gazette')return inventory.gazette_issues;const type=currentType();return inventory.decisions.filter(r=>type==='instruments'||(type==='decree'?r.kind==='مرسوم':r.kind!=='مرسوم'));}
+$('document-type').addEventListener('change',()=>{const type=$('document-type').value,view=type==='gazette'?'gazette':['decision','decree','instruments'].includes(type)?'decisions':null;navigate(urlFor({view,type:type==='all'?null:type,doc:null,record:null,article:null,within:null,search:null,category:null}));});
 function collectionTitle(){return collectionView()==='gazette'?'إصدارات أم القرى':collectionView()==='decisions'?'القرارات وأدوات الإصدار':'الوثائق المتاحة';}
 function renderCollectionChrome(){
  const view=collectionView();
+ $('document-type').value=currentType();
  for(const a of document.querySelectorAll('[data-view]')){
   const active=a.dataset.view===view;if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
  }
@@ -144,7 +153,7 @@ function renderCollectionChrome(){
  $('search-label').textContent=view==='articles'?'ابحث باسم الوثيقة أو في نصوص المواد':view==='decisions'?'ابحث باسم القرار أو رقمه المسجل':'ابحث برقم العدد أو الوثائق المرتبطة بشواهده';
  $('search').placeholder=view==='articles'?'مثل: الشراء المباشر، الإعارة، المادة 32':view==='decisions'?'مثل: مكافأة مباشرة الأموال العامة، 835':'مثل: 5180، نظام العمل، التخصيص';
  $('collection-note').textContent=view==='articles'?'هذه مكتبة المواد المؤهلة في نسخة الموقع. لا تشمل كل ملفات المستودع، وعدد المواد المتاحة لا يثبت اكتمال الوثيقة أو حداثتها أو سريانها على واقعتك.':view==='decisions'?'هذا فهرس للقرارات وأدوات الإصدار المؤرشفة. إدراج قرار هنا يتيح الوصول إلى سجله ومصدره؛ لا يجعله مؤهلًا لتوليد الأحكام، ولا يثبت اكتمال مرفقاته أو حداثته أو نفاذه.':'هذه أعداد أم القرى الممثلة بملفات أو شواهد في الأرشيف، وليست أرشيفًا شاملًا للجريدة. قد يكون المتاح صور صفحات أو مقتطفات فقط. وجود ملف PDF لا يثبت اكتمال العدد، والوثائق المرتبطة لا تمثل كل محتوياته.';
- const stats=view==='articles'?[[manifest.document_count,'وثيقة متاحة'],[manifest.section_count,'مادة مؤهلة']]:view==='decisions'?[[inventory.decisions.length,'سجل قرار وأداة إصدار']]:[[inventory.gazette_issues.length,'عددًا ممثلًا في الأرشيف'],[inventory.gazette_issues.filter(r=>r.archive_kind==='ISSUE_PDF_COMPLETENESS_UNVERIFIED').length,'أعداد لها ملفات PDF']];
+ const stats=view==='articles'?[[manifest.document_count,'وثيقة متاحة'],[manifest.section_count,'مادة مؤهلة']]:view==='decisions'?[[inventory.decisions.length,'سجل قرار وأداة إصدار']]:[[inventory.gazette_issues.length,'عددًا ممثلًا في الأرشيف'],[inventory.gazette_issues.filter(r=>r.archive_kind==='ISSUE_PDF_COMPLETENESS_UNVERIFIED').length,'أعداد لها ملفات للقراءة']];
  $('statistics').replaceChildren();for(const [value,label] of stats){const stat=el('span',undefined,'stat');stat.append(el('b',number(value)),el('span',label));$('statistics').append(stat);}
 }
 function renderCollectionCards(){
@@ -152,53 +161,81 @@ function renderCollectionCards(){
  const rows=records.filter(r=>{const text=normalizeCollection([r.title,r.number,r.issue_date_hijri,...(r.related_documents||[]).map(d=>d.title)].filter(Boolean).join(' ')).join(' ');return terms.every(t=>text.includes(t));});
  $('documents').replaceChildren();$('empty').hidden=rows.length>0;$('result-count').textContent=number(rows.length)+' من '+number(records.length)+' سجل';
  for(const record of rows){
+  const gazette=collectionView()==='gazette';
   const a=link('',urlFor({doc:null,article:null,within:null,record:record.id}),'card');a.dataset.internal='';
-  a.append(el('span',collectionView()==='gazette'?'الجريدة الرسمية · شاهد مؤرشف':record.kind,'card-category'),el('h3',record.title));
+  a.append(el('span',gazette?'أم القرى · الجريدة الرسمية':record.kind,'card-category'),el('h3',gazette?'العدد ('+record.issue_number+')':record.title));
+  if(gazette){
+   const related=el('p',undefined,'gazette-related');related.append(el('span','مرتبط بالتشريع: '));
+   const titles=record.related_documents.map(d=>d.title);
+   related.append(document.createTextNode(articleLabel(titles.length?titles.slice(0,2).join('، '):'لم يُستكمل ربط التشريع بهذا الشاهد')));
+   if(titles.length>2)related.append(el('span',' · و'+number(titles.length-2)+' أخرى'));a.append(related);
+  }
   const meta=el('div',undefined,'card-meta');
-  if(collectionView()==='gazette')meta.append(badge(record.archive_kind==='ISSUE_PDF_COMPLETENESS_UNVERIFIED'?'ملف PDF · اكتمال العدد غير مثبت':'صفحات أو شواهد فقط'));
-  else meta.append(badge('فهرس مصدر · الأهلية مستقلة'));
-  a.append(meta);const bottom=el('div',undefined,'card-bottom');bottom.append(el('span',number(record.sources.length)+' ملف مؤرشف'),el('span','السجل والمصادر ←'));a.append(bottom);$('documents').append(a);
+  meta.append(badge(gazette?(record.archive_kind==='ISSUE_PDF_COMPLETENESS_UNVERIFIED'?'ملف للعدد · اكتماله غير مثبت':'صفحات أو شواهد من العدد'):'مصدر مؤرشف'));a.append(meta);
+  const bottom=el('div',undefined,'card-bottom');bottom.append(el('span',number(record.sources.length)+' مصدر متاح'),el('span',gazette?'التشريعات والملفات ←':'عرض القرار ومصادره ←'));a.append(bottom);$('documents').append(a);
  }
 }
 function normalizeCollection(text){return normalize(text).trim().split(/\s+/).filter(Boolean);}
 function recordPanel(title){const p=el('section',undefined,'record-panel');p.append(el('h2',title));return p;}
+function relatedLink(doc){
+ if(doc.eligible_article_count){const a=link(doc.title,urlFor({record:null,view:null,type:null,doc:doc.id,article:null,within:null,search:null,category:null}),'record-document-link');a.dataset.internal='';a.append(el('span','قراءة المواد المتاحة ←'));return a;}
+ const decision=inventory.decisions.find(d=>d.id===doc.id);
+ if(decision){const a=link(doc.title,urlFor({record:doc.id,view:'decisions',type:'instruments',doc:null,search:null,category:null}),'record-document-link');a.dataset.internal='';a.append(el('span','فتح سجل القرار ←'));return a;}
+ const href=sourceLink(manifest.commit,doc.metadata_path);if(href){const a=external(doc.title,href);a.className='record-document-link';a.append(el('span','فتح سجل التشريع في الأرشيف ↗'));return a;}
+ return el('p',doc.title+' · الربط بالمصدر قيد الاستكمال','muted small');
+}
+function renderDocumentGazettes(doc){
+ let box=$('document-gazettes');if(!box){box=el('div',undefined,'document-gazettes');box.id='document-gazettes';$('document-view').insertBefore(box,$('document-view').querySelector('.reader-layout'));}
+ const issues=inventory.gazette_issues.filter(issue=>issue.related_documents.some(d=>d.id===doc.id));box.hidden=!issues.length;box.replaceChildren();
+ if(!issues.length)return;
+ box.append(el('p','أعداد أم القرى المرتبطة بشواهد هذا التشريع'));
+ for(const issue of issues){const a=link('العدد ('+issue.issue_number+')',urlFor({doc:null,article:null,within:null,record:issue.id,view:'gazette',type:'gazette',search:null,category:null}));a.dataset.internal='';box.append(a);}
+}
 function renderRecord(id,focus){
  requestSerial++;currentDoc=null;currentArticle=null;$('catalog-view').hidden=true;$('document-view').hidden=true;
- const record=collectionRecords().find(r=>r.id===id);
+ // Direct links remain valid even when a subtype filter is set.
+ const source=collectionView()==='gazette'?inventory.gazette_issues:inventory.decisions;
+ const record=source.find(r=>r.id===id);
  if(!record){$('record-view').hidden=true;$('load-error').hidden=false;$('load-error-message').textContent='السجل المطلوب غير متاح في هذه النسخة. ارجع إلى المكتبة للاطلاع على المصادر المتاحة.';return;}
- $('load-error').hidden=true;$('record-view').hidden=false;$('record-title').textContent=record.title;$('record-category').textContent=collectionTitle();$('record-back').href=urlFor({record:null});
- const gazette=collectionView()==='gazette';$('record-badges').replaceChildren(badge(gazette?(record.archive_kind==='ISSUE_PDF_COMPLETENESS_UNVERIFIED'?'اكتمال العدد غير مثبت':'صفحات أو شواهد فقط'):'فهرس مصدر · الأهلية مستقلة'));
- $('record-note').textContent=gazette?'يعرض هذا السجل ما توفر من ملفات وشواهد لهذا العدد. لا يثبت اكتمال العدد أو فهرسة جميع قراراته ولوائحه، ولا تنتقل أهلية الإجابة من شاهد النشر إلى محتوياته.':'هذا سجل تعريفي للقرار ومصادره. لا يتضمن متنًا مؤهلًا لمجرد إدراجه هنا؛ راجع المصدر والمرفقات والتعديلات والنفاذ قبل الاعتماد عليه.';
+ const gazette=collectionView()==='gazette';
+ $('load-error').hidden=true;$('record-view').hidden=false;$('record-title').textContent=articleLabel(gazette?'أم القرى · العدد ('+record.issue_number+')':record.title);$('record-category').textContent=collectionTitle();$('record-back').href=urlFor({record:null});
+ $('record-badges').replaceChildren(badge(gazette?(record.archive_kind==='ISSUE_PDF_COMPLETENESS_UNVERIFIED'?'ملف للعدد · اكتماله غير مثبت':'صفحات أو شواهد من العدد'):'سجل قرار مؤرشف'));
+ $('record-note').textContent=gazette?'الارتباطات أدناه تخص الشواهد المؤرشفة، وقد تتعلق بتعديل أو خبر نشر. لا تمثل قائمة كاملة بمحتويات العدد.':'تتوفر مصادر القرار أدناه. راجع نصه ومرفقاته وتعديلاته وتاريخ نفاذه قبل الاعتماد عليه.';
  const content=$('record-content');content.replaceChildren();
+ if(gazette){
+  const related=recordPanel('التشريعات المرتبطة بالعدد ('+record.issue_number+')');related.classList.add('record-legal-links');
+  if(record.related_documents.length){for(const d of record.related_documents)related.append(relatedLink(d));}
+  else related.append(el('p','لم يُستكمل ربط التشريع بهذا الشاهد. الملف المتاح أدناه لا يكفي وحده لتحديد كل محتويات العدد.','muted small'));
+  content.append(related);
+ }
  if(!gazette){
-  const panel=recordPanel('بيانات القرار وحدود التحقق'),grid=el('div',undefined,'metadata-grid');
-  grid.append(metadataItem('رقم الأداة المسجل',[record.number||'غير مسجل في الحقل المخصص؛ راجع عنوان المصدر']),metadataItem('تاريخ الإصدار الهجري المسجل',[record.issue_date_hijri||'غير متاح في الحقل المخصص']));
-  for(const [key,title] of [['issuance','الإصدار'],['publication','النشر'],['official_match','المقابلة'],['effectiveness','النفاذ'],['owner_approval','قبول صاحب المشروع']]){const v=record.verification[key]||{};grid.append(metadataItem(title,[statusLabel(v.status)],v.as_of?'تاريخ المراجعة المسجل: '+v.as_of:undefined));}
-  panel.append(grid);
-  const details=el('details',undefined,'source-details');details.append(el('summary','نطاقات التحقق كما سجلها المصدر'));
-  for(const [key,v] of Object.entries(record.verification))if(v.scope)details.append(el('p',({issuance:'الإصدار',publication:'النشر',official_match:'المقابلة',effectiveness:'النفاذ',owner_approval:'قبول المالك'})[key],'small'),el('p',v.scope,'raw-scope'));
-  panel.append(details);const meta=sourceLink(manifest.commit,record.metadata_path);if(meta)panel.append(external('فتح سجل القرار المؤرشف ↗',meta));
-  if(record.official_url&&/^https:\/\//.test(record.official_url)){panel.append(el('p','الرابط التالي للناشر وقد يعرض محتوى أحدث من النسخة المؤرشفة.','muted small'),external('فتح صفحة الناشر ↗',record.official_url));}content.append(panel);
+  const summary=el('div',undefined,'record-summary');
+  if(record.number){const field=el('p');field.append(el('strong','رقم الأداة'),document.createTextNode(latinDigits(record.number)));summary.append(field);}
+  if(record.issue_date_hijri){const field=el('p');field.append(el('strong','تاريخ الإصدار الهجري'),document.createTextNode(latinDigits(record.issue_date_hijri)));summary.append(field);}
+  if(summary.childNodes.length)content.append(summary);
+  if(record.official_url&&/^https:\/\//.test(record.official_url)){content.append(external('قراءة القرار من موقع الناشر ↗',record.official_url),el('p','قد تعرض صفحة الناشر نسخة أحدث من النسخة المؤرشفة.','muted small'));}
  }
- const files=recordPanel(gazette?'ملفات العدد وشواهده':'المصادر المؤرشفة');
- files.append(el('p','روابط الملفات تفتح المستودع الأساسي، وقد تتطلب صلاحية الوصول إليه.','muted small'));
- files.append(el('p',gazette?'قد تتكرر الصفحة في أكثر من ملف. هذه قائمة بالمتاح، وليست إثباتًا لاكتمال العدد.':'فتح المصدر لا يعني أن نصه مفهرس أو مؤهل للإجابة.','muted small'));
+ const files=recordPanel(gazette?'ملف العدد والصفحات المتاحة':'نسخ القرار المتاحة');
  const list=el('ul',undefined,'file-list');
- for(const file of record.sources){const href=sourceLink(manifest.commit,file.path);if(!href)continue;
-  const li=el('li');li.append(external((file.format||'ملف').toUpperCase()+' · '+file.path.split('/').pop()+' ↗',href));
-  li.append(el('small',file.path));
-  if(file.basis)li.append(el('small',file.basis==='archive_path'?'ارتباط رقم العدد مبني على مسار الأرشيف؛ لا يعد مقابلة مستقلة.':'ارتباط رقم العدد من سجل النشر المحفوظ؛ راجع نطاق الدليل.'));
-  const proof=file.evidence_path&&file.evidence_path!==file.path?sourceLink(manifest.commit,file.evidence_path):null;if(proof)li.append(external('سجل ربط الشاهد بالعدد',proof));
-  const details=el('details',undefined,'source-details');details.append(el('summary','بصمة الملف المسجلة'),el('p',file.sha256,'record-source-fingerprint'));li.append(details);list.append(li);
+ const sorted=[...record.sources].sort((a,b)=>(a.format==='pdf'?-1:0)-(b.format==='pdf'?-1:0)||a.path.localeCompare(b.path));
+ for(const file of sorted){const href=sourceLink(manifest.commit,file.path);if(!href)continue;
+  const li=el('li');li.append(external(fileLabel(file,gazette?record.issue_number:null)+' ↗',href));
+  const proof=file.evidence_path&&file.evidence_path!==file.path?sourceLink(manifest.commit,file.evidence_path):null;
+  if(proof)li.append(el('small','رقم العدد مرتبط بسجل نشر محفوظ في الأرشيف.'));
+  list.append(li);
  }
- files.append(list);if(!record.sources.length)files.append(el('p','لا يوجد ملف مصدر مباشر في هذا السجل؛ راجع بيانات الوثيقة.'));content.append(files);
- if(gazette&&record.related_documents.length){
-  const related=recordPanel('وثائق مرتبطة بالشواهد');related.append(el('p','هذه علاقات مسجلة إلى الملفات المتاحة، وليست حصرًا لمحتويات العدد.','muted small'));const links=el('div',undefined,'record-relations');
-  for(const d of record.related_documents){const href=d.eligible_article_count?urlFor({record:null,view:null,doc:d.id,search:null,category:null}):sourceLink(manifest.commit,inventory.decisions.find(x=>x.id===d.id)?.metadata_path);
-   if(href){const a=link(d.title,href,'quiet');if(d.eligible_article_count)a.dataset.internal='';else{a.target='_blank';a.rel='noopener noreferrer';}links.append(a);}else links.append(el('span',d.title+' · متن غير متاح في مكتبة المواد','small muted'));}
-  related.append(links);content.append(related);
+ files.append(list);files.append(el('p','روابط الأرشيف قد تتطلب صلاحية الوصول إلى المستودع.','muted small'));
+ if(!record.sources.length)files.append(el('p','لا توجد نسخة مباشرة مرتبطة بهذا السجل حتى الآن.'));content.append(files);
+ const details=el('details',undefined,'verification');details.append(el('summary',gazette?'تفاصيل التوثيق وحدود الربط':'توثيق القرار وحدود التحقق'));
+ if(gazette){details.append(el('p','قد تتكرر الصفحة في أكثر من ملف. لا يثبت توفر الملفات اكتمال العدد أو فهرسة جميع ما نُشر فيه.','muted small'));}
+ else{
+  const grid=el('div',undefined,'metadata-grid');
+  for(const [key,title] of [['issuance','الإصدار'],['publication','النشر'],['official_match','المقابلة'],['effectiveness','النفاذ'],['owner_approval','قبول صاحب المشروع']]){const v=record.verification[key]||{};grid.append(metadataItem(title,[statusLabel(v.status)],v.as_of?'تاريخ المراجعة المسجل: '+v.as_of:undefined));}details.append(grid);
+  if(record.number_basis==='title_transcription')details.append(el('p','رقم الأداة منقول من عنوان السجل، ولا يُعد توثيقًا مستقلاً للإصدار.','muted small'));
+  const meta=sourceLink(manifest.commit,record.metadata_path);if(meta)details.append(external('فتح سجل التوثيق في الأرشيف',meta));
  }
- document.title=record.title+' | المكتبة النظامية';if(focus){$('record-title').focus({preventScroll:true});window.scrollTo(0,0);}
+ content.append(details);document.title=articleLabel(record.title)+' | المكتبة النظامية';
+ if(focus){$('record-title').focus({preventScroll:true});window.scrollTo(0,0);}
 }
 async function start(){
  $('catalog-view').hidden=true;
@@ -209,7 +246,7 @@ async function start(){
   inventory=await checkedInventory(await ir.text(),manifest);
   for(const [id,name] of CATEGORIES)if(id!=='all'&&docs.some(d=>d.category===id)){const option=el('option',name);option.value=id;$('category').append(option);}
   $('statistics').replaceChildren();for(const [value,label] of [[manifest.document_count,'وثيقة متاحة'],[manifest.section_count,'مادة مؤهلة']]){const stat=el('span',undefined,'stat');stat.append(el('b',number(value)),el('span',label));$('statistics').append(stat);}
-  $('snapshot').append(document.createTextNode('نسخة المكتبة: '),external(manifest.commit.slice(0,8),'https://github.com/ahzh999-rgb/saudi-legislation/tree/'+manifest.commit),document.createTextNode(' · رقم النسخة لا يحدد تاريخ المراجعة القانونية.'));
+  $('snapshot').append(document.createTextNode('نسخة المكتبة: '),external('عرض بيانات النسخة','https://github.com/ahzh999-rgb/saudi-legislation/tree/'+manifest.commit),document.createTextNode(' · رقم النسخة لا يحدد تاريخ المراجعة القانونية.'));
   $('load-state').hidden=true;render();
  }catch{$('load-state').hidden=true;$('catalog-view').hidden=true;$('document-view').hidden=true;$('record-view').hidden=true;$('load-error').hidden=false;$('load-error-message').textContent='تعذّر تحميل نسخة مكتبة متطابقة. تحقق من الاتصال ثم أعد المحاولة؛ لن نعرض بيانات لم يكتمل التحقق منها.';}
 }
