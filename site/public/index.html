@@ -22,8 +22,12 @@
   --quote:#1f2924; --warn-bg:#3a3010; --warn-line:#c99a1e; --warn-fg:#f4dc8f; --err:#e07a68; color-scheme:dark}
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.8;direction:rtl;padding-inline:16px;padding-block:28px 48px}
-.wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:30px}
+body{margin:0;min-height:100svh;background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.8;direction:rtl;padding-inline:16px;padding-block:28px 48px}
+.wrap{width:100%;max-width:1120px;min-height:calc(100svh - 76px);margin:0 auto;display:flex;flex-direction:column;gap:24px}
+.workspace{width:100%;max-width:960px;margin:0 auto;flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;padding:32px 0}
+.composer-title{font-family:"Noto Naskh Arabic",serif;font-size:1.7rem;text-align:center;margin:0 0 4px}
+form.composer{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 12px 40px rgba(15,60,40,.06)}
+form .label{text-align:center;font-size:1rem;color:var(--fg)}
 header{display:flex;gap:14px;align-items:center}
 header .titles{flex:1;min-width:0}
 .theme{flex:none;align-self:flex-start;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:6px 12px;font-size:.85rem}
@@ -34,18 +38,15 @@ h1{font-family:"Noto Naskh Arabic",serif;font-size:1.65rem;line-height:1.35;marg
 .notice{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-line);border-inline-start:5px solid var(--warn-line);border-radius:10px;padding:12px 14px;font-size:.95rem;line-height:1.7;display:flex;gap:10px}
 .notice .ico{flex:none;font-size:1.2rem;line-height:1.4}
 form{display:flex;flex-direction:column;gap:10px}
-textarea{width:100%;min-height:150px;resize:vertical;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+textarea{width:100%;min-height:260px;resize:vertical;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;font-size:1.1rem;line-height:1.9}
 textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
-.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.row{display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap}
+.row .primary{min-width:140px}
+.hint{text-align:center}
 button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transparent;padding:9px 20px}
 .primary{background:var(--accent);color:var(--accent-fg);font-weight:600}
 .primary:disabled{opacity:.55;cursor:default}
 .ghost{background:transparent;color:var(--muted);border-color:var(--line)}
-.groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;margin-top:6px}
-.group{display:flex;flex-direction:column;gap:6px;min-width:0}
-.group h2{margin:0;font-size:.82rem;font-weight:600;color:var(--accent);letter-spacing:.02em}
-.examples{display:flex;flex-wrap:wrap;gap:6px}
-.chip{background:var(--accent-soft);color:var(--fg);font-size:.88rem;padding:6px 12px;border-radius:999px;border:0;text-align:right}
 .label{font-size:.8rem;color:var(--muted);letter-spacing:.02em}
 .status{color:var(--muted);font-size:.92rem}
 .loading{display:flex;gap:10px;align-items:center;color:var(--muted)}
@@ -55,9 +56,6 @@ button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transpare
 .after{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-top:10px}
 .basis{margin:0;font-size:.88rem;color:var(--muted);flex:1;min-width:0}
 .basis strong{color:var(--fg);font-weight:600}
-.chip.on{background:var(--accent);color:var(--accent-fg)}
-.chip.on::before{content:"✓ "}
-.group h2 .gi{margin-inline-end:6px}
 .primary .spin{width:14px;height:14px;border-color:color-mix(in srgb,var(--accent-fg) 35%,transparent);border-top-color:var(--accent-fg);display:inline-block;vertical-align:-2px;margin-inline-end:8px}
 .hint{font-size:.82rem;color:var(--muted)}
 .msg{border:1px solid var(--line);border-inline-start:4px solid var(--err);background:var(--surface);border-radius:10px;padding:12px 14px}
@@ -69,22 +67,21 @@ footer p{margin:0}
 .howto{font-size:.9rem;color:var(--muted)}
 .howto summary{cursor:pointer;color:var(--accent);font-weight:600}
 .howto ol{margin:8px 0 0;padding-inline-start:22px;display:flex;flex-direction:column;gap:4px}
-.meta{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;color:var(--muted);margin-top:8px}
 .tag{display:inline-block;font-size:.75rem;font-weight:600;border-radius:999px;padding:1px 9px;margin-inline-start:6px;vertical-align:1px}
 .tag.new{background:var(--accent);color:var(--accent-fg)}
 .tag.old{background:var(--line);color:var(--fg)}
 .basis ul{margin:4px 0 0;padding-inline-start:18px}
 .basis li{margin:2px 0}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-.fb{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:10px}
-.fb button{background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:3px 12px;font-size:.85rem}
-.follow{margin-top:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .answer details.q{margin:8px 0}
 .answer details.q summary{cursor:pointer;font-size:.88rem;color:var(--accent)}
-.recent{display:flex;flex-direction:column;gap:6px}
 @media (max-width:560px){
   body{padding-block:18px 36px}
-  .wrap{gap:24px}
+  .wrap{gap:20px;min-height:calc(100svh - 54px)}
+  .workspace{padding:18px 0 28px}
+  form.composer{padding:18px;border-radius:18px}
+  textarea{min-height:190px;padding:16px;font-size:1rem}
+  .composer-title{font-size:1.45rem}
   header{gap:10px;align-items:flex-start}
   .seal{width:38px;height:38px;font-size:17px}
   h1{font-size:1.2rem;line-height:1.45}
@@ -93,8 +90,6 @@ footer p{margin:0}
   .theme{padding:4px 10px;font-size:.78rem}
   .notice{font-size:.88rem;padding:10px 12px}
   .answer{padding:14px 16px}
-  .groups{gap:18px}
-  .chip{font-size:.85rem}
 }
 .copy{background:var(--accent-soft);color:var(--fg);font-size:.85rem;padding:5px 14px}
 .answer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-width:0;overflow-wrap:anywhere}
@@ -109,7 +104,19 @@ footer p{margin:0}
 details.sources{font-size:.9rem;color:var(--muted)}
 details.sources summary{cursor:pointer}
 details.sources li{margin:3px 0}
-footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:4px}
+footer{margin-top:auto;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.footer-links{display:flex;justify-content:center;gap:4px 16px;flex-wrap:wrap}
+.footer-links button{padding:4px 0;background:transparent;color:var(--accent);font-size:.9rem;border-radius:3px}
+.footer-links button:hover{text-decoration:underline}
+.policy{width:min(640px,calc(100% - 32px));max-height:80svh;padding:26px;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--fg);line-height:1.9}
+.policy::backdrop{background:rgba(10,25,18,.45)}
+.policy h2{font-family:"Noto Naskh Arabic",serif;margin:0;font-size:1.45rem}
+.policy p{margin:12px 0}
+.policy a{color:var(--accent)}
+.policy-head{display:flex;justify-content:space-between;align-items:center;gap:16px}
+.policy-close{background:var(--accent-soft);color:var(--fg);padding:4px 12px}
+button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+body:has(dialog[open]){overflow:hidden}
 </style>
 
 </head>
@@ -120,30 +127,25 @@ footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padd
     <div class="titles">
       <h1>المستشار النظامي للمتعاملين مع الجهات الحكومية</h1>
       <p class="sub">إجابة فورية من نصوص الأنظمة واللوائح السعودية: المنافسات والمشتريات، المالية العامة، الموارد البشرية، القضاء الإداري.</p>
-      <p class="updated">آخر تحديث للمكتبة: 12 أكتوبر 2026<br>تحتوي المكتبة على <span class="count" id="count">59 نظاماً ولائحة وقراراً</span> بنصها الكامل</p>
+      <p class="updated">المصدر: مكتبة التشريعات السعودية · <span class="count" id="count">جارٍ تحميل التغطية…</span></p>
     </div>
     <button type="button" class="theme" id="theme" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
   </header>
 
+  <main class="workspace">
   <div class="notice" role="note"><span class="ico" aria-hidden="true">⚠</span><div><strong>تنبيه: الإجابة استرشادية.</strong> تُبنى من نصوص المكتبة، وليست رأياً قانونياً ملزماً. راجِع النص الأصلي أو مختصاً قبل أي إجراء.</div></div>
 
-  <details class="howto">
-    <summary>كيف تستخدم الأداة؟</summary>
-    <ol>
-      <li>اكتب سؤالك بكلماتك، أو اختر سؤالاً من الأسئلة الشائعة.</li>
-      <li>اضغط «اسأل» أو Enter، وانتظر ثوانيَ حتى تُكتب الإجابة.</li>
-      <li>راجع السند والمادة المذكورة، ثم انسخ الإجابة أو شاركها.</li>
-    </ol>
-  </details>
 
-  <form id="f">
-    <label class="label" for="q">اكتب سؤالك</label>
+
+  <form id="f" class="composer" aria-labelledby="composer-title">
+    <h2 class="composer-title" id="composer-title">ما استفسارك النظامي؟</h2>
+    <label class="label" for="q">اكتب سؤالك وتفاصيله هنا</label>
     <textarea id="q" placeholder="مثال: ما مسوغات صرف المستخلص الختامي؟" maxlength="1500"></textarea>
     <div class="row">
       <button class="primary" id="ask" type="submit">اسأل</button>
       <button class="ghost" id="stop" type="button" hidden>إيقاف</button>
       <button class="ghost" id="clear" type="button">سؤال جديد</button>
-      <span class="status" id="status"></span>
+      <span class="status" id="status" role="status" aria-live="polite"></span>
     </div>
     <span class="hint">اضغط Enter للإرسال، وShift+Enter لسطر جديد.</span>
   </form>
@@ -157,34 +159,39 @@ footer{font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padd
         <button type="button" class="copy" id="share">مشاركة</button>
       </div>
     </div>
-    <div class="follow" id="follow" hidden></div>
-    <div class="fb" id="fb" hidden>
-      <span>هل كانت الإجابة مفيدة؟</span>
-      <button type="button" data-v="yes">نعم 👍</button>
-      <button type="button" data-v="no">لا 👎</button>
-    </div>
-    <div class="meta" id="meta" hidden></div>
-    <details class="sources" id="srcBox" hidden><summary>النصوص التي رُجع إليها</summary><ol id="srcList"></ol></details>
   </section>
-
-  <div class="recent" id="recentBox" hidden>
-    <p class="label" style="margin:0">أسئلتك الأخيرة</p>
-    <div class="examples" id="recent"></div>
-  </div>
-
-  <div class="groups" id="examples">
-    <p class="label" style="grid-column:1/-1;margin:0">أسئلة شائعة</p>
-    <div class="group"><h2><span class="gi" aria-hidden="true">📋</span>المنافسات والمشتريات</h2><div class="examples"><button type="button" class="chip">متى يجوز الشراء المباشر؟</button><button type="button" class="chip">كم نسبة الضمان الابتدائي والنهائي في نظام المنافسات الجديد؟</button><button type="button" class="chip">ما مدة سريان العروض في المنافسات؟</button><button type="button" class="chip">كيف أتظلم من قرار ترسية المنافسة؟</button></div></div>
-    <div class="group"><h2><span class="gi" aria-hidden="true">💰</span>العقود والمستخلصات</h2><div class="examples"><button type="button" class="chip">ما مسوغات صرف المستخلص الختامي؟</button><button type="button" class="chip">ما غرامة التأخير على المقاول؟</button><button type="button" class="chip">متى تصرف الدفعة المقدمة للمتعاقد وكم نسبتها؟</button><button type="button" class="chip">ماذا يحدث إذا تعطلت البوابة الإلكترونية (منصة اعتماد)؟</button></div></div>
-    <div class="group"><h2><span class="gi" aria-hidden="true">👤</span>الموظفون</h2><div class="examples"><button type="button" class="chip">كم مدة الإجازة الاضطرارية للموظف؟</button><button type="button" class="chip">متى يستحق الموظف بدل العمل خارج وقت الدوام؟</button><button type="button" class="chip">ما العقوبات التأديبية في نظام الانضباط الوظيفي؟</button></div></div>
-    <div class="group"><h2><span class="gi" aria-hidden="true">⚖️</span>التظلم والنزاهة</h2><div class="examples"><button type="button" class="chip">ما مدة رفع الدعوى أمام ديوان المظالم ضد قرار إداري؟</button><button type="button" class="chip">كيف أبلغ عن فساد وهل أحصل على حماية؟</button></div></div>
-  </div>
+  </main>
 
   <footer>
-    <p>الإجابات تُكتب آلياً بواسطة Claude من نصوص الأنظمة المنشورة رسمياً، وتظهر تحت كل إجابة النصوص التي بُنيت عليها.</p>
-    <p><strong>هذه الأداة لا تغني عن الرجوع إلى النص الرسمي المعتمد أو إلى جهة مختصة.</strong></p>
+    <nav class="footer-links" aria-label="الخصوصية والاستخدام">
+      <button type="button" data-policy="privacy">الخصوصية</button>
+      <button type="button" data-policy="terms">شروط الاستخدام</button>
+      <button type="button" data-policy="limits">حدود الإجابات</button>
+    </nav>
+    <p>المستشار النظامي · أداة بحثية مساعدة، وليست جهة رسمية أو بديلاً عن الاستشارة المتخصصة.</p>
   </footer>
 </div>
+
+
+<dialog class="policy" id="privacy" aria-labelledby="privacy-title">
+  <div class="policy-head"><h2 id="privacy-title">الخصوصية</h2><button class="policy-close" type="button" data-close aria-label="إغلاق سياسة الخصوصية">إغلاق</button></div>
+  <p>يُعالج الموقع طلبك عبر Cloudflare، ويُرسل السؤال والنصوص النظامية المختارة إلى Anthropic لتوليد الإجابة. لا تُدخل معلومات شخصية أو بيانات سرية في سؤالك.</p>
+  <p>تخضع معالجة البيانات والسجلات التشغيلية والاحتفاظ بها لسياسات مقدمي الخدمة المشار إليها أدناه.</p>
+  <p>يُحفظ تفضيل الوضع الفاتح أو الداكن محلياً في متصفحك.</p>
+  <p>للتفاصيل: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">خصوصية Cloudflare</a> و<a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener noreferrer">خصوصية Anthropic</a>.</p>
+</dialog>
+<dialog class="policy" id="terms" aria-labelledby="terms-title">
+  <div class="policy-head"><h2 id="terms-title">شروط الاستخدام</h2><button class="policy-close" type="button" data-close aria-label="إغلاق شروط الاستخدام">إغلاق</button></div>
+  <p>الموقع أداة بحثية للمساعدة في فهم النصوص المتاحة، وليس جهة حكومية أو مصدراً رسمياً للتشريعات.</p>
+  <p>الإجابات آلية وقد تكون ناقصة أو غير دقيقة. راجع المصدر الرسمي وتاريخ نفاذ النص، واستعن بمختص قبل اتخاذ إجراء يرتب حقوقاً أو التزامات.</p>
+  <p>استخدم الموقع للأسئلة النظامية، وتجنّب إرسال معلومات شخصية أو وثائق سرية.</p>
+</dialog>
+<dialog class="policy" id="limits" aria-labelledby="limits-title">
+  <div class="policy-head"><h2 id="limits-title">حدود الإجابات</h2><button class="policy-close" type="button" data-close aria-label="إغلاق حدود الإجابات">إغلاق</button></div>
+  <p>يعتمد البحث على المواد المؤهلة والمفهرسة في نسخة محددة من مكتبة التشريعات؛ لا تشمل النتائج بالضرورة جميع الأنظمة أو أحدث تعديلاتها.</p>
+  <p>أهلية النص للبحث لا تثبت انطباقه على واقعتك. راجع اسم الوثيقة ورقم المادة والمصدر، وحدد تاريخ الواقعة وصفة الأطراف عند الحاجة.</p>
+  <p>عدم ظهور مادة في الإجابة لا يعني عدم وجودها في المكتبة أو عدم وجود حكم نظامي للمسألة.</p>
+</dialog>
 
 <script>
 (function(){
@@ -234,7 +241,7 @@ async function post(path,body){
   if(!r.ok){let e={};try{e=await r.json();}catch{}const err=new Error(e.error||'http');err.code=e.error||'http';throw err;}
   return r;
 }
-async function streamAnswer(q,onText,onEvidence){
+async function streamAnswer(q,onText){
   const r=await post('/api/ask',{question:q,snapshot:LIB.snapshot});
   const rd=r.body.getReader(), dec=new TextDecoder(); let buf='', text='', stopReason='', evidence=null;
   for(;;){
@@ -244,7 +251,7 @@ async function streamAnswer(q,onText,onEvidence){
       const line=buf.slice(0,i).trim(); buf=buf.slice(i+1);
       if(!line.startsWith('data:'))continue;
       let ev; try{ev=JSON.parse(line.slice(5));}catch{continue;}
-      if(ev.type==='evidence'){evidence=ev;onEvidence(ev);}
+      if(ev.type==='evidence'){evidence=ev;}
       else if(ev.type==='content_block_delta'&&ev.delta&&ev.delta.type==='text_delta'){text+=ev.delta.text;onText(text);}
       else if(ev.type==='message_delta'&&ev.delta)stopReason=ev.delta.stop_reason||stopReason;
       else if(ev.type==='error'){const err=new Error('upstream');err.code=ev.error&&ev.error.type==='overloaded_error'?'busy':'upstream';throw err;}
@@ -253,7 +260,6 @@ async function streamAnswer(q,onText,onEvidence){
   return {text,truncated:stopReason==='max_tokens',evidence};
 }
 
-const count=(n,one,two,few,many)=>n===1?one:n===2?two:n+' '+(n<=10?few:many);
 // سؤال المتابعة المقترح يأتي في آخر سطر من الإجابة
 function splitFollow(text){
   const m=text.match(/\n[\s*_>-]*سؤال\s*(?:ال)?متابعة[^:\n]*[:：][*_\s]*(.+?)[*_\s]*$/);
@@ -269,42 +275,24 @@ function foldQuotes(el){
     b.replaceWith(d);d.appendChild(b);
   });
 }
-// الجلسة: العداد وآخر الأسئلة
-const ss={get(k,d){try{const v=sessionStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}},set(k,v){try{sessionStorage.setItem(k,JSON.stringify(v));}catch{}}};
-function renderRecent(){
-  const r=ss.get('recent',[]);$('recentBox').hidden=!r.length;
-  $('recent').innerHTML=r.map(q=>'<button type="button" class="chip">'+esc(q)+'</button>').join('');
-  $('recent').querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>pick(b)));
-}
-
 $('f').addEventListener('submit', async e=>{
   e.preventDefault();
   const q=$('q').value.trim(); if(!q||!LIB)return;
   ctrl=new AbortController(); ask.disabled=true; stop.hidden=false; ask.innerHTML='<span class="spin"></span>جاري…';
-  $('out').hidden=false; ['srcBox','after','follow','fb','meta'].forEach(id=>$(id).hidden=true); lastText=''; lastQ=q;
+  $('out').hidden=false; ['after'].forEach(id=>$(id).hidden=true); lastText=''; lastQ=q;
   const t0=performance.now();
   const loading=t=>{$('answer').innerHTML='<div class="loading" role="status"><span class="spin"></span>'+t+'</div>';};
   try{
     status.textContent=''; loading('جاري البحث في الأنظمة…');
-    $('srcList').textContent='';
-    const res=await streamAnswer(q,text=>{$('answer').innerHTML=md(splitFollow(text).body);},evidence=>{
-      $('srcList').innerHTML=evidence.sources.map(source=>'<li>'+esc(source.title)+' — '+esc(source.heading)+'</li>').join('');
-    });
-    const {body,follow}=splitFollow(res.text);
+    const res=await streamAnswer(q,text=>{$('answer').innerHTML=md(splitFollow(text).body);});
+    const {body}=splitFollow(res.text);
     $('answer').innerHTML=md(body)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
     foldQuotes($('answer'));
     const sources=res.evidence?.sources||[];
     $('basis').innerHTML=sources.length?'المواد المرفقة للإجابة:<ul>'+sources.map(source=>'<li><strong>'+esc(source.title+'، '+source.heading)+'</strong>'+(source.temporal?.state==='FUTURE_RECORDED'?'<span class="tag new">لم يبدأ نفاذه بعد وفق التاريخ المسجل</span>':'')+'</li>').join('')+'</ul>':'';
     lastBasis=sources.map(source=>source.title+'، '+source.heading).join('؛ ');
     lastText=body.replace(/\*\*/g,'').trim()+(lastBasis?'\n\nالمواد المرفقة للإجابة: '+lastBasis:'')+'\n'+location.origin;
-    if(follow){$('follow').innerHTML='<span class="label">قد يهمك أيضاً</span><button type="button" class="chip">'+esc(follow)+'</button>';
-      $('follow').querySelector('.chip').addEventListener('click',e=>{pick(e.target);$('f').requestSubmit();});$('follow').hidden=false;}
-    const n=ss.get('n',0)+1; ss.set('n',n);
-    ss.set('recent',[q,...ss.get('recent',[]).filter(x=>x!==q)].slice(0,3)); renderRecent();
-    const secsTook=Math.max(1,Math.round((performance.now()-t0)/1000));
-    $('meta').innerHTML='<span>تم الرد خلال '+count(secsTook,'ثانية واحدة','ثانيتين','ثوانٍ','ثانية')+'</span><span>أجبت عن '+count(n,'سؤال واحد','سؤالين','أسئلة','سؤالاً')+' في هذه الجلسة</span>';
-    $('fb').querySelectorAll('button').forEach(b=>{b.disabled=false;b.hidden=false;}); $('fb').firstElementChild.textContent='هل كانت الإجابة مفيدة؟';
-    ['after','fb','meta'].forEach(id=>$(id).hidden=false); $('srcBox').hidden=!sources.length; status.textContent='';
+    $('after').hidden=false; status.textContent='';
   }catch(err){
     status.textContent='';
     if(err.name==='AbortError'){$('answer').innerHTML=msg('أُوقفت الإجابة.','اضغط «اسأل» لإعادة المحاولة.','info');}
@@ -327,12 +315,6 @@ $('share').addEventListener('click',async()=>{
   try{await navigator.clipboard.writeText(text+'\n'+url);}catch{}
   b.textContent='نُسخ الرابط والنص ✓';setTimeout(()=>{b.textContent='مشاركة';},2000);
 });
-// هل كانت الإجابة مفيدة؟
-$('fb').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
-  fetch('/api/feedback',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({question:lastQ,vote:b.dataset.v,basis:lastBasis})}).catch(()=>{});
-  $('fb').querySelectorAll('button').forEach(x=>x.hidden=true);
-  $('fb').firstElementChild.textContent=b.dataset.v==='yes'?'شكراً لك.':'شكراً، سنراجع هذه الإجابة لتحسينها.';
-}));
 $('copy').addEventListener('click',async()=>{
   const b=$('copy');
   try{await navigator.clipboard.writeText(lastText);}
@@ -346,15 +328,18 @@ const paint=()=>{themeBtn.textContent=isDark()?'الوضع الفاتح':'الو
 try{const t=localStorage.getItem('theme');if(t)root.dataset.theme=t;}catch{}
 paint();
 themeBtn.addEventListener('click',()=>{root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme);}catch{}paint();});
-const chips=document.querySelectorAll('.chip');
-function pick(b){document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));b.classList.add('on');$('q').value=b.textContent;grow();$('q').focus();}
-chips.forEach(b=>b.addEventListener('click',()=>pick(b)));
-renderRecent();
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(!ask.disabled)$('f').requestSubmit();}});
 // الحقل يتمدد مع الكتابة الطويلة
-const grow=()=>{const q=$('q');q.style.height='auto';q.style.height=Math.min(q.scrollHeight+2,innerHeight*0.6)+'px';};
-$('q').addEventListener('input',()=>{grow();chips.forEach(c=>c.classList.toggle('on',c.textContent===$('q').value));});
-$('clear').addEventListener('click',()=>{if(ctrl)ctrl.abort();$('q').value='';grow();$('out').hidden=true;chips.forEach(c=>c.classList.remove('on'));$('q').focus();});
+const grow=()=>{const q=$('q'),minimum=innerWidth<=560?190:260;q.style.height='auto';q.style.height=Math.max(minimum,Math.min(q.scrollHeight+2,innerHeight*0.6))+'px';};
+$('q').addEventListener('input',grow);
+$('clear').addEventListener('click',()=>{if(ctrl)ctrl.abort();$('q').value='';grow();$('out').hidden=true;$('q').focus();});
+document.querySelectorAll('[data-policy]').forEach(button=>button.addEventListener('click',()=>{
+  const dialog=document.getElementById(button.dataset.policy);if(dialog)dialog.showModal();
+}));
+document.querySelectorAll('dialog.policy').forEach(dialog=>{
+  dialog.querySelector('[data-close]').addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('click',event=>{if(event.target===dialog)dialog.close();});
+});
 })();
 </script>
 </body>
