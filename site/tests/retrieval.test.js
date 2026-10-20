@@ -96,7 +96,7 @@ test('Worker selects authoritative sections, returns their provenance before str
         const body=index.rows[source.id].body;assert.ok(payloads[i].messages[0].content.includes(body));
         assert.equal(source.body_sha256,createHash('sha256').update(body).digest('hex'));
       }
-      assert.equal(payloads[i].temperature,0);
+      assert.equal(payloads[i].temperature,undefined);
       assert.ok(payloads[i].system.includes('لم يدخل حيز النفاذ بعد'));
       assert.ok(payloads[i].system.includes('لم أسترجع نصاً كافياً'));
     }
@@ -130,4 +130,16 @@ test('context budgets omit whole sections explicitly rather than truncating cond
   const result=selectEvidence(index,questions[1],'2026-10-20',{maxArticles:1});
   assert.equal(result.rows.length,1);assert.ok(result.omitted.length);
   assert.equal(result.rows[0].body,index.rows[result.rows[0].id].body);
+});
+
+test('provider failures expose only status and stage, never provider details or credentials',async()=>{
+  const previous=globalThis.fetch;
+  globalThis.fetch=async()=>Response.json({error:{type:'invalid_request_error',message:'PRIVATE_PROVIDER_DETAIL'}},{status:400});
+  try{
+    const response=await worker.fetch(request(questions[0]),envFor());
+    assert.equal(response.status,502);
+    const result=await response.json();
+    assert.equal(result.stage,'provider');assert.equal(result.upstream_status,400);
+    assert.ok(result.request_id);assert.ok(!JSON.stringify(result).includes('PRIVATE_PROVIDER_DETAIL'));
+  }finally{globalThis.fetch=previous;}
 });
