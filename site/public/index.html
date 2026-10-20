@@ -30,6 +30,7 @@ form.composer{background:var(--surface);border:1px solid var(--line);border-radi
 form .label{text-align:center;font-size:1rem;color:var(--fg)}
 header{display:flex;gap:14px;align-items:center}
 header .titles{flex:1;min-width:0}
+.library-link{display:inline-block;margin-top:8px;color:var(--accent);font-size:.9rem;text-underline-offset:4px}
 .theme{flex:none;align-self:flex-start;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:6px 12px;font-size:.85rem}
 .updated{margin:2px 0 0;color:var(--muted);font-size:.85rem}
 .seal{flex:none;width:52px;height:52px;border-radius:50%;border:2px solid var(--seal);display:grid;place-items:center;color:var(--seal);font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:22px}
@@ -128,6 +129,7 @@ body:has(dialog[open]){overflow:hidden}
       <h1>المستشار النظامي للمتعاملين مع الجهات الحكومية</h1>
       <p class="sub">إجابة فورية من نصوص الأنظمة واللوائح السعودية: المنافسات والمشتريات، المالية العامة، الموارد البشرية، القضاء الإداري.</p>
       <p class="updated">المصدر: مكتبة التشريعات السعودية · <span class="count" id="count">جارٍ تحميل التغطية…</span></p>
+      <a class="library-link" href="/library.html">تصفّح المكتبة النظامية ←</a>
     </div>
     <button type="button" class="theme" id="theme" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
   </header>
@@ -232,7 +234,7 @@ fetch('source-manifest.json').then(r=>{if(!r.ok)throw new Error('source_unavaila
   $('count').textContent=d.document_count+' وثيقة تتضمن مواد مؤهلة للبحث';
   ask.disabled=false; status.textContent='';
   const sq=new URLSearchParams(location.search).get('q');
-  if(sq){$('q').value=sq.slice(0,1500);grow();$('f').requestSubmit();}
+  if(sq){$('q').value=sq.slice(0,1500);grow();if(new URLSearchParams(location.search).get('draft')!=='1')$('f').requestSubmit();else $('q').focus();}
 }).catch(()=>{status.textContent='';$('out').hidden=false;
   $('answer').innerHTML=msg('تعذر الوصول إلى مكتبة الأنظمة.','تحقق من اتصالك بالإنترنت، ثم اضغط «إعادة المحاولة».')+'<p><button type="button" class="ghost" onclick="location.reload()">إعادة المحاولة</button></p>';});
 

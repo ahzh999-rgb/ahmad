@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>المكتبة النظامية | المستشار النظامي</title>
+<meta name="description" content="تصفح الوثائق والمواد المؤهلة للبحث في نسخة مكتبة المستشار النظامي، واقرأ النصوص ومصادرها وحدود التحقق.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/library.css">
+</head>
+<body>
+<a class="skip" href="#main">انتقل إلى المحتوى</a>
+<div class="shell">
+<header class="topbar">
+ <a class="brand" href="/" aria-label="المستشار النظامي — الرئيسية"><span class="seal" aria-hidden="true">§</span><span>المستشار النظامي<small>للمتعاملين مع الجهات الحكومية</small></span></a>
+ <nav aria-label="التنقل الرئيسي"><a href="/">الاستفسار النظامي</a><a href="/library.html" aria-current="page">المكتبة النظامية</a></nav>
+ <button class="quiet theme" id="theme" type="button">الوضع الداكن</button>
+</header>
+<main id="main">
+ <div id="catalog-view">
+  <section class="intro" aria-labelledby="page-title">
+   <div><p class="eyebrow">اقرأ النص، واعرف مصدره</p><h1 id="page-title">المكتبة النظامية</h1><p class="lead">أنظمة ولوائح وقرارات وشواهد أم القرى، في مكان واحد. اقرأ النص، وتحقق من نطاقه ومصدره.</p></div>
+   <div class="statistics" id="statistics" aria-label="تغطية المكتبة"><span>جارٍ تحميل التغطية…</span></div>
+  </section>
+  <nav class="library-tabs" aria-label="أقسام المكتبة"><a href="/library.html" data-view="articles">الأنظمة واللوائح</a><a href="/library.html?view=decisions" data-view="decisions">القرارات وأدوات الإصدار</a><a href="/library.html?view=gazette" data-view="gazette">إصدارات أم القرى</a></nav>
+  <aside class="coverage-note"><span aria-hidden="true">ⓘ</span><p id="collection-note"><strong>هذه مكتبة المواد المؤهلة في نسخة الموقع.</strong> لا تشمل كل ملفات المستودع، وعدد المواد المتاحة لا يثبت اكتمال الوثيقة أو حداثتها أو سريانها على واقعتك.</p></aside>
+  <section class="search-panel" aria-label="البحث في المكتبة">
+   <label for="search" id="search-label">ابحث باسم الوثيقة أو في نصوص المواد</label>
+   <div class="search-row"><input id="search" type="search" maxlength="200" placeholder="مثل: الشراء المباشر، الإعارة، المادة 32" autocomplete="off"><button id="reset" type="button" class="quiet">مسح البحث</button></div>
+   <div class="filter-row" id="category-row"><label for="category">المجال</label><select id="category"><option value="all">جميع المجالات</option></select></div>
+  </section>
+  <div class="result-heading"><h2 id="collection-heading">الوثائق المتاحة</h2><p id="result-count" role="status" aria-live="polite"></p></div>
+  <div class="cards" id="documents"></div>
+  <div class="empty" id="empty" hidden><h3>لم تظهر نتائج مطابقة</h3><p>جرّب كلمة أخرى أو اختر جميع المجالات. عدم ظهور نتيجة لا يعني عدم وجود حكم نظامي أو مصدر آخر للمسألة.</p><button id="reset-empty" class="primary" type="button">عرض جميع الوثائق</button></div>
+ </div>
+ <section id="document-view" hidden aria-labelledby="document-title">
+  <a href="/library.html" id="back" class="back">← العودة إلى المكتبة</a>
+  <div class="document-heading"><p class="eyebrow" id="document-category"></p><h1 id="document-title" tabindex="-1"></h1><div id="document-badges" class="badges"></div></div>
+  <aside class="coverage-note"><span aria-hidden="true">ⓘ</span><p id="document-coverage"></p></aside>
+  <details class="verification"><summary>بيانات الوثيقة وحدود التحقق</summary><div id="document-metadata"></div><p class="muted">هذه بيانات التحقق المسجلة في المصدر. قبول صاحب المشروع لا يعادل مقابلة مستقلة، وتاريخ المراجعة ليس شهادة بحداثة النص.</p></details>
+  <div class="reader-layout">
+   <aside class="article-navigation" aria-label="مواد الوثيقة"><label for="article-search">ابحث داخل هذه الوثيقة</label><input id="article-search" type="search" maxlength="200" placeholder="كلمة أو رقم مادة" autocomplete="off"><p id="article-count" role="status" aria-live="polite"></p><div id="article-list" class="article-list"></div></aside>
+   <article class="article-reader" id="reader" aria-labelledby="article-title">
+    <div class="article-toolbar"><h2 id="article-title" tabindex="-1"></h2><button type="button" id="copy-article" class="quiet">نسخ المادة</button></div>
+    <p class="reader-hint">النص المتاح في النسخة المؤرشفة</p><div id="article-body" class="article-body"></div>
+    <div class="article-source" id="article-source" role="status" aria-live="polite"></div>
+    <div class="reader-actions"><a href="/" class="primary" id="ask-article">استفسر عن هذه المادة</a><button type="button" id="share-article" class="quiet">نسخ رابط المادة</button></div>
+    <p class="muted small">الاستفسار يفتح في صفحة المساعد للمراجعة قبل الإرسال. قراءتك للمادة لا تحسم انطباقها على الواقعة.</p>
+   </article>
+  </div>
+ </section>
+ <section id="record-view" hidden aria-labelledby="record-title"><a href="/library.html" id="record-back" class="back">← العودة إلى المكتبة</a><div class="document-heading"><p class="eyebrow" id="record-category"></p><h1 id="record-title" tabindex="-1"></h1><div id="record-badges" class="badges"></div></div><aside class="coverage-note"><span aria-hidden="true">ⓘ</span><p id="record-note"></p></aside><div id="record-content" class="record-content"></div></section>
+ <div class="load-state" id="load-state" role="status" aria-live="polite">جارٍ تحميل المكتبة والتحقق من بياناتها…</div>
+ <div class="empty" id="load-error" hidden role="alert"><h2>تعذّر تحميل المكتبة</h2><p id="load-error-message">تحقق من اتصالك ثم أعد المحاولة.</p><button type="button" id="retry" class="primary">إعادة المحاولة</button></div>
+ <noscript><p>يتطلب البحث وعرض مواد المكتبة تفعيل JavaScript في المتصفح.</p></noscript>
+</main>
+<footer><p>المستشار النظامي · أداة بحثية مساعدة، وليست جهة رسمية أو بديلًا عن الاستشارة المتخصصة.</p><a href="/">الاستفسار والخصوصية وشروط الاستخدام</a><p class="snapshot" id="snapshot"></p></footer>
+</div>
+<script type="module" src="/library.js"></script>
+</body></html>
