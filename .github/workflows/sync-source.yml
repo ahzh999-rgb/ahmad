@@ -60,6 +60,4 @@ jobs:
           lock=json.load(open('site/source-lock.json'))
           open('.tmp/pr-body.md','w').write('Update eligible article assets from '+lock['repository']+' at '+lock['commit']+'.\n\nRaw witnesses, unverified text and conflicts remain excluded. Review before merging: main may trigger existing Cloudflare deployment.\n')
           PY
-          if ! gh pr view sync/canonical-source --json number >/dev/null 2>&1; then
-            gh pr create --base main --head sync/canonical-source --title 'Update canonical legislation snapshot' --body-file .tmp/pr-body.md
-          fi
+          python site/sync_review.py --repo "$GH_REPO" --body-file .tmp/pr-body.md
