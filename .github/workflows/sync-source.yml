@@ -49,7 +49,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git switch -C sync/canonical-source
-          git add site/source-lock.json site/public/data.json site/public/source-manifest.json site/public/rules.txt site/public/s
+          git add site/public/library-inventory.json site/source-lock.json site/public/data.json site/public/source-manifest.json site/public/rules.txt site/public/s
           git commit -m 'Update eligible articles from pinned canonical source'
           if git ls-remote --exit-code --heads origin sync/canonical-source >/dev/null 2>&1; then
             git fetch origin refs/heads/sync/canonical-source:refs/remotes/origin/sync/canonical-source

@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+from library_inventory import build_inventory
 
 REPOSITORY='ahzh999-rgb/saudi-legislation'
 SITE=Path(__file__).resolve().parent
@@ -88,12 +89,14 @@ def build(source,out,update_lock=False,check=False,lock_path=None):
     for s in sections:s['snapshot']=sha;s['source_url']=f'https://github.com/{REPOSITORY}/blob/{sha}/{s["source_path"]}'
     payload={'snapshot':sha,'repository':REPOSITORY,'docs':docs}
     data=json_text(payload)
+    from legislation_data import instruments
+    inventory=json_text(build_inventory(source,instruments(),docs,sha))
     manifest={'schema_version':1,**lock,'document_count':len(docs),'section_count':len(sections),
         'coverage':'selected_display_articles_only; documents without article indexes excluded',
         'eligible_body_kinds':sorted(KINDS),'excluded_article_reason_counts':excluded,
-        'currentness_or_applicability_established':False,'data_sha256':hashlib.sha256(data.encode()).hexdigest(),
+        'currentness_or_applicability_established':False,'library_inventory_sha256':hashlib.sha256(inventory.encode()).hexdigest(),'data_sha256':hashlib.sha256(data.encode()).hexdigest(),
         'section_sha256':{str(i):hashlib.sha256(json_text(s).encode()).hexdigest() for i,s in enumerate(sections)}}
-    outputs={'data.json':data,'rules.txt':RULES,'source-manifest.json':json_text(manifest)}
+    outputs={'library-inventory.json':inventory,'data.json':data,'rules.txt':RULES,'source-manifest.json':json_text(manifest)}
     outputs.update({f's/{i}.json':json_text(s) for i,s in enumerate(sections)})
     if check:
         for name,content in outputs.items():
