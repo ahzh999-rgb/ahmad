@@ -30,5 +30,11 @@ export async function checkedInventory(raw, manifest) {
   if (!/^[a-f0-9]{64}$/.test(manifest.library_inventory_sha256 || '') || await sha256(raw) !== manifest.library_inventory_sha256) throw new Error('source_integrity');
   const inventory = JSON.parse(raw);
   if (inventory.schema_version !== 1 || inventory.snapshot !== manifest.commit || inventory.repository !== manifest.repository || !Array.isArray(inventory.decisions) || !Array.isArray(inventory.gazette_issues) || inventory.answer_eligibility_changed !== false) throw new Error('source_integrity');
+  for(const record of [...inventory.decisions,...inventory.gazette_issues])for(const file of record.sources||[]){
+    const reading=file.reading;
+    if(reading && (reading.format!=='plain_text' || typeof reading.text!=='string' || !reading.text.trim() ||
+      reading.source_sha256!==file.sha256 || reading.answer_eligibility_changed!==false ||
+      await sha256(reading.text)!==reading.sha256))throw new Error('source_integrity');
+  }
   return inventory;
 }

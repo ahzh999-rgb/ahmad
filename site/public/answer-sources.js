@@ -1,4 +1,4 @@
-import { articleLabel, referenceLabel, isRegulatoryGroup, sourceLink } from './library-core.js';
+import { articleLabel, referenceLabel, isRegulatoryGroup, sourceLink, readableFileLink } from './library-core.js';
 
 // Only explicit publisher metadata is exported. A publisher page is a
 // document-level reference, not a claim that its live bytes match the archive.
@@ -33,7 +33,11 @@ export function sourceLinks(source, snapshot) {
     links.push({ href:'/library?'+new URLSearchParams({doc:source.instrument_id,article:source.legal_key}), label:isRegulatoryGroup(source.legal_key,source.instrument_id)?'عرض الأحكام':'عرض المادة', kind:'article' });
   }
   const archive = archiveLink(source.source_url, snapshot);
-  if (archive) links.push({href:archive,label:'النسخة المؤرشفة المستخدمة',kind:'archive'});
+  if (archive) {
+    const path=decodeURIComponent(new URL(archive).pathname.split('/').slice(5).join('/'));
+    const direct=readableFileLink(snapshot,path);
+    links.push({href:direct||archive,label:direct?'فتح ملف المصدر المستخدم':/\.html$/i.test(path)?'ملف HTML المؤرشف (للتوثيق)':'النسخة المؤرشفة المستخدمة',kind:'archive'});
+  }
   for (const value of Array.isArray(source.publisher_urls) ? source.publisher_urls : []) {
     const link = publisherLink(value);
     if (link && !links.some(item => item.href === link.href)) links.push(link);

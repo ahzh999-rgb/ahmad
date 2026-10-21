@@ -73,6 +73,13 @@ export function sourceLink(snapshot,path) {
   if (!/^[a-f0-9]{40}$/.test(snapshot)||typeof path!=='string'||!path||path.startsWith('/')||path.split('/').some(p=>p==='..'||p==='.')||/[\\\u0000-\u001f]/.test(path)) return null;
   return 'https://github.com/ahzh999-rgb/saudi-legislation/blob/'+snapshot+'/'+path.split('/').map(encodeURIComponent).join('/');
 }
+export function readableFileLink(snapshot,path) {
+  // Never render raw archived HTML; only inert documents/images get a direct file URL.
+  const archive=sourceLink(snapshot,path);
+  if(!archive || !/\.(?:pdf|png|jpe?g|webp)$/i.test(path))return null;
+  return archive.replace('https://github.com/ahzh999-rgb/saudi-legislation/blob/',
+    'https://raw.githubusercontent.com/ahzh999-rgb/saudi-legislation/');
+}
 
 // Presentation only: canonical bodies, hashes and legal keys remain unchanged.
 export function latinDigits(value) {
@@ -115,7 +122,7 @@ export const DOCUMENT_TYPES=[
 ];
 export function fileLabel(file,issueNumber) {
   const name=(file.path||'').split('/').pop()||'';
-  if(!issueNumber){if(file.format==='pdf')return 'نسخة القرار المؤرشفة';if(['png','jpg','jpeg','webp'].includes(file.format))return 'صورة المصدر';return 'نسخة نصية من المصدر';}
+  if(!issueNumber){if(file.format==='pdf')return 'ملف القرار PDF';if(['png','jpg','jpeg','webp'].includes(file.format))return 'صورة المصدر';if(file.format==='html')return 'ملف HTML الأصلي (للتوثيق)';return 'الملف النصي الأصلي (للتوثيق)';}
   const article=name.match(/article[-_]?(\d+)/i);
   const page=name.match(/page[-_]?(\d+)/i);
   const pages=name.match(/pages(\d+)(?:-and(\d+))?/i);
@@ -125,6 +132,7 @@ export function fileLabel(file,issueNumber) {
   if(page)return 'الصفحة '+Number(page[1])+' من العدد';
   if(file.format==='pdf')return issueNumber?'ملف العدد ('+latinDigits(issueNumber)+')':'نسخة القرار المؤرشفة';
   if(['png','jpg','jpeg','webp'].includes(file.format))return issueNumber?'صورة شاهد للعدد ('+latinDigits(issueNumber)+')':'صورة المصدر';
-  if(['html','txt','md'].includes(file.format))return 'نسخة نصية من المصدر';
+  if(file.format==='html')return 'ملف HTML الأصلي (للتوثيق)';
+  if(['txt','md'].includes(file.format))return 'الملف النصي الأصلي (للتوثيق)';
   return 'المصدر المؤرشف';
 }

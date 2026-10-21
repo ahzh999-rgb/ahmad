@@ -10,3 +10,11 @@
 @media(max-width:640px){.shell{padding:12px 16px}.topbar{gap:9px;padding-bottom:10px}.topbar nav{gap:24px}nav a{padding:5px 0}.intro{padding:18px 0 14px;display:flex;flex-wrap:wrap;gap:12px}.intro h1{font-size:1.7rem}.intro .lead{font-size:.8rem}.statistics{margin:0;gap:18px}.stat{display:block;text-align:start;font-size:.7rem}.stat b{display:inline;margin-inline-end:5px;font-size:1.05rem}.search-panel{padding:13px;margin:0 0 8px}.search-tools{gap:10px;margin-bottom:10px;align-items:stretch}.type-picker{flex:1.2}.search-tools .filter-row{flex:1}.search-tools label{font-size:.75rem}.type-picker select,.search-tools .filter-row select{font-size:.78rem;padding:8px 5px;min-width:0}.search-panel>label{font-size:.75rem;margin-bottom:6px}.search-row input{padding:9px 10px}.search-row button{font-size:.7rem}.coverage-disclosure{font-size:.73rem;padding-bottom:4px}.result-heading{margin:8px 0}.cards{grid-template-columns:1fr}.card{min-height:0;padding:15px;gap:8px}.card h3{font-size:1.12rem}.card-bottom{font-size:.75rem}.document-heading h1{font-size:1.5rem}.reader-layout{gap:12px}.article-list{max-height:100px}.article-navigation{padding:12px}.article-navigation input{padding:7px}.article-reader{padding:16px}.record-panel{padding:15px}.record-summary{gap:14px;font-size:.85rem}.record-document-link{display:block}.record-document-link span:last-child{display:block;margin-top:4px}.file-list li{padding:12px 0}.file-list small{font-size:.73rem}.record-note{font-size:.75rem}.record-legal-links{margin-bottom:14px}.gazette-related{font-size:.82rem}}
 
 .snapshot a{font-family:inherit}.badge bdi{unicode-bidi:isolate}@media(max-width:640px){.stat{display:flex;align-items:baseline;gap:6px}.stat b{display:inline-block;margin:0}}
+/* Archived reading copies are plain text, never executable publisher HTML. */
+.archived-reading-text{white-space:pre-wrap;overflow-wrap:anywhere;font-family:"Noto Naskh Arabic",serif;font-size:1.12rem;line-height:2.1;margin-block:18px}
+.record-reading{scroll-margin-top:20px}
+.record-reading .article-toolbar{align-items:flex-start;gap:12px}
+.record-reading .article-toolbar p{margin:0;flex:1}
+.source-archive{margin-block:10px;font-size:.85rem;color:var(--muted)}
+.source-archive summary{cursor:pointer}
+.source-archive a{display:inline-block;margin-block:8px}
