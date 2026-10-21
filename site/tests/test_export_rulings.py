@@ -19,7 +19,8 @@ class RulingsAssets(unittest.TestCase):
         catalog = json.loads((ROOT / 'public/rulings/catalog.json').read_text())
         for r in catalog['rulings']:
             self.assertTrue(r['case']['first_instance'] or r['case']['appeal'], r['id'])
-            self.assertEqual(r['verification'], 'MACHINE_READ')
+            self.assertEqual(r['transcription']['status'], 'REVIEWED_AGAINST_PAGE', r['id'])
+            self.assertNotIn('verification', r)
         data = (ROOT / 'public/data.json').read_text()
         self.assertNotIn('BOG-1444-', data)
 if __name__ == '__main__':

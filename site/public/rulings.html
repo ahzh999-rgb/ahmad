@@ -24,7 +24,7 @@
    <div><h1 id="page-title">الأحكام القضائية</h1><p class="lead">أحكام منشورة رسمياً، مصنفة حسب الاختصاص ثم المجموعة ثم الموضوع كما صنّفته الجهة الناشرة.</p></div>
    <div class="statistics" id="statistics" aria-label="تغطية المكتبة"><span>جارٍ التحميل…</span></div>
   </section>
-  <aside class="coverage-note machine-note"><span aria-hidden="true">ⓘ</span><p><strong>نصوص مقروءة آلياً.</strong> نص كل حكم مستخرج آلياً من الملف الرسمي ولم يُقابل بالأصل بعد، فقد تقع فيه أخطاء قراءة. الأحكام هنا للتصفح فقط ولا يستخدمها المستشار في إجاباته. المرجع هو ملف الحكم الرسمي.</p></aside>
+  <aside class="coverage-note"><span aria-hidden="true">ⓘ</span><p>الأحكام كما نشرتها الجهة الرسمية: ملف الحكم الأصلي في صفحة كل حكم، وبيانات القضية والموضوعات ومستند الحكم والمنطوق منقولة منه حرفياً. المكتبة للاطلاع ولا يستشهد بها المستشار في إجاباته.</p></aside>
   <section aria-labelledby="jurisdictions-title" class="jurisdictions-panel">
    <h2 id="jurisdictions-title" class="section-title">الاختصاصات</h2>
    <div class="jurisdictions" id="jurisdictions" role="list"></div>
@@ -32,11 +32,11 @@
   <section class="search-panel" aria-label="البحث في الأحكام">
    <div class="search-tools">
     <div class="filter-row"><label for="collection">المجموعة</label><select id="collection"><option value="all">جميع المجموعات</option></select></div>
-    <div class="filter-row"><label for="outcome">نتيجة الحكم الابتدائي</label><select id="outcome"><option value="all">جميع النتائج</option></select></div>
    </div>
    <div class="topic-chips" id="topics" role="group" aria-label="الموضوع"></div>
-   <label for="search">ابحث في المبدأ والكلمات المفتاحية والمستند النظامي ورقم القضية</label>
-   <div class="search-row"><input id="search" type="search" maxlength="200" placeholder="مثل: التظلم الوجوبي، غرامة تأخير، 1666" autocomplete="off"><button id="reset" type="button" class="quiet">مسح</button></div>
+   <label for="search">ابحث في الموضوعات ومستند الحكم والمنطوق ورقم القضية</label>
+   <div class="search-row"><input id="search" type="search" maxlength="200" placeholder="مثل: التظلم الوجوبي، غرامة تأخير، ١٦٦٦" autocomplete="off"><button id="reset" type="button" class="quiet">مسح</button></div>
+   <label class="full-text-option"><input type="checkbox" id="full-text"> ابحث أيضاً في نص الحكم كاملاً (الوقائع والأسباب)</label>
   </section>
   <div class="result-heading"><h2 id="result-title">الأحكام</h2><p id="result-count" role="status" aria-live="polite"></p></div>
   <div class="cards ruling-cards" id="rulings"></div>
@@ -45,11 +45,11 @@
  <section id="ruling-view" hidden aria-labelledby="ruling-title">
   <a href="/rulings.html" id="back" class="back">← العودة إلى الأحكام</a>
   <div class="document-heading"><p class="eyebrow" id="ruling-eyebrow"></p><h1 id="ruling-title" tabindex="-1"></h1><div id="ruling-badges" class="badges"></div></div>
-  <aside class="coverage-note machine-note"><span aria-hidden="true">ⓘ</span><p>نص مقروء آلياً من الملف الرسمي ولم يُقابل بالأصل. الأرقام مأخوذة من الملف نفسه، وقد تقع أخطاء في الحروف. اعتمد على ملف الحكم الرسمي.</p></aside>
   <div class="ruling-layout">
    <article class="article-reader ruling-body" id="ruling-body"></article>
    <aside class="ruling-side" id="ruling-side" aria-label="بيانات الحكم"></aside>
   </div>
+  <section class="ruling-pdf" id="ruling-pdf" aria-label="ملف الحكم الرسمي"></section>
  </section>
  <div class="load-state" id="load-state" role="status" aria-live="polite">جارٍ تحميل الأحكام والتحقق من بصماتها…</div>
  <div class="empty" id="load-error" hidden role="alert"><h2>تعذّر تحميل الأحكام</h2><p id="load-error-message">تحقق من اتصالك ثم أعد المحاولة.</p><button type="button" id="retry" class="primary">إعادة المحاولة</button></div>

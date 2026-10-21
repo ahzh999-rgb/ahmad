@@ -1,4 +1,5 @@
-import { prepare, filterRulings, countsBy, caseLabel, effectText, checkedFile, archiveLink, officialLink, OUTCOME_ORDER } from './rulings-core.js';
+import { normalize } from './library-core.js';
+import { prepare, filterRulings, countsBy, caseLabel, effectText, checkedFile, archiveLink, officialLink, pdfPath, indic } from './rulings-core.js';
 
 const $ = id => document.getElementById(id);
 const number = n => new Intl.NumberFormat('en-US').format(n);
@@ -23,7 +24,7 @@ function navigate(href) { history.pushState(null, '', href); render(true); }
 function state() {
   const p = params();
   return { id: p.get('id'), jurisdiction: p.get('j') || 'all', collection: p.get('c') || 'all', topic: p.get('t') || 'all',
-           outcome: p.get('o') || 'all', q: p.get('q') || '' };
+           q: p.get('q') || '', full: p.get('full') === '1' };
 }
 
 function renderJurisdictions(s) {
@@ -46,10 +47,7 @@ function renderFilters(s, inJurisdiction) {
   for (const c of catalog.collections.filter(c => s.jurisdiction === 'all' || c.jurisdiction === s.jurisdiction))
     col.append(new Option(`${c.title} (${number(c.ruling_count)})`, c.id));
   col.value = s.collection;
-  const out = $('outcome'); out.replaceChildren(new Option('جميع النتائج', 'all'));
-  const oc = countsBy(inJurisdiction, r => r.outcome.first_instance);
-  for (const o of OUTCOME_ORDER) if (oc.get(o)) out.append(new Option(`${o} (${number(oc.get(o))})`, o));
-  out.value = s.outcome;
+  $('full-text').checked = s.full;
   const chips = $('topics'); chips.replaceChildren();
   const scope = inJurisdiction.filter(r => s.collection === 'all' || r.collection === s.collection);
   const topics = new Map();
@@ -67,15 +65,10 @@ function card(r) {
   const a = el('a', null, 'card'); a.href = urlFor({ id: r.id });
   a.addEventListener('click', e => { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); catalogScroll = scrollY; navigate(a.getAttribute('href')); });
   a.append(el('span', `${r.topic.name} · ${r.collection_title}`, 'card-category'));
-  a.append(el('h3', r.keywords.slice(1, 4).join(' · ') || r.topic.name));
-  const eff = effectText(r); if (eff) a.append(el('p', eff, 'effect'));
-  const meta = el('div', null, 'card-meta');
-  meta.append(el('span', r.outcome.first_instance, 'badge outcome'));
-  if (r.outcome.appeal !== 'غير مذكور') meta.append(el('span', 'الاستئناف: ' + r.outcome.appeal, 'badge appeal'));
-  a.append(meta);
+  a.append(el('h3', r.transcription.subjects));
+  const eff = effectText(r); if (eff) a.append(el('p', 'أثر ذلك: ' + eff, 'effect'));
   const bottom = el('div', null, 'card-bottom');
-  const c = el('span', null, 'case'); c.append(caseLabel(r.case) + ' · ', bdi(r.case.session_date_h + 'هـ'));
-  bottom.append(c, el('span', 'اقرأ الحكم ←'));
+  bottom.append(el('span', caseLabel(r.case) + ' · الجلسة ' + indic(r.case.session_date_h) + 'هـ', 'case'), el('span', 'اقرأ الحكم ←'));
   a.append(bottom);
   return a;
 }
@@ -85,7 +78,7 @@ function renderCatalog() {
   $('search').value = s.q;
   const inJ = catalog.rulings.filter(r => s.jurisdiction === 'all' || r.jurisdiction === s.jurisdiction);
   renderJurisdictions(s); renderFilters(s, inJ);
-  const rows = filterRulings(catalog.rulings, s);
+  const rows = filterRulings(catalog.rulings, { ...s, fullText: s.full ? fullTexts : null });
   const box = $('rulings'); box.replaceChildren(...rows.map(card));
   $('result-count').textContent = number(rows.length) + ' من ' + number(catalog.rulings.length) + ' حكماً';
   const jname = catalog.jurisdictions.find(j => j.id === s.jurisdiction)?.name;
@@ -96,7 +89,7 @@ function renderCatalog() {
 
 function section(parent, title, ...nodes) { parent.append(el('h2', title), ...nodes); }
 
-async function rulingText(r) {
+async function unusedRulingText(r) {
   if (textCache.has(r.id)) return textCache.get(r.id);
   const res = await fetch(`/rulings/text/${r.id}.txt`);
   if (!res.ok) throw new Error('unavailable');
@@ -105,48 +98,49 @@ async function rulingText(r) {
   textCache.set(r.id, text); return text;
 }
 
+function block(parent, title, ...nodes) {
+  const sec = el('section', null, 'ruling-section'); sec.append(el('h2', title, 'source-heading'), ...nodes); parent.append(sec);
+}
+
 function renderRuling(r, focus) {
-  $('ruling-eyebrow').textContent = `${catalog.jurisdictions.find(j => j.id === r.jurisdiction)?.name || ''} · ${r.collection_title} · ${r.topic.name}`;
-  $('ruling-title').textContent = 'حكم ' + caseLabel(r.case);
-  const badges = $('ruling-badges'); badges.replaceChildren(el('span', r.outcome.first_instance, 'badge outcome'));
-  if (r.outcome.appeal !== 'غير مذكور') badges.append(el('span', 'الاستئناف: ' + r.outcome.appeal, 'badge appeal'));
-  badges.append(el('span', 'مقروء آلياً', 'badge future'));
+  const t = r.transcription;
+  $('ruling-eyebrow').textContent = `${catalog.jurisdictions.find(j => j.id === r.jurisdiction)?.name || ''} · ${r.collection_title}`;
+  $('ruling-title').textContent = t.label;
+  const badges = $('ruling-badges'); badges.replaceChildren(el('span', caseLabel(r.case), 'badge'));
 
   const body = $('ruling-body'); body.replaceChildren();
-  const kw = el('div', null, 'keywords'); for (const k of r.keywords) kw.append(el('span', k, 'badge')); section(body, 'الكلمات المفتاحية', kw);
-  if (r.principle) section(body, 'المبدأ', el('p', r.principle));
-  const eff = effectText(r); if (eff) section(body, 'أثر ذلك', el('p', eff, 'effect-box'));
-  if (r.provisions.length) { const ul = el('ul'); for (const p of r.provisions) ul.append(el('li', p)); section(body, 'المستند النظامي', ul); }
-  if (r.ruling) section(body, 'منطوق الحكم', el('p', r.ruling));
-  if (r.appeal_ruling) section(body, 'منطوق الاستئناف', el('p', r.appeal_ruling));
-  for (const n of r.notes || []) body.append(el('p', 'ملاحظة: ' + n, 'muted small'));
-  const det = el('details'); det.append(el('summary', 'النص الكامل المقروء آلياً'));
-  const holder = el('div', 'يُحمّل النص عند الفتح…', 'ruling-text');
-  det.append(holder);
-  det.addEventListener('toggle', async () => {
-    if (!det.open || holder.dataset.loaded) return;
-    try { holder.textContent = await rulingText(r); holder.dataset.loaded = '1'; }
-    catch { holder.textContent = 'تعذّر التحقق من نص الحكم. افتح الملف الرسمي.'; }
-  });
-  body.append(det);
+  const head = el('div', null, 'case-header'); for (const line of t.header) head.append(el('p', line)); body.append(head);
+  block(body, 'الموضوعات', el('p', t.subjects, 'subjects'), el('p', t.summary));
+  if (t.basis.length) { const ul = el('ul', null, 'basis'); for (const b of t.basis) ul.append(el('li', b)); block(body, 'مستند الحكم', ul); }
+  block(body, 'منطوق الحكم', el('p', t.ruling));
+  if (t.appeal) block(body, 'محكمة الاستئناف', el('p', t.appeal));
+  body.append(el('p', 'نُقلت هذه الأجزاء حرفياً من ملف الحكم الرسمي. الوقائع والأسباب في الملف أدناه.', 'muted small'));
+
+  const pdf = pdfPath(r), viewer = $('ruling-pdf'); viewer.replaceChildren();
+  if (pdf) {
+    const frame = document.createElement('iframe'); frame.src = pdf + '#view=FitH'; frame.title = 'ملف الحكم الرسمي'; frame.loading = 'lazy';
+    const actions = el('div', null, 'pdf-actions');
+    const dl = el('a', 'تنزيل ملف الحكم (PDF)', 'primary'); dl.href = pdf; dl.download = r.id + '.pdf';
+    const open = el('a', 'فتح في نافذة مستقلة', 'quiet'); open.href = pdf; open.target = '_blank'; open.rel = 'noopener';
+    actions.append(dl, open);
+    viewer.append(el('h2', 'ملف الحكم الرسمي', 'source-heading'), frame, actions);
+  }
 
   const side = $('ruling-side'); side.replaceChildren();
   const dl = el('dl');
-  const row = (k, v) => { if (v === null || v === undefined || v === '') return; const dd = el('dd'); dd.append(v); dl.append(el('dt', k), dd); };
+  const row = (k, v) => { if (!v) return; dl.append(el('dt', k), el('dd', v)); };
   const f = r.case.first_instance, a = r.case.appeal;
-  if (f) row(f.court, bdi(`${f.case_no} لعام ${f.year_h}هـ`));
-  if (a) row(a.court, bdi(`${a.case_no} لعام ${a.year_h}هـ`));
-  row('تاريخ الجلسة', bdi(r.case.session_date_h + 'هـ'));
+  if (f) row(f.court, indic(`${f.case_no} لعام ${f.year_h}هـ`));
+  if (a) row(a.court, indic(`${a.case_no} لعام ${a.year_h}هـ`));
+  row('تاريخ الجلسة', indic(r.case.session_date_h) + 'هـ');
   row('الجهة', r.authority);
-  row('المجموعة', `${r.collection_title} · المجلد ${r.volume}`);
+  row('المجموعة', `${r.collection_title} · المجلد ${indic(r.volume)}`);
   row('الموضوع', r.topic.name);
-  if (r.full_volume_page_start) row('الصفحة في المجلد الكامل', bdi(String(r.full_volume_page_start)));
-  row('المعرّف', bdi(r.id));
+  if (r.full_volume_page_start) row('الصفحة في المجلد الكامل', indic(r.full_volume_page_start));
   side.append(dl);
-  const off = officialLink(r.official_url); if (off) side.append(external('ملف الحكم الرسمي (ديوان المظالم) ↗', off));
+  const off = officialLink(r.official_url); if (off) side.append(external('الملف في موقع ديوان المظالم ↗', off));
   const arc = archiveLink(manifest.commit, r.source_path); if (arc) side.append(external('النسخة المؤرشفة ↗', arc));
-  side.append(el('p', 'بصمة الملف: ' + r.source_sha256.slice(0, 16) + '…', 'muted small'));
-  document.title = 'حكم ' + caseLabel(r.case) + ' | الأحكام القضائية';
+  document.title = t.label + ' · ' + caseLabel(r.case) + ' | الأحكام القضائية';
   if (focus) { $('ruling-title').focus({ preventScroll: true }); scrollTo(0, 0); }
 }
 
@@ -182,7 +176,16 @@ let typing;
 $('search').addEventListener('input', () => { clearTimeout(typing); typing = setTimeout(() => { history.replaceState(null, '', urlFor({ q: $('search').value.trim() })); renderCatalog(); }, 200); });
 $('reset').onclick = $('reset-empty').onclick = () => navigate('/rulings.html');
 $('collection').onchange = e => navigate(urlFor({ c: e.target.value, t: null }));
-$('outcome').onchange = e => navigate(urlFor({ o: e.target.value }));
+const fullTexts = new Map();
+$('full-text').onchange = async e => {
+  if (e.target.checked && fullTexts.size < catalog.rulings.length) {
+    $('result-count').textContent = 'جارٍ تحميل نصوص البحث…';
+    await Promise.all(catalog.rulings.map(async r => {
+      try { const res = await fetch(`/rulings/text/${r.id}.txt`); if (res.ok) fullTexts.set(r.id, normalize(await checkedFile(await res.text(), r.text_sha256))); } catch {}
+    }));
+  }
+  navigate(urlFor({ full: e.target.checked ? '1' : null }));
+};
 $('back').addEventListener('click', e => { e.preventDefault(); navigate(urlFor({ id: null })); });
 $('retry').onclick = start;
 addEventListener('popstate', () => catalog && render(true));

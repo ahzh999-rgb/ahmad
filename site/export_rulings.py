@@ -5,7 +5,8 @@
 Reads indexes/rulings.json and the per-ruling records and texts at the commit in
 site/rulings-lock.json, verifies every recorded SHA-256, and writes:
   site/public/rulings/catalog.json   records without the full text (browse and search)
-  site/public/rulings/text/<id>.txt  machine-read text, fetched only when a ruling is opened
+  site/public/rulings/text/<id>.txt  machine-read text, used for search only and never displayed
+  site/public/rulings/pdf/<id>.pdf   the official file, byte for byte, shown on each ruling page
   site/public/rulings/manifest.json  commit, counts and SHA-256 of every file above
 
 Rulings are browse-only. Nothing here touches data.json, source-manifest.json or the
@@ -23,8 +24,7 @@ REPOSITORY = 'ahzh999-rgb/saudi-legislation'
 SITE = Path(__file__).resolve().parent
 LOCK = SITE / 'rulings-lock.json'
 OUT = SITE / 'public' / 'rulings'
-RECORD_FIELDS = ('id', 'jurisdiction', 'authority', 'collection', 'volume', 'topic', 'seq', 'case', 'keywords', 'principle',
-                 'effect', 'provisions', 'ruling', 'appeal_ruling', 'outcome', 'notes')
+RECORD_FIELDS = ('id', 'jurisdiction', 'authority', 'collection', 'volume', 'topic', 'seq', 'case', 'transcription', 'notes')
 
 
 def sha(data):
@@ -43,38 +43,47 @@ def build(root):
     root = Path(root)
     index = json.loads((root / 'indexes' / 'rulings.json').read_text(encoding='utf-8'))
     collections = {c['id']: c for c in index['collections']}
-    rulings, texts = [], {}
+    rulings, texts, pdfs = [], {}, {}
     for item in index['rulings']:
         rec = json.loads((root / item['record']).read_text(encoding='utf-8'))
         raw = (root / rec['text']['path']).read_bytes()
         if sha(raw) != rec['text']['sha256'] or rec['text']['sha256'] != item['text_sha256']:
             sys.exit(f'text hash differs for {rec["id"]}')
-        src = root / rec['source']['path']
-        if sha(src.read_bytes()) != rec['source']['sha256']:
+        src = (root / rec['source']['path']).read_bytes()
+        if sha(src) != rec['source']['sha256']:
             sys.exit(f'source hash differs for {rec["id"]}')
+        if rec['transcription']['status'] != 'REVIEWED_AGAINST_PAGE':
+            sys.exit(f'{rec["id"]}: displayed parts are not reviewed against the page')
         if rec['verification']['eligible_for_answers']:
             sys.exit(f'{rec["id"]} is marked eligible for answers; the site keeps rulings browse-only')
         entry = {k: rec[k] for k in RECORD_FIELDS}
         entry.update(official_url=rec['source']['official_url'], source_path=rec['source']['path'], source_sha256=rec['source']['sha256'],
                      pages=rec['source']['pages'], full_volume_page_start=rec['source']['full_volume_page_start'],
-                     text_sha256=rec['text']['sha256'], verification=rec['verification']['status'],
+                     text_sha256=rec['text']['sha256'], pdf=f'pdf/{rec["id"]}.pdf',
                      collection_title=collections[rec['collection']]['title'])
         rulings.append(entry)
         texts[rec['id']] = raw
+        pdfs[rec['id']] = src
     catalog = {'schema_version': 1, 'jurisdictions': index['jurisdictions'], 'collections': index['collections'],
                'rulings': sorted(rulings, key=lambda r: r['id'])}
-    return catalog, texts
+    return catalog, texts, pdfs
 
 
-def render(catalog, texts, commit):
+def render(catalog, texts, pdfs, commit):
     files = {'catalog.json': json_text(catalog).encode()}
     for rid, raw in texts.items():
         files[f'text/{rid}.txt'] = raw
+    for rid, raw in pdfs.items():
+        files[f'pdf/{rid}.pdf'] = raw
     manifest = {'schema_version': 1, 'repository': REPOSITORY, 'commit': commit, 'ruling_count': len(catalog['rulings']),
-                'browse_only': True, 'verification': 'MACHINE_READ',
+                'browse_only': True, 'displayed_parts': 'REVIEWED_AGAINST_PAGE', 'full_text': 'search only',
                 'files': {name: sha(data) for name, data in sorted(files.items())}}
     files['manifest.json'] = json_text(manifest).encode()
     return files
+
+
+def catalog_ids(files):
+    return [n for n in files if n.startswith('pdf/')]
 
 
 def main(argv=None):
@@ -100,7 +109,7 @@ def main(argv=None):
         extra = [p.relative_to(OUT).as_posix() for p in OUT.rglob('*') if p.is_file() and p.relative_to(OUT).as_posix() not in files]
         if stale or extra:
             sys.exit(f'rulings assets are stale: {len(stale)} changed, {len(extra)} unexpected')
-        print(f'rulings assets match {commit[:12]} ({len(files) - 2} rulings)')
+        print(f'rulings assets match {commit[:12]} ({len(catalog_ids(files))} rulings)')
         return
     if OUT.exists():
         shutil.rmtree(OUT)
