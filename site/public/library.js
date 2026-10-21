@@ -1,5 +1,5 @@
 import { checkedCatalog, checkedSection, checkedInventory } from './source-guard.js';
-import { buildCatalog, filterCatalog, matchingArticles, normalize, CATEGORIES, futureDate, sourceLink, latinDigits, articleLabel, fileLabel, referenceUnit } from './library-core.js';
+import { buildCatalog, filterCatalog, matchingArticles, normalize, CATEGORIES, futureDate, sourceLink, readableFileLink, latinDigits, articleLabel, fileLabel, referenceUnit } from './library-core.js';
 
 const $=id=>document.getElementById(id), day=new Date().toISOString().slice(0,10);
 const number=n=>new Intl.NumberFormat('en-US').format(n);
@@ -73,7 +73,8 @@ async function loadSection(doc,article){
   source.replaceChildren();
   const verified=el('p');verified.append(badge('تطابقت بصمة النص مع نسخة الموقع'));source.append(verified);
   source.append(el('p',section.body_kind==='OWNER_ACCEPTED'?'نوع المتن: مقبول من صاحب المشروع ضمن نطاقه المسجل.':'نوع المتن: نص مقابل ضمن النسخة والنطاق المسجلين.'));
-  const href=sourceLink(manifest.commit,section.source_path);if(href)source.append(external('فتح المصدر المؤرشف ↗',href));
+  const href=readableFileLink(manifest.commit,section.source_path)||sourceLink(manifest.commit,section.source_path);
+  if(href){const format=section.source_path.split('.').pop().toLowerCase();source.append(external(fileLabel({path:section.source_path,format})+' ↗',href));}
   source.append(sourceDetails(section),el('p','تطابق البصمة يثبت سلامة النقل من النسخة المثبتة، ولا يثبت حداثة الحكم أو انطباقه.','muted small'));
  }catch{
   if(serial!==requestSerial)return;
@@ -221,16 +222,27 @@ function renderRecord(id,focus){
   if(summary.childNodes.length)content.append(summary);
   if(record.official_url&&/^https:\/\//.test(record.official_url)){content.append(external('قراءة القرار من موقع الناشر ↗',record.official_url),el('p','قد تعرض صفحة الناشر نسخة أحدث من النسخة المؤرشفة.','muted small'));}
  }
- const files=recordPanel(gazette?'ملف العدد والصفحات المتاحة':'نسخ القرار المتاحة');
+ const files=recordPanel(gazette?'ملف العدد والصفحات المتاحة':'ملفات القرار ومصادره');
  const list=el('ul',undefined,'file-list');
  const sorted=[...record.sources].sort((a,b)=>(a.format==='pdf'?-1:0)-(b.format==='pdf'?-1:0)||a.path.localeCompare(b.path));
  for(const file of sorted){const href=sourceLink(manifest.commit,file.path);if(!href)continue;
-  const li=el('li');li.append(external(fileLabel(file,gazette?record.issue_number:null)+' ↗',href));
+  const li=el('li'),direct=readableFileLink(manifest.commit,file.path);
+  if(file.reading){
+   const panel=recordPanel(gazette?'النص المتاح من المصدر':'نص القرار في النسخة المؤرشفة');
+   panel.classList.add('record-reading');panel.id='reading-'+file.sha256;
+   const toolbar=el('div',undefined,'article-toolbar'),copyButton=el('button','نسخ النص','quiet');copyButton.type='button';
+   copyButton.onclick=()=>copy(copyButton,record.title+'\n\n'+file.reading.text+'\n\n'+new URL('#'+panel.id,location.href).href,'نسخ النص');
+   toolbar.append(el('p','نص مستخرج من المصدر المؤرشف؛ لا يشمل تلقائيًا المرفقات أو التعديلات اللاحقة.','muted small'),copyButton);
+   const text=el('div',undefined,'archived-reading-text');text.textContent=file.reading.text;panel.append(toolbar,text);content.append(panel);
+   li.append(link('قراءة النص داخل الموقع','#'+panel.id));
+  }else if(direct){li.append(external(fileLabel(file,gazette?record.issue_number:null)+' ↗',direct));}
+  else{li.append(el('span','لا تتوفر نسخة قراءة داخل الموقع لهذا الملف.','muted small'));}
+  const archive=el('details',undefined,'source-archive');archive.append(el('summary','الملف الأصلي للتوثيق'),external(fileLabel(file,gazette?record.issue_number:null)+' — عرض في الأرشيف ↗',href));li.append(archive);
   const proof=file.evidence_path&&file.evidence_path!==file.path?sourceLink(manifest.commit,file.evidence_path):null;
   if(proof)li.append(el('small','رقم العدد مرتبط بسجل نشر محفوظ في الأرشيف.'));
   list.append(li);
  }
- files.append(list);files.append(el('p','روابط الأرشيف قد تتطلب صلاحية الوصول إلى المستودع.','muted small'));
+ files.append(list);files.append(el('p','ملفات PDF والصور تفتح مباشرة. الملفات الأصلية وسجلات التوثيق تبقى في الأرشيف، وقد يتطلب الوصول إليها صلاحية المستودع.','muted small'));
  if(!record.sources.length)files.append(el('p','لا توجد نسخة مباشرة مرتبطة بهذا السجل حتى الآن.'));content.append(files);
  let details;
  if(gazette){details=el('details',undefined,'verification');details.append(el('summary','تفاصيل التوثيق وحدود الربط'),el('p','قد تتكرر الصفحة في أكثر من ملف. لا يثبت توفر الملفات اكتمال العدد أو فهرسة جميع ما نُشر فيه.','muted small'));}

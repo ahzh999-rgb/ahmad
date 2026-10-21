@@ -14,8 +14,8 @@ test('article, pinned archive and recorded official publisher links remain disti
   assert.equal(article.pathname,'/library');
   assert.equal(article.searchParams.get('doc'),'test-law');
   assert.equal(article.searchParams.get('article'),'10-bis-2');
-  assert.ok(links[1].href.includes('/blob/'+snapshot+'/sources/test/'));
-  assert.match(links[1].label,/المؤرشفة/);
+  assert.ok(links[1].href.includes('raw.githubusercontent.com/ahzh999-rgb/saudi-legislation/'+snapshot+'/sources/test/'));
+  assert.match(links[1].label,/ملف المصدر المستخدم/);
   assert.match(links[2].label,/أم القرى/);
   assert.match(links[3].label,/هيئة الخبراء/);
 });
@@ -26,6 +26,12 @@ test('old evidence still links the material and archive without inventing an off
   assert.ok(!sourcesHTML([legacy],snapshot).includes('المصدر الرسمي'));
   assert.equal(sourcesHTML([],snapshot),'');
   assert.equal(sourcesHTML(null,snapshot),'');
+});
+
+test('an HTML archive is explicitly labelled as an original documentation file',()=>{
+  const links=sourceLinks({...source,source_url:source.source_url.replace('.pdf','.html')},snapshot);
+  assert.match(links[1].label,/HTML.*للتوثيق/);
+  assert.ok(links[1].href.startsWith('https://github.com/'));
 });
 
 test('unsafe URLs, lookalike domains, credentials and unexpected archive revisions are rejected',()=>{

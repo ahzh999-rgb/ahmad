@@ -5,10 +5,78 @@ from pathlib import Path
 import re
 import subprocess
 from urllib.parse import urlparse
+from html.parser import HTMLParser
 
 ISSUE_RE = re.compile(r'(?:uqn|gazette|umm-al-qura)[-_]?(\d{4})(?!\d|-\d{2}-\d{2})', re.I)
 ASSET_EXTENSIONS = {'.pdf', '.png', '.jpg', '.jpeg', '.webp'}
 DECISION_TITLE = re.compile(r'^(?:قرار|مرسوم|أمر|تعديل قرار)')
+
+
+class ArticleText(HTMLParser):
+    """Extract only the archived publisher's article container, never navigation or executable HTML."""
+    BLOCKS = {'p','div','section','article','li','ul','ol','h1','h2','h3','h4','h5','h6','tr','blockquote'}
+    IGNORE = {'script','style','noscript','template','iframe','object','svg'}
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.root = None; self.depth = 0; self.matches = 0; self.ignored = []; self.parts = []
+
+    def handle_starttag(self, tag, attrs):
+        if dict(attrs).get('id') == 'article-content':
+            self.matches += 1
+            if not self.depth and tag in {'div','article','section','main'}:
+                self.root = tag; self.depth = 1
+                return
+        if not self.depth:
+            return
+        if tag == self.root:
+            self.depth += 1
+        if tag in self.IGNORE:
+            self.ignored.append(tag)
+        if not self.ignored and (tag in self.BLOCKS or tag == 'br'):
+            self.parts.append('\n')
+        elif not self.ignored and tag in {'td','th'}:
+            self.parts.append(' | ')
+
+    def handle_endtag(self, tag):
+        if not self.depth:
+            return
+        if self.ignored:
+            if tag == self.ignored[-1]:
+                self.ignored.pop()
+        elif tag in self.BLOCKS:
+            self.parts.append('\n')
+        if tag == self.root:
+            self.depth -= 1
+
+    def handle_data(self, data):
+        if self.depth and not self.ignored:
+            self.parts.append(data)
+
+    def text(self):
+        if self.matches != 1 or self.depth:
+            return None
+        lines = [re.sub(r'[\t\r\f\v ]+', ' ', line).strip() for line in ''.join(self.parts).split('\n')]
+        return '\n'.join(line for line in lines if line) or None
+
+
+def source_reading(path):
+    """Plain reading copy only: source bytes and answer eligibility remain unchanged."""
+    if path.suffix.lower() not in {'.html','.txt','.md'}:
+        return None
+    raw = path.read_bytes()
+    try:
+        text = raw.decode('utf-8')
+    except UnicodeDecodeError:
+        return None
+    if path.suffix.lower() == '.html':
+        parser = ArticleText(); parser.feed(text); parser.close(); text = parser.text()
+    if not text or not text.strip():
+        return None
+    return {'format':'plain_text', 'text':text, 'sha256':hashlib.sha256(text.encode()).hexdigest(),
+            'source_sha256':hashlib.sha256(raw).hexdigest(),
+            'extraction':'html_article_content_v1' if path.suffix.lower() == '.html' else 'utf8_source_v1',
+            'answer_eligibility_changed':False}
 
 
 def safe_path(root, value):
@@ -105,8 +173,11 @@ def build_inventory(root, records, docs, snapshot):
             return None
         if path not in digest_cache:
             digest_cache[path] = hashlib.sha256(file.read_bytes()).hexdigest()
-        return dict(path=path, sha256=digest_cache[path], format=file.suffix[1:].lower(),
-                    **(relation or {}))
+        result = dict(path=path, sha256=digest_cache[path], format=file.suffix[1:].lower(), **(relation or {}))
+        reading = source_reading(file)
+        if reading:
+            result['reading'] = reading
+        return result
 
     decisions = []
     for ident, record in records.items():

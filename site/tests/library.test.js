@@ -74,7 +74,7 @@ test('Arabic labels and Latin digits affect presentation only, including repeate
  assert.equal(articleLabel('المادة 15-bis'),'المادة 15 مكرر');
  assert.equal(articleLabel('المادة 37-bis-2'),'المادة 37 مكرر 2');
  assert.equal(fileLabel({path:'sources/gazette/article85-disputed-span.png',format:'png'},'5180'),'مقتطف مصوّر من المادة 85');
- assert.equal(fileLabel({path:'sources/page-5-pdf-10.pdf',format:'pdf'}),'نسخة القرار المؤرشفة');
+ assert.equal(fileLabel({path:'sources/page-5-pdf-10.pdf',format:'pdf'}),'ملف القرار PDF');
  const doc=docs.find(d=>d.id==='civil-service');
  assert.deepEqual(matchingArticles(doc,'المادة ١٥ مكرر').map(a=>a.key),['15-bis']);
  assert.ok(doc.articles.some(a=>a.heading==='المادة 15-bis'));

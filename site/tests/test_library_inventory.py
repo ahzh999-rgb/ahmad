@@ -6,10 +6,26 @@ import sys
 import tempfile
 import unittest
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from library_inventory import build_inventory
+from library_inventory import build_inventory,source_reading,ArticleText
 
 
 class LibraryInventoryTests(unittest.TestCase):
+    def test_html_reading_is_scoped_to_article_and_never_copies_executable_markup(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp)/'source.html'
+            path.write_text('<nav>خارج النص</nav><div id="article-content"><p>أولاً: &amp; قرار</p>'
+                            '<script>alert("bad")</script><style>.bad{}</style><p>ثانياً:<br>نص المرسوم</p></div><footer>تذييل</footer>')
+            reading=source_reading(path)
+            self.assertEqual(reading['text'],'أولاً: & قرار\nثانياً:\nنص المرسوم')
+            self.assertEqual(reading['source_sha256'],hashlib.sha256(path.read_bytes()).hexdigest())
+            self.assertEqual(reading['sha256'],hashlib.sha256(reading['text'].encode()).hexdigest())
+            self.assertFalse(reading['answer_eligibility_changed'])
+    def test_missing_duplicate_unclosed_or_non_content_containers_do_not_produce_a_reading(self):
+        for html in ['<body>navigation only</body>',
+                     '<div id="article-content">one</div><div id="article-content">two</div>',
+                     '<div id="article-content">unclosed',
+                     '<script id="article-content">alert(1)</script>']:
+            parser=ArticleText();parser.feed(html);parser.close();self.assertIsNone(parser.text())
     def test_decisions_and_gazette_are_discovery_not_answer_eligibility(self):
         with tempfile.TemporaryDirectory() as temp:
             root=Path(temp)
