@@ -63,3 +63,22 @@ test('model receives full article and evidence limits, never client supplied bod
     assert.equal(res.status, 200);assert.equal(called, true);
   } finally { globalThis.fetch = oldFetch; }
 });
+
+test('evidence links come from the checked catalog, ignoring client supplied publishers',async()=>{
+  const f=fixtures();
+  const data=JSON.parse(f.data);
+  data.docs[0].publisher_urls=['https://www.uqn.gov.sa/details?p=18244','https://uqn.gov.sa.evil.test/'];
+  f.data=JSON.stringify(data);f.manifest.data_sha256=sha(f.data);
+  const oldFetch=globalThis.fetch;
+  globalThis.fetch=async()=>new Response('data: mock\n\n');
+  try {
+    const response=await worker.fetch(request({publisher_urls:['https://www.uqn.gov.sa/wrong']}),envFor(f));
+    assert.equal(response.status,200);
+    const events=(await response.text()).split('\n').filter(l=>l.startsWith('data: '));
+    const evidence=events.map(l=>{try{return JSON.parse(l.slice(6));}catch{return null;}}).find(e=>e?.type==='evidence');
+    assert.equal(evidence.sources[0].instrument_id,'test-law');
+    assert.equal(evidence.sources[0].legal_key,'1');
+    assert.equal(evidence.sources[0].source_url,f.section.source_url);
+    assert.deepEqual(evidence.sources[0].publisher_urls,['https://www.uqn.gov.sa/details?p=18244']);
+  } finally {globalThis.fetch=oldFetch;}
+});

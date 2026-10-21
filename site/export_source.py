@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+from urllib.parse import urlparse, quote
 from library_inventory import build_inventory
 
 REPOSITORY='ahzh999-rgb/saudi-legislation'
@@ -27,6 +28,21 @@ RULES='''# قواعد الإجابة من نسخة المستودع الأساس
 
 def json_text(x):return json.dumps(x,ensure_ascii=False,separators=(',',':'))+'\n'
 def run(root,*args):return subprocess.check_output(['git','-C',str(root),*args],text=True).strip()
+def publisher_urls(meta):
+    """Explicit document publisher references only; never infer a URL or a text version."""
+    urls=[]
+    for field in ('official_source_url','official_boe_url','official_boe_source_url'):
+        value=meta.get(field)
+        if not isinstance(value,str) or re.search(r'[\\\x00-\x1f]',value):continue
+        # Some recorded publisher paths contain spaces/Arabic characters.
+        value=quote(value,safe=":/?=&%#@+;,~!$'()*-._")
+        try:
+            parsed=urlparse(value);host=parsed.hostname or ''
+            if parsed.scheme!='https' or parsed.username or parsed.password or parsed.port:continue
+        except ValueError:continue
+        if not (host.endswith('.gov.sa') or host=='mu.edu.sa' or host.endswith('.mu.edu.sa')):continue
+        if value not in urls:urls.append(value)
+    return urls
 def eligible_result(result,quality):
     if result.get('status')!='FOUND_SNAPSHOT':return result.get('status','UNAVAILABLE')
     if result.get('body_kind') not in KINDS:return result.get('body_kind','UNKNOWN_KIND')
@@ -59,7 +75,7 @@ def collect(root):
         tool=' '.join(x for x in [instrument.get('type'),instrument.get('number'),instrument.get('issue_date_hijri')] if x)
         doc={'id':ident,'path':rec['metadata'] or rec['index'],'title':rec['title'],
              'meta':{'أداة الإصدار':tool,'الحالة':'نسخة مؤهلة للبحث؛ السريان والتطبيق الزمني يحتاجان تحققاً مستقلاً'},
-             'kind':'text','verification':kept[0][1]['verification_summary'],
+             'kind':'text','publisher_urls':publisher_urls(meta),'verification':kept[0][1]['verification_summary'],
              'metadata_view':kept[0][1]['metadata_view'],
              'registry':{'file_counts':{k:len(v) for k,v in formats.get(ident,{}).items()},'related':related.get(ident,[])},'secs':[]}
         for article,result in kept:

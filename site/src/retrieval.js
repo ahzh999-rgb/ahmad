@@ -61,7 +61,7 @@ export function buildIndex(data) {
     const terms = new Map();
     for (const token of words(body).map(stem)) if (token.length > 1) terms.set(token, (terms.get(token) || 0) + 1);
     const row = { id:rows.length, instrument:doc.id, title:doc.title, heading, body,
-      key:heading.replace(/^المادة\s*/, ''), domain:domainOf(doc.id), meta:doc.metadata_view,
+      key:heading.replace(/^المادة\s*/, ''), domain:domainOf(doc.id), meta:doc.metadata_view, publisher_urls:doc.publisher_urls || [],
       normalized:normalize(body), terms, length:[...terms.values()].reduce((a,b) => a+b, 0) };
     for (const token of terms.keys()) df.set(token, (df.get(token) || 0) + 1);
     rows.push(row);
