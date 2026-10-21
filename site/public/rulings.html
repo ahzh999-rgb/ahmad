@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>الأحكام القضائية | المستشار النظامي</title>
+<meta name="description" content="تصفح الأحكام القضائية المنشورة رسمياً مصنفة حسب الاختصاص والموضوع، مع رقم القضية والمبدأ والمستند النظامي والمنطوق ورابط الملف الرسمي.">
+<link rel="canonical" href="https://ask.mustashar.workers.dev/rulings">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/library.css">
+<link rel="stylesheet" href="/rulings.css">
+</head>
+<body>
+<a class="skip" href="#main">انتقل إلى المحتوى</a>
+<div class="shell">
+<header class="topbar">
+ <a class="brand" href="/" aria-label="المستشار النظامي — الرئيسية"><span class="seal" aria-hidden="true">§</span><span>المستشار النظامي<small>للمتعاملين مع الجهات الحكومية</small></span></a>
+ <nav aria-label="التنقل الرئيسي"><a href="/">الاستفسار النظامي</a><a href="/library.html">المكتبة النظامية</a><a href="/rulings.html" aria-current="page">الأحكام القضائية</a></nav>
+ <button class="quiet theme" id="theme" type="button">الوضع الداكن</button>
+</header>
+<main id="main">
+ <div id="catalog-view">
+  <section class="intro" aria-labelledby="page-title">
+   <div><h1 id="page-title">الأحكام القضائية</h1><p class="lead">أحكام منشورة رسمياً، مصنفة حسب الاختصاص ثم المجموعة ثم الموضوع كما صنّفته الجهة الناشرة.</p></div>
+   <div class="statistics" id="statistics" aria-label="تغطية المكتبة"><span>جارٍ التحميل…</span></div>
+  </section>
+  <aside class="coverage-note"><span aria-hidden="true">ⓘ</span><p>الأحكام كما نشرتها الجهة الرسمية: ملف الحكم الأصلي في صفحة كل حكم، وبيانات القضية والموضوعات ومستند الحكم والمنطوق منقولة منه حرفياً. المكتبة للاطلاع ولا يستشهد بها المستشار في إجاباته.</p></aside>
+  <section aria-labelledby="jurisdictions-title" class="jurisdictions-panel">
+   <h2 id="jurisdictions-title" class="section-title">الاختصاصات</h2>
+   <div class="jurisdictions" id="jurisdictions" role="list"></div>
+  </section>
+  <section class="search-panel" aria-label="البحث في الأحكام">
+   <div class="search-tools">
+    <div class="filter-row"><label for="collection">المجموعة</label><select id="collection"><option value="all">جميع المجموعات</option></select></div>
+   </div>
+   <div class="topic-chips" id="topics" role="group" aria-label="الموضوع"></div>
+   <label for="search">ابحث في الموضوعات ومستند الحكم والمنطوق ورقم القضية</label>
+   <div class="search-row"><input id="search" type="search" maxlength="200" placeholder="مثل: التظلم الوجوبي، غرامة تأخير، ١٦٦٦" autocomplete="off"><button id="reset" type="button" class="quiet">مسح</button></div>
+   <label class="full-text-option"><input type="checkbox" id="full-text"> ابحث أيضاً في نص الحكم كاملاً (الوقائع والأسباب)</label>
+  </section>
+  <div class="result-heading"><h2 id="result-title">الأحكام</h2><p id="result-count" role="status" aria-live="polite"></p></div>
+  <div class="cards ruling-cards" id="rulings"></div>
+  <div class="empty" id="empty" hidden><h3>لا أحكام مطابقة</h3><p>جرّب كلمة أخرى أو اختر موضوعاً آخر. عدم ظهور حكم لا يعني عدم وجود قضاء في المسألة.</p><button id="reset-empty" class="primary" type="button">عرض جميع الأحكام</button></div>
+ </div>
+ <section id="ruling-view" hidden aria-labelledby="ruling-title">
+  <a href="/rulings.html" id="back" class="back">← العودة إلى الأحكام</a>
+  <div class="document-heading"><p class="eyebrow" id="ruling-eyebrow"></p><h1 id="ruling-title" tabindex="-1"></h1><div id="ruling-badges" class="badges"></div></div>
+  <div class="ruling-layout">
+   <article class="article-reader ruling-body" id="ruling-body"></article>
+   <aside class="ruling-side" id="ruling-side" aria-label="بيانات الحكم"></aside>
+  </div>
+  <section class="ruling-pdf" id="ruling-pdf" aria-label="ملف الحكم الرسمي"></section>
+ </section>
+ <div class="load-state" id="load-state" role="status" aria-live="polite">جارٍ تحميل الأحكام والتحقق من بصماتها…</div>
+ <div class="empty" id="load-error" hidden role="alert"><h2>تعذّر تحميل الأحكام</h2><p id="load-error-message">تحقق من اتصالك ثم أعد المحاولة.</p><button type="button" id="retry" class="primary">إعادة المحاولة</button></div>
+ <noscript><p>يتطلب تصفح الأحكام تفعيل JavaScript في المتصفح.</p></noscript>
+</main>
+<footer><p>المستشار النظامي · أداة بحثية مساعدة، وليست جهة رسمية أو بديلًا عن الاستشارة المتخصصة.</p><a href="/">الاستفسار والخصوصية وشروط الاستخدام</a><p class="snapshot" id="snapshot"></p></footer>
+</div>
+<script type="module" src="/rulings.js"></script>
+</body></html>

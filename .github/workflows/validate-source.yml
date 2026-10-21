@@ -53,3 +53,32 @@ jobs:
           path: .tmp/source
       - if: steps.source.outputs.available == 'true'
         run: python site/export_source.py .tmp/source --check
+  reproduce-rulings:
+    name: Reproduce pinned rulings library
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - id: lock
+        run: |
+          python - <<'PY'
+          import json,os,re
+          lock=json.load(open('site/rulings-lock.json'))
+          assert lock['repository']=='ahzh999-rgb/saudi-legislation'
+          assert re.fullmatch('[a-f0-9]{40}',lock['commit'])
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f: f.write('sha='+lock['commit']+'\n')
+          PY
+      - uses: actions/checkout@v4
+        with:
+          repository: ahzh999-rgb/saudi-legislation
+          ref: ${{ steps.lock.outputs.sha }}
+          persist-credentials: false
+          sparse-checkout: |
+            indexes/rulings.json
+            rulings
+            sources/rulings
+          sparse-checkout-cone-mode: false
+          path: .tmp/rulings-source
+      - run: python site/export_rulings.py .tmp/rulings-source --check
