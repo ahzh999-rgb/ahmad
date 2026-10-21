@@ -226,15 +226,15 @@ function renderRecord(id,focus){
  }
  files.append(list);files.append(el('p','روابط الأرشيف قد تتطلب صلاحية الوصول إلى المستودع.','muted small'));
  if(!record.sources.length)files.append(el('p','لا توجد نسخة مباشرة مرتبطة بهذا السجل حتى الآن.'));content.append(files);
- const details=el('details',undefined,'verification');details.append(el('summary',gazette?'تفاصيل التوثيق وحدود الربط':'توثيق القرار وحدود التحقق'));
- if(gazette){details.append(el('p','قد تتكرر الصفحة في أكثر من ملف. لا يثبت توفر الملفات اكتمال العدد أو فهرسة جميع ما نُشر فيه.','muted small'));}
+ let details;
+ if(gazette){details=el('details',undefined,'verification');details.append(el('summary','تفاصيل التوثيق وحدود الربط'),el('p','قد تتكرر الصفحة في أكثر من ملف. لا يثبت توفر الملفات اكتمال العدد أو فهرسة جميع ما نُشر فيه.','muted small'));}
  else{
-  const grid=el('div',undefined,'metadata-grid');
-  for(const [key,title] of [['issuance','الإصدار'],['publication','النشر'],['official_match','المقابلة'],['effectiveness','النفاذ'],['owner_approval','قبول صاحب المشروع']]){const v=record.verification[key]||{};grid.append(metadataItem(title,[statusLabel(v.status)],v.as_of?'تاريخ المراجعة المسجل: '+v.as_of:undefined));}details.append(grid);
+  // Per-dimension verification statuses are not shown on decision pages; the archived record keeps them.
+  details=el('div',undefined,'verification');
   if(record.number_basis==='title_transcription')details.append(el('p','رقم الأداة منقول من عنوان السجل، ولا يُعد توثيقًا مستقلاً للإصدار.','muted small'));
   const meta=sourceLink(manifest.commit,record.metadata_path);if(meta)details.append(external('فتح سجل التوثيق في الأرشيف',meta));
  }
- content.append(details);document.title=articleLabel(record.title)+' | المكتبة النظامية';
+ if(details.childNodes.length)content.append(details);document.title=articleLabel(record.title)+' | المكتبة النظامية';
  if(focus){$('record-title').focus({preventScroll:true});window.scrollTo(0,0);}
 }
 async function start(){
