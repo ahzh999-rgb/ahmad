@@ -82,3 +82,32 @@ test('evidence links come from the checked catalog, ignoring client supplied pub
     assert.deepEqual(evidence.sources[0].publisher_urls,['https://www.uqn.gov.sa/details?p=18244']);
   } finally {globalThis.fetch=oldFetch;}
 });
+
+test('group keys stay internal while model context and SSE headings describe the real source structure',async()=>{
+ const body='20/1- نص المادة وأحكام الغرامة التهديدية.\n20/2- بقية أحكام اللائحة.';
+ const f=fixtures('OFFICIAL_SNAPSHOT',body);
+ const id='administrative-execution-executive',heading='المادة group-20';
+ Object.assign(f.section,{instrument_id:id,legal_key:'group-20',h:heading});
+ f.raw=JSON.stringify(f.section)+'\n';f.manifest.section_sha256[0]=sha(f.raw);
+ const data=JSON.parse(f.data);data.docs[0].id=id;data.docs[0].secs[0][0]=heading;
+ f.data=JSON.stringify(data);f.manifest.data_sha256=sha(f.data);
+ const oldFetch=globalThis.fetch;
+ let called=false;
+ globalThis.fetch=async(url,options)=>{
+  called=true;const payload=JSON.parse(options.body);
+  assert.ok(payload.messages[0].content.includes('أحكام اللائحة المرتبطة بالمادة 20 من النظام'));
+  assert.ok(payload.messages[0].content.includes(body));
+  assert.ok(!payload.messages[0].content.includes('group-20'));
+  assert.ok(payload.system.includes('ليس مادة مستقلة في اللائحة'));
+  return new Response('data: mock\n\n');
+ };
+ try{
+  const response=await worker.fetch(request(),envFor(f));
+  assert.equal(response.status,200);assert.ok(called);
+  const first=(await response.text()).split('\n').find(l=>l.startsWith('data: '));
+  const source=JSON.parse(first.slice(6)).sources[0];
+  assert.equal(source.legal_key,'group-20');
+  assert.equal(source.heading,'أحكام اللائحة المرتبطة بالمادة 20 من النظام');
+  assert.equal(source.body_sha256,sha(body));
+ }finally{globalThis.fetch=oldFetch;}
+});

@@ -25,8 +25,8 @@ export function categoryOf(id) {
 export function buildCatalog(data) {
   let sectionId = 0;
   return data.docs.map(doc => ({...doc, category:categoryOf(doc.id), documentType:documentType(doc), searchableTitle:normalize(doc.title),
-    articles:doc.secs.map(([heading,body]) => ({id:sectionId++,heading,body,
-      key:heading.replace(/^المادة\s*/,''),searchable:normalize(heading+' '+body)})),
+    articles:doc.secs.map(([heading,body]) => ({id:sectionId++,heading,body,displayHeading:referenceLabel(heading,doc.id),
+      key:heading.replace(/^المادة\s*/,''),searchable:normalize(referenceLabel(heading,doc.id)+' '+body)})),
   }));
 }
 const SEARCH_STOP = new Set('ما ماذا هل متى كيف من في على عن هي هو شروط الشروط ضوابط الضوابط حالات الحالات يجوز تجيز التي الذي'.split(' '));
@@ -40,7 +40,8 @@ export function matchingArticles(doc, query) {
   if (number) {
     const repeated=/-bis|مكرر/.test(q),suffix=number[2]||number[3];
     const key=number[1]+(repeated?'-bis'+(suffix?'-'+suffix:''):'');
-    return doc.articles.filter(a=>normalize(a.key)===key);
+    return doc.articles.filter(a=>normalize(a.key)===key ||
+      (doc.id==='administrative-execution-executive' && !repeated && a.key==='group-'+key));
   }
   if (!terms.length) return [];
   const matches=doc.articles.filter(a=>terms.every(term=>a.searchable.includes(term)));
@@ -79,7 +80,26 @@ export function latinDigits(value) {
 }
 export function articleLabel(value) {
   return latinDigits(value).replace(/(\d+)-bis(?:-(\d+))?/g,(_,n,repeat)=>n+' مكرر'+(repeat?' '+repeat:''))
-    .replace(/\bArticle\s*(\d+)/gi,'المادة $1');
+    .replace(/\bArticle\s*(\d+)/gi,'المادة $1')
+    .replace(/(?:المادة\s+)?\bgroup[-_]\d+\b/gi,'مجموعة أحكام (ترقيم مستقل غير مثبت)')
+    .replace(/المادة\s+[a-z][a-z0-9_-]*/gi,'مقطع من الوثيقة (ترقيم المادة غير مثبت)');
+}
+// The pinned source index explicitly groups regulation clauses by the
+// corresponding LAW article. Keep group-N as the stable key, never an
+// independent regulation article number. Unknown identifiers stay unnumbered.
+export function referenceLabel(heading,instrumentId) {
+  const value=latinDigits(heading);
+  const group=value.match(/^(?:المادة\s+)?group-(\d+)$/);
+  if(group && instrumentId==='administrative-execution-executive') {
+    return 'أحكام اللائحة المرتبطة بالمادة '+group[1]+' من النظام';
+  }
+  return articleLabel(value);
+}
+export function isRegulatoryGroup(key,instrumentId) {
+  return instrumentId==='administrative-execution-executive' && /^group-\d+$/.test(key);
+}
+export function referenceUnit(doc) {
+  return doc.id==='administrative-execution-executive' ? 'مجموعة أحكام' : 'مادة';
 }
 export function documentType(doc) {
   const title=doc.title||'';
