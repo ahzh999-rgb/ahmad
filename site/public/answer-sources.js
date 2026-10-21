@@ -1,4 +1,4 @@
-import { articleLabel, sourceLink } from './library-core.js';
+import { articleLabel, referenceLabel, isRegulatoryGroup, sourceLink } from './library-core.js';
 
 // Only explicit publisher metadata is exported. A publisher page is a
 // document-level reference, not a claim that its live bytes match the archive.
@@ -30,7 +30,7 @@ function archiveLink(value, snapshot) {
 export function sourceLinks(source, snapshot) {
   const links = [];
   if (typeof source.instrument_id === 'string' && source.instrument_id && typeof source.legal_key === 'string' && source.legal_key) {
-    links.push({ href:'/library?'+new URLSearchParams({doc:source.instrument_id,article:source.legal_key}), label:'عرض المادة', kind:'article' });
+    links.push({ href:'/library?'+new URLSearchParams({doc:source.instrument_id,article:source.legal_key}), label:isRegulatoryGroup(source.legal_key,source.instrument_id)?'عرض الأحكام':'عرض المادة', kind:'article' });
   }
   const archive = archiveLink(source.source_url, snapshot);
   if (archive) links.push({href:archive,label:'النسخة المؤرشفة المستخدمة',kind:'archive'});
@@ -44,10 +44,10 @@ export function sourceLinks(source, snapshot) {
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function sourcesHTML(sources, snapshot) {
   if (!Array.isArray(sources) || !sources.length) return '';
-  return 'المواد المرفقة للإجابة:<ul>'+sources.map(source => {
+  return 'النصوص المرفقة للإجابة:<ul>'+sources.map(source => {
     const links = sourceLinks(source,snapshot).map(link => '<a href="'+escape(link.href)+'"'+
       (link.kind === 'article' ? '' : ' target="_blank" rel="noopener noreferrer"')+'>'+escape(link.label)+'</a>').join('');
-    return '<li><strong>'+escape(articleLabel(source.title+'، '+source.heading))+'</strong>'+
+    return '<li><strong>'+escape(articleLabel(source.title)+'، '+referenceLabel(source.heading,source.instrument_id))+'</strong>'+
       (source.temporal?.state === 'FUTURE_RECORDED' ? '<span class="tag new">لم يبدأ نفاذه بعد وفق التاريخ المسجل</span>' : '')+
       '<div class="source-links">'+links+'</div></li>';
   }).join('')+'</ul><p class="source-note">روابط الناشر تخص الوثيقة وقد تعرض نسخة مختلفة أو أحدث؛ النسخة المؤرشفة هي مرجع الإجابة، ووجود الرابط لا يثبت السريان أو الانطباق على الواقعة.</p>';

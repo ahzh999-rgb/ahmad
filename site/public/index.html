@@ -203,6 +203,7 @@ body:has(dialog[open]){overflow:hidden}
 
 <script type="module">
 import { sourcesHTML } from './answer-sources.js';
+import { articleLabel, referenceLabel } from './library-core.js';
 (function(){
 let LIB=null;
 const $ = id => document.getElementById(id);
@@ -210,7 +211,7 @@ const $ = id => document.getElementById(id);
 
 // ---------- rendering ----------
 function msg(t,d,k){return '<div class="msg'+(k?' '+k:'')+'" role="alert"><strong>'+esc(t)+'</strong><br>'+esc(d)+'</div>';}
-function displayText(s){return String(s).replace(/[٠-٩۰-۹]/g,c=>String(c.charCodeAt(0)-(c>='۰'?1776:1632))).replace(/(\d+)-bis(?:-(\d+))?/g,(_,n,r)=>n+' مكرر'+(r?' '+r:''));}
+function displayText(s){return articleLabel(s);}
 function esc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function inline(s){return esc(displayText(s)).replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>');}
 function md(src){
@@ -300,8 +301,8 @@ $('f').addEventListener('submit', async e=>{
     foldQuotes($('answer'));
     const sources=res.evidence?.sources||[];
     $('basis').innerHTML=sourcesHTML(sources,res.evidence?.snapshot);
-    lastBasis=displayText(sources.map(source=>source.title+'، '+source.heading).join('؛ '));
-    lastText=displayText(body).replace(/\*\*/g,'').trim()+(lastBasis?'\n\nالمواد المرفقة للإجابة: '+lastBasis:'')+'\n'+location.origin;
+    lastBasis=displayText(sources.map(source=>source.title+'، '+referenceLabel(source.heading,source.instrument_id)).join('؛ '));
+    lastText=displayText(body).replace(/\*\*/g,'').trim()+(lastBasis?'\n\nالنصوص المرفقة للإجابة: '+lastBasis:'')+'\n'+location.origin;
     $('after').hidden=false; status.textContent='';
   }catch(err){
     status.textContent='';

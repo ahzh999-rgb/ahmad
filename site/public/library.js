@@ -1,5 +1,5 @@
 import { checkedCatalog, checkedSection, checkedInventory } from './source-guard.js';
-import { buildCatalog, filterCatalog, matchingArticles, normalize, CATEGORIES, futureDate, sourceLink, latinDigits, articleLabel, fileLabel } from './library-core.js';
+import { buildCatalog, filterCatalog, matchingArticles, normalize, CATEGORIES, futureDate, sourceLink, latinDigits, articleLabel, fileLabel, referenceUnit } from './library-core.js';
 
 const $=id=>document.getElementById(id), day=new Date().toISOString().slice(0,10);
 const number=n=>new Intl.NumberFormat('en-US').format(n);
@@ -20,7 +20,7 @@ function urlFor(changes){const u=new URL(location.href);for(const [key,value] of
 function navigate(href){history.pushState(null,'',href);render(true);}
 function statusLabel(v){return ({VERIFIED:'موثق ضمن النطاق المسجل',OWNER_ACCEPTED:'مقبول من صاحب المشروع',PARTIAL:'تحقق جزئي',UNKNOWN:'غير مثبت',NOT_APPLICABLE:'غير منطبق'})[v]||'راجع سجل المصدر';}
 function futureBadge(doc){const date=futureDate(doc,day);return date?badge('نفاذ مسجل مستقبلًا · '+date,true):null;}
-function appendBadges(parent,doc){parent.append(badge(number(doc.articles.length)+' مادة متاحة'));const f=futureBadge(doc);if(f)parent.append(f);}
+function appendBadges(parent,doc){parent.append(badge(number(doc.articles.length)+' '+referenceUnit(doc)+' متاحة'));const f=futureBadge(doc);if(f)parent.append(f);}
 function renderCards(){
  if(collectionView()!=='articles'){renderCollectionCards();return;}
  const query=$('search').value,category=$('category').value;
@@ -30,14 +30,14 @@ function renderCards(){
   const a=link('',urlFor({doc:doc.id,article:query.trim()&&!titleMatch?matches[0]?.key:null,within:query.trim()&&!titleMatch?query:null}),'card');a.dataset.internal='';
   a.append(el('span',categoryName(doc.category),'card-category'),el('h3',doc.title));
   const meta=el('div',undefined,'card-meta');appendBadges(meta,doc);a.append(meta);
-  if(query.trim())a.append(el('span',titleMatch?'تطابق في اسم الوثيقة':number(matches.length)+' مادة مطابقة للبحث','small muted'));
-  const bottom=el('div',undefined,'card-bottom');bottom.append(el('span','ضمن نسخة الموقع'),el('span','تصفح المواد ←'));a.append(bottom);container.append(a);
+  if(query.trim())a.append(el('span',titleMatch?'تطابق في اسم الوثيقة':number(matches.length)+' '+referenceUnit(doc)+' مطابقة للبحث','small muted'));
+  const bottom=el('div',undefined,'card-bottom');bottom.append(el('span','ضمن نسخة الموقع'),el('span','تصفح النصوص ←'));a.append(bottom);container.append(a);
  }
 }
 function metadataItem(title,values,note){const block=el('div',undefined,'metadata-item');block.append(el('strong',title));for(const value of values)block.append(el('p',value));if(note)block.append(el('small',note));return block;}
 function renderMetadata(doc){
  const grid=el('div',undefined,'metadata-grid');
- grid.append(metadataItem('التغطية المتاحة',[number(doc.articles.length)+' مادة مؤهلة في نسخة الموقع'],'لا يُعرف اكتمال الوثيقة من هذا العدد وحده.'));
+ grid.append(metadataItem('التغطية المتاحة',[number(doc.articles.length)+' '+referenceUnit(doc)+' مؤهلة في نسخة الموقع'],'لا يُعرف اكتمال الوثيقة من هذا العدد وحده.'));
  const verified=doc.verification||{};
  for(const [key,title] of [['official_match','المقابلة الرسمية'],['amendments','التعديلات'],['publication','النشر'],['effectiveness','النفاذ'],['owner_approval','قبول صاحب المشروع']]){
   const v=verified[key]||{};grid.append(metadataItem(title,[statusLabel(v.status)],v.as_of?'تاريخ المراجعة المسجل: '+v.as_of:undefined));
@@ -52,32 +52,32 @@ function renderMetadata(doc){
  $('document-metadata').append(el('p','راجع سجل المصدر لمعرفة النطاق التفصيلي للمقابلة والتعديلات؛ حالة التحقق تخص النسخة الموثقة فقط.','muted small'));
 }
 function renderArticleList(){
- const matches=matchingArticles(currentDoc,$('article-search').value);$('article-count').textContent=number(matches.length)+' من '+number(currentDoc.articles.length)+' مادة متاحة';
+ const matches=matchingArticles(currentDoc,$('article-search').value);$('article-count').textContent=number(matches.length)+' من '+number(currentDoc.articles.length)+' '+referenceUnit(currentDoc)+' متاحة';
  const list=$('article-list');list.replaceChildren();
- for(const article of matches){const a=link(article.heading,urlFor({article:article.key,within:$('article-search').value}),'article-link');a.dataset.internal='';if(article.key===currentArticle?.key)a.setAttribute('aria-current','true');list.append(a);}
+ for(const article of matches){const a=link(article.displayHeading,urlFor({article:article.key,within:$('article-search').value}),'article-link');a.dataset.internal='';if(article.key===currentArticle?.key)a.setAttribute('aria-current','true');list.append(a);}
  if(!matches.length)list.append(el('p','لا توجد مواد مطابقة ضمن المتاح.','small muted'));
 }
 function sourceDetails(section){
  const details=el('details',undefined,'source-details');details.append(el('summary','معلومات التوثيق'));
  details.append(el('p','تم التحقق من مطابقة النص لنسخة الموقع. لا يثبت ذلك اكتمال التعديلات أو انطباق الحكم على واقعة.'));
- const record=sourceLink(manifest.commit,section.body_record_path);if(record)details.append(external('فتح سجل المادة في الأرشيف',record));
+ const record=sourceLink(manifest.commit,section.body_record_path);if(record)details.append(external('فتح سجل النص في الأرشيف',record));
  return details;
 }
 async function loadSection(doc,article){
- const serial=++requestSerial,source=$('article-source');source.replaceChildren(el('p','جارٍ التحقق من مصدر المادة…','muted'));
+ const serial=++requestSerial,source=$('article-source');source.replaceChildren(el('p','جارٍ التحقق من مصدر النص…','muted'));
  try{
   let section=sectionCache.get(article.id);
   if(!section){const response=await fetch('/s/'+article.id+'.json');if(!response.ok)throw new Error('unavailable');section=await checkedSection(await response.text(),manifest,article.id);
    if(section.instrument_id!==doc.id||section.legal_key!==article.key||section.h!==article.heading||section.b!==article.body)throw new Error('source_integrity');sectionCache.set(article.id,section);}
   if(serial!==requestSerial)return;
   source.replaceChildren();
-  const verified=el('p');verified.append(badge('تطابقت بصمة المادة مع نسخة الموقع'));source.append(verified);
+  const verified=el('p');verified.append(badge('تطابقت بصمة النص مع نسخة الموقع'));source.append(verified);
   source.append(el('p',section.body_kind==='OWNER_ACCEPTED'?'نوع المتن: مقبول من صاحب المشروع ضمن نطاقه المسجل.':'نوع المتن: نص مقابل ضمن النسخة والنطاق المسجلين.'));
   const href=sourceLink(manifest.commit,section.source_path);if(href)source.append(external('فتح المصدر المؤرشف ↗',href));
   source.append(sourceDetails(section),el('p','تطابق البصمة يثبت سلامة النقل من النسخة المثبتة، ولا يثبت حداثة الحكم أو انطباقه.','muted small'));
  }catch{
   if(serial!==requestSerial)return;
-  source.replaceChildren(el('p','تعذّر التحقق من ملف مصدر المادة. قد تكون نسخة الموقع قد تغيّرت؛ أعد تحميل المكتبة قبل الاعتماد عليها.'));
+  source.replaceChildren(el('p','تعذّر التحقق من ملف مصدر النص. قد تكون نسخة الموقع قد تغيّرت؛ أعد تحميل المكتبة قبل الاعتماد عليها.'));
   const retry=el('button','إعادة التحقق','quiet');retry.type='button';retry.onclick=()=>loadSection(doc,article);source.append(retry);
  }
 }
@@ -99,18 +99,24 @@ function render(focus=false){
  $('document-badges').replaceChildren();appendBadges($('document-badges'),doc);
  renderDocumentGazettes(doc);
  const future=futureDate(doc,day);
- $('document-coverage').textContent='المعروض '+number(doc.articles.length)+' مادة من النسخة المؤرشفة؛ اكتمال الوثيقة وحداثتها يحتاجان مراجعة.'+(future?' لم يدخل النص حيز النفاذ بعد وفق التاريخ المسجل '+future+'؛ عرضه هنا للقراءة والمقارنة.':' السريان والتطبيق على واقعة يحتاجان تحققًا مستقلاً.');
+ $('document-coverage').textContent='المعروض '+number(doc.articles.length)+' '+referenceUnit(doc)+' من النسخة المؤرشفة؛ اكتمال الوثيقة وحداثتها يحتاجان مراجعة.'+
+  (doc.id==='administrative-execution-executive'?' هذه مجموعات فقرات اللائحة المرتبطة بمواد النظام، وليست مواد مستقلة في اللائحة.':'')+
+  (future?' لم يدخل النص حيز النفاذ بعد وفق التاريخ المسجل '+future+'؛ عرضه هنا للقراءة والمقارنة.':' السريان والتطبيق على واقعة يحتاجان تحققًا مستقلاً.');
  if(changed)renderMetadata(doc);
  $('article-search').value=(params.get('within')||'').slice(0,200);
  const key=params.get('article'),article=key?doc.articles.find(a=>a.key===key):doc.articles[0];currentArticle=article||null;
  renderArticleList();
  $('reader').hidden=!article;
  if(article){
-  $('article-title').textContent=articleLabel(article.heading);$('article-body').textContent=latinDigits(article.body);
-  const q='ما أحكام '+articleLabel(article.heading)+' من '+doc.title+'، وما شروط تطبيقها؟';$('ask-article').href='/?q='+encodeURIComponent(q)+'&draft=1';
-  loadSection(doc,article);document.title=articleLabel(article.heading+' · '+doc.title)+' | المكتبة النظامية';
+  $('article-title').textContent=article.displayHeading;$('article-body').textContent=latinDigits(article.body);
+  const grouped=doc.id==='administrative-execution-executive';
+  $('copy-article').textContent=grouped?'نسخ الأحكام':'نسخ المادة';$('share-article').textContent=grouped?'نسخ رابط الأحكام':'نسخ رابط المادة';
+  $('ask-article').textContent=grouped?'استفسر عن هذه الأحكام':'استفسر عن هذه المادة';
+  $('article-search').placeholder=grouped?'كلمة أو رقم مادة النظام':'كلمة أو رقم مادة';
+  const q='ما أحكام '+article.displayHeading+' من '+doc.title+'، وما شروط تطبيقها؟';$('ask-article').href='/?q='+encodeURIComponent(q)+'&draft=1';
+  loadSection(doc,article);document.title=articleLabel(article.displayHeading+' · '+doc.title)+' | المكتبة النظامية';
  }else{
-  requestSerial++;$('article-count').textContent='المادة المطلوبة غير متاحة في هذه النسخة. اختر مادة من القائمة.';
+  requestSerial++;$('article-count').textContent='النص المطلوب غير متاح في هذه النسخة. اختر نصًا من القائمة.';
  }
  if(focus){if(changed){$('document-title').focus({preventScroll:true});window.scrollTo(0,0);}else if(article){$('article-title').focus({preventScroll:true});if(innerWidth<=640)$('reader').scrollIntoView({block:'start'});}}
 }
@@ -126,12 +132,12 @@ document.addEventListener('click',event=>{
 });
 addEventListener('popstate',()=>{if(manifest)render(true);});
 async function copy(button,value,original){
- value=articleLabel(value);
+ // Callers format visible text; never rewrite an identifier inside a URL.
  try{await navigator.clipboard.writeText(value);button.textContent='تم النسخ ✓';}catch{button.textContent='تعذّر النسخ؛ انسخ النص يدويًا';}
  setTimeout(()=>{button.textContent=original;},2000);
 }
-$('copy-article').onclick=()=>{if(currentArticle)copy($('copy-article'),currentDoc.title+'\n'+currentArticle.heading+'\n\n'+currentArticle.body+'\n\nنسخة الموقع: '+manifest.commit+'\n'+new URL(urlFor({article:currentArticle.key}),location.origin).href,'نسخ المادة');};
-$('share-article').onclick=()=>{if(currentArticle)copy($('share-article'),new URL(urlFor({article:currentArticle.key}),location.origin).href,'نسخ رابط المادة');};
+$('copy-article').onclick=()=>{if(currentArticle)copy($('copy-article'),articleLabel(currentDoc.title)+'\n'+currentArticle.displayHeading+'\n\n'+latinDigits(currentArticle.body)+'\n\nنسخة الموقع: '+manifest.commit+'\n'+new URL(urlFor({article:currentArticle.key}),location.origin).href,referenceUnit(currentDoc)==='مجموعة أحكام'?'نسخ الأحكام':'نسخ المادة');};
+$('share-article').onclick=()=>{if(currentArticle)copy($('share-article'),new URL(urlFor({article:currentArticle.key}),location.origin).href,referenceUnit(currentDoc)==='مجموعة أحكام'?'نسخ رابط الأحكام':'نسخ رابط المادة');};
 $('retry').onclick=()=>location.reload();
 const root=document.documentElement,isDark=()=>root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme:dark)').matches;
 try{const theme=localStorage.getItem('theme');if(['light','dark'].includes(theme))root.dataset.theme=theme;}catch{}
@@ -153,7 +159,7 @@ function renderCollectionChrome(){
  $('search-label').textContent=view==='articles'?'ابحث باسم الوثيقة أو في نصوص المواد':view==='decisions'?'ابحث باسم القرار أو رقمه المسجل':'ابحث برقم العدد أو الوثائق المرتبطة بشواهده';
  $('search').placeholder=view==='articles'?'مثل: الشراء المباشر، الإعارة، المادة 32':view==='decisions'?'مثل: مكافأة مباشرة الأموال العامة، 835':'مثل: 5180، نظام العمل، التخصيص';
  $('collection-note').textContent=view==='articles'?'هذه مكتبة المواد المؤهلة في نسخة الموقع. لا تشمل كل ملفات المستودع، وعدد المواد المتاحة لا يثبت اكتمال الوثيقة أو حداثتها أو سريانها على واقعتك.':view==='decisions'?'هذا فهرس للقرارات وأدوات الإصدار المؤرشفة. إدراج قرار هنا يتيح الوصول إلى سجله ومصدره؛ لا يجعله مؤهلًا لتوليد الأحكام، ولا يثبت اكتمال مرفقاته أو حداثته أو نفاذه.':'هذه أعداد أم القرى الممثلة بملفات أو شواهد في الأرشيف، وليست أرشيفًا شاملًا للجريدة. قد يكون المتاح صور صفحات أو مقتطفات فقط. وجود ملف PDF لا يثبت اكتمال العدد، والوثائق المرتبطة لا تمثل كل محتوياته.';
- const stats=view==='articles'?[[manifest.document_count,'وثيقة متاحة'],[manifest.section_count,'مادة مؤهلة']]:view==='decisions'?[[inventory.decisions.length,'سجل قرار وأداة إصدار']]:[[inventory.gazette_issues.length,'عددًا ممثلًا في الأرشيف'],[inventory.gazette_issues.filter(r=>r.archive_kind==='ISSUE_PDF_COMPLETENESS_UNVERIFIED').length,'أعداد لها ملفات للقراءة']];
+ const stats=view==='articles'?[[manifest.document_count,'وثيقة متاحة'],[manifest.section_count,'نص مؤهل']]:view==='decisions'?[[inventory.decisions.length,'سجل قرار وأداة إصدار']]:[[inventory.gazette_issues.length,'عددًا ممثلًا في الأرشيف'],[inventory.gazette_issues.filter(r=>r.archive_kind==='ISSUE_PDF_COMPLETENESS_UNVERIFIED').length,'أعداد لها ملفات للقراءة']];
  $('statistics').replaceChildren();for(const [value,label] of stats){const stat=el('span',undefined,'stat');stat.append(el('b',number(value)),el('span',label));$('statistics').append(stat);}
 }
 function renderCollectionCards(){
@@ -245,7 +251,7 @@ async function start(){
   docs=buildCatalog(await checkedCatalog(await dr.text(),manifest));
   inventory=await checkedInventory(await ir.text(),manifest);
   for(const [id,name] of CATEGORIES)if(id!=='all'&&docs.some(d=>d.category===id)){const option=el('option',name);option.value=id;$('category').append(option);}
-  $('statistics').replaceChildren();for(const [value,label] of [[manifest.document_count,'وثيقة متاحة'],[manifest.section_count,'مادة مؤهلة']]){const stat=el('span',undefined,'stat');stat.append(el('b',number(value)),el('span',label));$('statistics').append(stat);}
+  $('statistics').replaceChildren();for(const [value,label] of [[manifest.document_count,'وثيقة متاحة'],[manifest.section_count,'نص مؤهل']]){const stat=el('span',undefined,'stat');stat.append(el('b',number(value)),el('span',label));$('statistics').append(stat);}
   $('snapshot').append(document.createTextNode('نسخة المكتبة: '),external('عرض بيانات النسخة','https://github.com/ahzh999-rgb/saudi-legislation/tree/'+manifest.commit),document.createTextNode(' · رقم النسخة لا يحدد تاريخ المراجعة القانونية.'));
   $('load-state').hidden=true;render();
  }catch{$('load-state').hidden=true;$('catalog-view').hidden=true;$('document-view').hidden=true;$('record-view').hidden=true;$('load-error').hidden=false;$('load-error-message').textContent='تعذّر تحميل نسخة مكتبة متطابقة. تحقق من الاتصال ثم أعد المحاولة؛ لن نعرض بيانات لم يكتمل التحقق منها.';}
