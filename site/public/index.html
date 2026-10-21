@@ -75,6 +75,9 @@ footer p{margin:0}
 .tag.old{background:var(--line);color:var(--fg)}
 .basis ul{margin:4px 0 0;padding-inline-start:18px}
 .basis li{margin:2px 0}
+.source-links{display:flex;gap:4px 14px;flex-wrap:wrap;margin-block:4px 10px}
+.source-links a{color:var(--accent);text-underline-offset:3px}
+.source-note{margin:8px 0 0;font-size:.82rem}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
 .answer details.q{margin:8px 0}
 .answer details.q summary{cursor:pointer;font-size:.88rem;color:var(--accent)}
@@ -198,7 +201,8 @@ body:has(dialog[open]){overflow:hidden}
   <p>عدم ظهور مادة في الإجابة لا يعني عدم وجودها في المكتبة أو عدم وجود حكم نظامي للمسألة.</p>
 </dialog>
 
-<script>
+<script type="module">
+import { sourcesHTML } from './answer-sources.js';
 (function(){
 let LIB=null;
 const $ = id => document.getElementById(id);
@@ -295,7 +299,7 @@ $('f').addEventListener('submit', async e=>{
     $('answer').innerHTML=md(body)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
     foldQuotes($('answer'));
     const sources=res.evidence?.sources||[];
-    $('basis').innerHTML=sources.length?'المواد المرفقة للإجابة:<ul>'+sources.map(source=>'<li><strong>'+esc(displayText(source.title+'، '+source.heading))+'</strong>'+(source.temporal?.state==='FUTURE_RECORDED'?'<span class="tag new">لم يبدأ نفاذه بعد وفق التاريخ المسجل</span>':'')+'</li>').join('')+'</ul>':'';
+    $('basis').innerHTML=sourcesHTML(sources,res.evidence?.snapshot);
     lastBasis=displayText(sources.map(source=>source.title+'، '+source.heading).join('؛ '));
     lastText=displayText(body).replace(/\*\*/g,'').trim()+(lastBasis?'\n\nالمواد المرفقة للإجابة: '+lastBasis:'')+'\n'+location.origin;
     $('after').hidden=false; status.textContent='';

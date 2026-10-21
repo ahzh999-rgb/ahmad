@@ -1,9 +1,26 @@
 import hashlib,json,sys,unittest
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from export_source import eligible_result
+from export_source import eligible_result,publisher_urls
 ROOT=Path(__file__).resolve().parents[1]
 class ExportTests(unittest.TestCase):
+    def test_publisher_urls_only_export_explicit_trusted_document_references(self):
+        urls=publisher_urls({'official_source_url':'https://www.uqn.gov.sa/details?p=18244',
+            'official_boe_url':'https://laws.boe.gov.sa/BoeLaws/Laws/LawDetails/example/1',
+            'unrelated_search_url':'https://www.uqn.gov.sa/search?q=anything'})
+        self.assertEqual(len(urls),2)
+        self.assertIn('18244',urls[0])
+        self.assertEqual(publisher_urls({'official_source_url':'https://uqn.gov.sa.evil.test/'}),[])
+        self.assertEqual(publisher_urls({'official_source_url':'javascript:alert(1)'}),[])
+        self.assertEqual(publisher_urls({'official_source_url':'https://user:pass@uqn.gov.sa/'}),[])
+        self.assertEqual(publisher_urls({'official_source_url':'https://uqn.gov.sa:444/'}),[])
+        self.assertEqual(publisher_urls({'official_source_url':'https://uqn.gov.sa/\\bad'}),[])
+        self.assertEqual(publisher_urls({}),[])
+    def test_publisher_paths_are_encoded_and_university_copies_retained(self):
+        self.assertEqual(publisher_urls({'official_source_url':'https://www.mof.gov.sa/لائحة تفضيل.pdf'}),
+            ['https://www.mof.gov.sa/%D9%84%D8%A7%D8%A6%D8%AD%D8%A9%20%D8%AA%D9%81%D8%B6%D9%8A%D9%84.pdf'])
+        copy='https://www.mu.edu.sa/sites/default/files/scan.pdf'
+        self.assertEqual(publisher_urls({'official_source_url':copy,'official_boe_url':copy}),[copy])
     def result(self,**kw):
         body='نص المادة';return dict(status='FOUND_SNAPSHOT',body_kind='OFFICIAL_SNAPSHOT',body=body,body_sha256=hashlib.sha256(body.encode()).hexdigest(),**kw)
     def test_source_policy_preserves_owner_acceptance_without_certifying_it(self):

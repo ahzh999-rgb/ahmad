@@ -1,5 +1,6 @@
 import { checkedSection, checkedCatalog } from './source_guard.js';
 import { buildIndex, selectEvidence, RETRIEVAL_VERSION } from './retrieval.js';
+import { publisherLink } from '../public/answer-sources.js';
 
 const API = 'https://api.anthropic.com/v1/messages';
 const MAX_Q = 1500, MAX_CONTEXT_CHARS = 90000;
@@ -69,6 +70,7 @@ async function ask(question, body, req, env, diagnostic) {
     snapshot:manifest.commit, data_sha256:manifest.data_sha256, as_of:day, domain:selection.domain,
     sources:entries.map(({row,section}) => ({ id:row.id, instrument_id:row.instrument, legal_key:row.key,
       title:section.t, heading:section.h, source_url:section.source_url, body_sha256:section.body_sha256,
+      publisher_urls:(Array.isArray(row.publisher_urls) ? row.publisher_urls : []).filter(url => publisherLink(url)),
       reason:row.reason, temporal:row.temporal })),
     excluded_future:selection.future, omitted:selection.omitted,
     unresolved_references:selection.references.filter(r => r.state !== 'CANDIDATE_FOUND'),
