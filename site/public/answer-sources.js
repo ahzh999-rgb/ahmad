@@ -48,7 +48,8 @@ export function sourceLinks(source, snapshot) {
 const escape = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export function sourcesHTML(sources, snapshot) {
   if (!Array.isArray(sources) || !sources.length) return '';
-  return 'النصوص المرفقة للإجابة:<ul>'+sources.map(source => {
+  const code=typeof snapshot === 'string' && /^[a-f0-9]{40}$/.test(snapshot) ? '<small>نسخة المكتبة <code>'+escape(snapshot.slice(0,7))+'</code></small>' : '';
+  return '<div class="src-head"><span>النصوص المرفقة للإجابة <small>('+sources.length+')</small></span>'+code+'</div><ul>'+sources.map(source => {
     const links = sourceLinks(source,snapshot).map(link => '<a href="'+escape(link.href)+'"'+
       (link.kind === 'article' ? '' : ' target="_blank" rel="noopener noreferrer"')+'>'+escape(link.label)+'</a>').join('');
     return '<li><strong>'+escape(articleLabel(source.title)+'، '+referenceLabel(source.heading,source.instrument_id))+'</strong>'+

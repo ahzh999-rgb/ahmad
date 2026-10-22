@@ -3,184 +3,140 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>المستشار النظامي</title>
-<meta name="description" content="المستشار النظامي: ابحث في مكتبة التشريعات السعودية، واقرأ المواد ومصادرها، واطرح استفسارك للحصول على إجابة استرشادية مسندة إلى النصوص المتاحة.">
+<title>المستشار النظامي | إجابات من نصوص الأنظمة السعودية مع المصدر</title>
+<meta name="description" content="اسأل عن الأنظمة واللوائح السعودية ذات الصلة بالتعامل مع الجهات الحكومية، واحصل على إجابة استرشادية مرفقة بالمادة ونسختها المؤرشفة ومصدرها.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ar_SA">
+<meta property="og:title" content="المستشار النظامي">
+<meta property="og:description" content="إجابات من نصوص الأنظمة السعودية، مع المادة والمصدر.">
+<meta property="og:url" content="https://mustasher.com/">
+<meta name="theme-color" content="#105c43">
 <link rel="canonical" href="https://mustasher.com/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500;700&display=swap">
-<style>
-:root{
-  --bg:#f6f7f4; --surface:#ffffff; --fg:#1c2420; --muted:#5b6a62; --line:#dde3dd;
-  --accent:#0f5c3f; --accent-fg:#ffffff; --accent-soft:#e6f0ea; --seal:#a8823a;
-  --quote:#f1f4ee; --warn-bg:#fff4c7; --warn-line:#e0b52c; --warn-fg:#5c4508; --err:#a23b2c;
-}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#121815; --surface:#1a221e; --fg:#e4ebe6; --muted:#9aaba1; --line:#2c3832;
-  --accent:#4fb486; --accent-fg:#0d1511; --accent-soft:#1f3329; --seal:#d0ac62;
-  --quote:#1f2924; --warn-bg:#3a3010; --warn-line:#c99a1e; --warn-fg:#f4dc8f; --err:#e07a68; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#121815; --surface:#1a221e; --fg:#e4ebe6; --muted:#9aaba1; --line:#2c3832;
-  --accent:#4fb486; --accent-fg:#0d1511; --accent-soft:#1f3329; --seal:#d0ac62;
-  --quote:#1f2924; --warn-bg:#3a3010; --warn-line:#c99a1e; --warn-fg:#f4dc8f; --err:#e07a68; color-scheme:dark}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-body{margin:0;min-height:100svh;background:var(--bg);color:var(--fg);font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;font-size:16px;line-height:1.8;direction:rtl;padding-inline:16px;padding-block:28px 48px}
-.wrap{width:100%;max-width:1120px;min-height:calc(100svh - 76px);margin:0 auto;display:flex;flex-direction:column;gap:24px}
-.workspace{width:100%;max-width:960px;margin:0 auto;flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;padding:32px 0}
-.composer-title{font-family:"Noto Naskh Arabic",serif;font-size:1.7rem;text-align:center;margin:0 0 4px}
-form.composer{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:26px;box-shadow:0 12px 40px rgba(15,60,40,.06)}
-form .label{text-align:center;font-size:1rem;color:var(--fg)}
-header{display:flex;gap:14px;align-items:center}
-header .titles{flex:1;min-width:0}
-.library-link{display:inline-block;margin-top:8px;color:var(--accent);font-size:.9rem;text-underline-offset:4px}
-.theme{flex:none;align-self:flex-start;background:var(--surface);color:var(--fg);border:1px solid var(--line);padding:6px 12px;font-size:.85rem}
-.updated{margin:2px 0 0;color:var(--muted);font-size:.85rem}
-.seal{flex:none;width:52px;height:52px;border-radius:50%;border:2px solid var(--seal);display:grid;place-items:center;color:var(--seal);font-family:"Noto Naskh Arabic",serif;font-weight:700;font-size:22px}
-h1{font-family:"Noto Naskh Arabic",serif;font-size:1.65rem;line-height:1.35;margin:0;text-wrap:balance}
-.sub{margin:0;color:var(--muted);font-size:.95rem}
-.notice{background:var(--warn-bg);color:var(--warn-fg);border:1px solid var(--warn-line);border-inline-start:5px solid var(--warn-line);border-radius:10px;padding:12px 14px;font-size:.95rem;line-height:1.7;display:flex;gap:10px}
-.notice .ico{flex:none;font-size:1.2rem;line-height:1.4}
-form{display:flex;flex-direction:column;gap:10px}
-textarea{width:100%;min-height:260px;resize:vertical;font:inherit;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px 22px;font-size:1.1rem;line-height:1.9}
-textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:transparent}
-.row{display:flex;justify-content:center;gap:10px;align-items:center;flex-wrap:wrap}
-.row .primary{min-width:140px}
-.hint{text-align:center}
-button{font:inherit;cursor:pointer;border-radius:10px;border:1px solid transparent;padding:9px 20px}
-.primary{background:var(--accent);color:var(--accent-fg);font-weight:600}
-.primary:disabled{opacity:.55;cursor:default}
-.ghost{background:transparent;color:var(--muted);border-color:var(--line)}
-.label{font-size:.8rem;color:var(--muted);letter-spacing:.02em}
-.status{color:var(--muted);font-size:.92rem}
-.loading{display:flex;gap:10px;align-items:center;color:var(--muted)}
-.spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:sp 0.9s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.spin{animation:none}}
-.after{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-top:10px}
-.basis{margin:0;font-size:.88rem;color:var(--muted);flex:1;min-width:0}
-.basis strong{color:var(--fg);font-weight:600}
-.primary .spin{width:14px;height:14px;border-color:color-mix(in srgb,var(--accent-fg) 35%,transparent);border-top-color:var(--accent-fg);display:inline-block;vertical-align:-2px;margin-inline-end:8px}
-.hint{font-size:.82rem;color:var(--muted)}
-.msg{border:1px solid var(--line);border-inline-start:4px solid var(--err);background:var(--surface);border-radius:10px;padding:12px 14px}
-.msg strong{color:var(--err)}
-.msg.info{border-inline-start-color:var(--seal)}
-.msg.info strong{color:var(--fg)}
-.count{font-weight:600;color:var(--fg)}
-footer p{margin:0}
-.howto{font-size:.9rem;color:var(--muted)}
-.howto summary{cursor:pointer;color:var(--accent);font-weight:600}
-.howto ol{margin:8px 0 0;padding-inline-start:22px;display:flex;flex-direction:column;gap:4px}
-.tag{display:inline-block;font-size:.75rem;font-weight:600;border-radius:999px;padding:1px 9px;margin-inline-start:6px;vertical-align:1px}
-.tag.new{background:var(--accent);color:var(--accent-fg)}
-.tag.old{background:var(--line);color:var(--fg)}
-.basis ul{margin:4px 0 0;padding-inline-start:18px}
-.basis li{margin:2px 0}
-.source-links{display:flex;gap:4px 14px;flex-wrap:wrap;margin-block:4px 10px}
-.source-links a{color:var(--accent);text-underline-offset:3px}
-.source-note{margin:8px 0 0;font-size:.82rem}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.answer details.q{margin:8px 0}
-.answer details.q summary{cursor:pointer;font-size:.88rem;color:var(--accent)}
-@media (max-width:560px){
-  body{padding-block:18px 36px}
-  .wrap{gap:20px;min-height:calc(100svh - 54px)}
-  .workspace{padding:18px 0 28px}
-  form.composer{padding:18px;border-radius:18px}
-  textarea{min-height:190px;padding:16px;font-size:1rem}
-  .composer-title{font-size:1.45rem}
-  header{gap:10px;align-items:flex-start}
-  .seal{width:38px;height:38px;font-size:17px}
-  h1{font-size:1.2rem;line-height:1.45}
-  .sub{font-size:.85rem;line-height:1.6;margin-top:4px}
-  .updated{font-size:.78rem;line-height:1.6}
-  .theme{padding:4px 10px;font-size:.78rem}
-  .notice{font-size:.88rem;padding:10px 12px}
-  .answer{padding:14px 16px}
-}
-.copy{background:var(--accent-soft);color:var(--fg);font-size:.85rem;padding:5px 14px}
-.answer{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px;min-width:0;overflow-wrap:anywhere}
-.answer h2,.answer h3{font-family:"Noto Naskh Arabic",serif;font-size:1.12rem;margin:14px 0 4px}
-.answer p{margin:6px 0}
-.answer ul,.answer ol{margin:6px 0;padding-inline-start:22px}
-.answer blockquote{margin:8px 0;padding:8px 12px;background:var(--quote);border-inline-start:3px solid var(--seal);border-radius:6px}
-.answer table{border-collapse:collapse;font-size:.92rem}
-.answer td,.answer th{border:1px solid var(--line);padding:4px 8px}
-.tbl{overflow-x:auto}
-.err{color:var(--err)}
-details.sources{font-size:.9rem;color:var(--muted)}
-details.sources summary{cursor:pointer}
-details.sources li{margin:3px 0}
-footer{margin-top:auto;font-size:.85rem;color:var(--muted);border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
-.footer-links{display:flex;justify-content:center;gap:4px 16px;flex-wrap:wrap}
-.footer-links button{padding:4px 0;background:transparent;color:var(--accent);font-size:.9rem;border-radius:3px}
-.footer-links button:hover{text-decoration:underline}
-.policy{width:min(640px,calc(100% - 32px));max-height:80svh;padding:26px;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--fg);line-height:1.9}
-.policy::backdrop{background:rgba(10,25,18,.45)}
-.policy h2{font-family:"Noto Naskh Arabic",serif;margin:0;font-size:1.45rem}
-.policy p{margin:12px 0}
-.policy a{color:var(--accent)}
-.policy-head{display:flex;justify-content:space-between;align-items:center;gap:16px}
-.policy-close{background:var(--accent-soft);color:var(--fg);padding:4px 12px}
-button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
-body:has(dialog[open]){overflow:hidden}
-.library-menu{display:inline-block;position:relative;margin-top:8px;font-size:.9rem;color:var(--accent)}.library-menu summary{cursor:pointer;list-style:none;font-weight:500;padding:4px 0}.library-menu summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.library-menu nav{position:absolute;inset-inline-start:0;top:100%;z-index:10;min-width:270px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.1);display:flex;flex-direction:column;gap:2px}.library-menu nav a{padding:8px 12px;text-decoration:none;color:var(--fg);border-radius:7px;font-size:.85rem}.library-menu nav a:hover{background:var(--accent-soft)}.rulings-link{display:inline-block;margin-top:8px;margin-inline-start:18px;font-size:.9rem;font-weight:500;color:var(--accent);text-decoration:none;padding:4px 0}.rulings-link:hover{text-decoration:underline}
-</style>
-
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/library.css">
+<link rel="stylesheet" href="/home.css">
 </head>
 <body>
-<div class="wrap" dir="rtl">
-  <header>
-    <div class="seal" aria-hidden="true">§</div>
-    <div class="titles">
-      <h1>المستشار النظامي للمتعاملين مع الجهات الحكومية</h1>
-      <p class="sub">إجابة فورية من نصوص الأنظمة واللوائح السعودية: المنافسات والمشتريات، المالية العامة، الموارد البشرية، القضاء الإداري.</p>
-      <p class="updated">المصدر: مكتبة التشريعات السعودية · <span class="count" id="count">جارٍ تحميل التغطية…</span></p>
-      <details class="library-menu"><summary>المكتبة النظامية ▾</summary><nav aria-label="أنواع وثائق المكتبة"><a href="/library.html?type=law">الأنظمة</a><a href="/library.html?type=regulation">اللوائح</a><a href="/library.html?view=decisions&type=decision">القرارات</a><a href="/library.html?view=decisions&type=decree">المراسيم الملكية</a><a href="/library.html?view=gazette&type=gazette">أعداد أم القرى والتشريعات المرتبطة</a><a href="/library.html">عرض المكتبة كاملة</a></nav></details>
-      <a class="rulings-link" href="/rulings.html">الأحكام القضائية</a>
-    </div>
-    <button type="button" class="theme" id="theme" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
-  </header>
+<a class="skip" href="#main">انتقل إلى المحتوى</a>
+<div class="shell">
+<header class="topbar">
+ <a class="brand" href="/" aria-label="المستشار النظامي — الرئيسية"><span class="seal" aria-hidden="true">§</span><span>المستشار النظامي<small>للمتعاملين مع الجهات الحكومية</small></span></a>
+ <nav aria-label="التنقل الرئيسي"><a href="/" aria-current="page">الاستفسار النظامي</a><a href="/library.html">المكتبة النظامية</a><a href="/rulings.html">الأحكام القضائية</a><a href="#how">كيف يعمل</a><a href="/about.html">عن المشروع</a></nav>
+ <button class="quiet theme" id="theme" type="button" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
+</header>
 
-  <main class="workspace">
-  <div class="notice" role="note"><span class="ico" aria-hidden="true">⚠</span><div><strong>تنبيه: الإجابة استرشادية.</strong> تُبنى من نصوص المكتبة، وليست رأياً قانونياً ملزماً. راجِع النص الأصلي أو مختصاً قبل أي إجراء.</div></div>
+<main id="main">
+ <section class="hero" aria-labelledby="hero-title">
+  <p class="eyebrow">للمتعاملين مع الجهات الحكومية</p>
+  <h1 id="hero-title">إجابات من نصوص الأنظمة السعودية، مع المادة والمصدر</h1>
+  <p class="lead">اسأل عن المنافسات والمشتريات، والمالية العامة، والموارد البشرية. نبحث في المواد المؤهلة، ونعرض لك الإجابة ومعها النص الأصلي ونسخته المؤرشفة.</p>
 
-
-
-  <form id="f" class="composer" aria-labelledby="composer-title">
-    <h2 class="composer-title" id="composer-title">ما استفسارك النظامي؟</h2>
-    <label class="label" for="q">اكتب سؤالك وتفاصيله هنا</label>
-    <textarea id="q" placeholder="مثال: ما مسوغات صرف المستخلص الختامي؟" maxlength="1500"></textarea>
-    <div class="row">
-      <button class="primary" id="ask" type="submit">اسأل</button>
-      <button class="ghost" id="stop" type="button" hidden>إيقاف</button>
-      <button class="ghost" id="clear" type="button">سؤال جديد</button>
-      <span class="status" id="status" role="status" aria-live="polite"></span>
-    </div>
-    <span class="hint">اضغط Enter للإرسال، وShift+Enter لسطر جديد.</span>
+  <form id="f" class="composer" aria-labelledby="composer-label">
+   <label for="q" id="composer-label">اكتب استفسارك النظامي وتفاصيله</label>
+   <textarea id="q" placeholder="مثال: ما الشروط التي تجيز للجهة الحكومية اللجوء إلى الشراء المباشر؟" maxlength="1500"></textarea>
+   <div class="row">
+    <button class="primary" id="ask" type="submit">اسأل</button>
+    <button class="ghost" id="stop" type="button" hidden>إيقاف</button>
+    <button class="ghost" id="clear" type="button">سؤال جديد</button>
+    <span class="status" id="status" role="status" aria-live="polite"></span>
+    <span class="spacer"></span>
+    <span class="hint">Enter للإرسال · Shift+Enter لسطر جديد</span>
+   </div>
   </form>
 
-  <section id="out" hidden>
-    <div class="answer" id="answer"></div>
-    <div class="after" id="after" hidden>
-      <div class="basis" id="basis"></div>
-      <div class="actions">
-        <button type="button" class="copy" id="copy">نسخ</button>
-        <button type="button" class="copy" id="share">مشاركة</button>
-      </div>
+  <div class="chips" aria-label="أمثلة على الأسئلة">
+   <span class="label">جرّب سؤالاً:</span>
+   <button type="button" class="chip" data-q="ما الشروط التي تجيز للجهة الحكومية اللجوء إلى الشراء المباشر؟">الشراء المباشر</button>
+   <button type="button" class="chip" data-q="ما الفرق بين نقل الموظف وتكليفه وإعارته من حيث الشروط والآثار الوظيفية؟">نقل الموظف وتكليفه وإعارته</button>
+   <button type="button" class="chip" data-q="متى يستحق الموظف إجازة مرضية وما مدتها؟">الإجازة المرضية</button>
+   <button type="button" class="chip" data-q="ما حالات استحقاق غرامة التأخير في العقود الحكومية؟">غرامة التأخير في العقود</button>
+  </div>
+
+  <p class="trust-line"><span aria-hidden="true">ⓘ</span><span><b>الإجابة استرشادية وليست رأياً قانونياً.</b> تُبنى من نصوص المكتبة، وراجِع النص الأصلي قبل أي إجراء. <a href="/limits.html">حدود الإجابات</a></span></p>
+
+  <section id="out" hidden aria-live="polite">
+   <div class="answer" id="answer"></div>
+   <div class="after" id="after" hidden>
+    <div class="basis" id="basis"></div>
+    <div class="actions">
+     <button type="button" class="copy" id="copy">نسخ</button>
+     <button type="button" class="copy" id="share">مشاركة</button>
     </div>
+   </div>
   </section>
-  </main>
+ </section>
 
-  <footer>
-    <nav class="footer-links" aria-label="الخصوصية والاستخدام">
-      <button type="button" data-policy="privacy">الخصوصية</button>
-      <button type="button" data-policy="terms">شروط الاستخدام</button>
-      <button type="button" data-policy="limits">حدود الإجابات</button>
-    </nav>
-    <p>المستشار النظامي · أداة بحثية مساعدة، وليست جهة رسمية أو بديلاً عن الاستشارة المتخصصة.</p>
-  </footer>
+ <section class="stats" aria-label="تغطية المكتبة">
+  <div class="s"><b id="st-docs">—</b><span>وثيقة فيها مواد مؤهلة للبحث</span></div>
+  <div class="s"><b id="st-secs">—</b><span>مادة وبند في الفهرس</span></div>
+  <div class="s"><b id="st-rul">—</b><span>حكم قضائي للاطلاع فقط</span></div>
+  <div class="s"><b id="st-snap">—</b><span>رمز نسخة المكتبة المعتمدة</span></div>
+ </section>
+
+ <section class="band" id="how" aria-labelledby="how-title">
+  <h2 id="how-title">كيف يعمل؟</h2>
+  <p class="sub">البحث عن المواد يجري بقواعد ثابتة على الخادم، ولا يختاره النموذج.</p>
+  <ol class="steps">
+   <li><h3>تسأل بلغتك</h3><p>اكتب الواقعة أو رقم المادة. كلما حددت الجهة والتاريخ وصفة الأطراف كانت الإجابة أدق.</p></li>
+   <li><h3>نبحث في المواد المؤهلة</h3><p>نختار المواد ذات الصلة من نسخة محددة من مكتبة التشريعات، ونتتبع الإحالات بينها ونستبعد ما لم يبدأ نفاذه.</p></li>
+   <li><h3>تقرأ الإجابة مع مصدرها</h3><p>تظهر المادة ورقمها وروابط النص والنسخة المؤرشفة ورمز النسخة، لتتحقق بنفسك قبل الاعتماد.</p></li>
+  </ol>
+ </section>
+
+ <section class="band" aria-labelledby="who-title">
+  <h2 id="who-title">في ماذا يفيدك؟</h2>
+  <p class="sub">المجالات التي تغطيها المكتبة اليوم.</p>
+  <div class="grid4">
+   <div class="tile"><h3>المنافسات والمشتريات</h3><p>نظام المنافسات والمشتريات الحكومية ولائحته التنفيذية.</p></div>
+   <div class="tile"><h3>المالية العامة</h3><p>الصرف والمستخلصات والغرامات والضمانات.</p></div>
+   <div class="tile"><h3>الموارد البشرية</h3><p>الخدمة المدنية والانضباط الوظيفي والإجازات.</p></div>
+   <div class="tile"><h3>القضاء الإداري</h3><p>أحكام ديوان المظالم للتصفح والاطلاع.</p></div>
+  </div>
+ </section>
+
+ <section class="band" aria-labelledby="trust-title">
+  <h2 id="trust-title">لماذا يمكنك التحقق من الإجابة؟</h2>
+  <p class="sub">لا نطلب منك أن تثق بنا؛ نعطيك ما تتحقق به.</p>
+  <div class="trust">
+   <div class="tile"><h3>كل إجابة معها مصادرها</h3><p>المواد التي وصلت إلى النموذج تُعرض بعد الإجابة، لا مواد مخمّنة من نص الإجابة.</p></div>
+   <div class="tile"><h3>نسخة مؤرشفة ورمز نسخة</h3><p>كل مادة مرتبطة بنسخة محددة من المكتبة، ويُفحص سلامة ملفاتها قبل العرض.</p></div>
+   <div class="tile"><h3>تواريخ النفاذ</h3><p>النصوص التي لم يحن نفاذها تُستبعد من الجواب العادي، وتظهر عند السؤال عنها مع التنبيه.</p></div>
+   <div class="tile"><h3>الأحكام للاطلاع فقط</h3><p>الأحكام القضائية تُعرض للتصفح، ولا تدخل في بناء الإجابات ولا يُستشهد بها فيها.</p></div>
+  </div>
+ </section>
+
+ <section class="band" aria-labelledby="lib-title">
+  <h2 id="lib-title">تصفّح المكتبة بنفسك</h2>
+  <p class="sub">إن كنت تعرف ما تبحث عنه، فاقرأه مباشرة.</p>
+  <div class="grid2">
+   <a class="cta-card" href="/library.html"><h3>المكتبة النظامية</h3><p>الأنظمة واللوائح والقرارات والمراسيم الملكية وأعداد أم القرى، مع مصادرها ونسخها المؤرشفة.</p><span class="go">افتح المكتبة ←</span></a>
+   <a class="cta-card" href="/rulings.html"><h3>الأحكام القضائية</h3><p>أحكام ديوان المظالم مصنفة حسب المجموعة والموضوع، منقولة حرفياً ومراجعة على صفحات الأصل.</p><span class="go">تصفّح الأحكام ←</span></a>
+  </div>
+ </section>
+
+ <section class="band faq" aria-labelledby="faq-title">
+  <h2 id="faq-title">أسئلة شائعة</h2>
+  <details><summary>هل الموقع جهة حكومية أو رأي قانوني معتمد؟</summary><p>لا. هو أداة بحثية تساعدك على الوصول إلى النصوص وفهمها. الإجابات آلية وقد تكون ناقصة أو غير دقيقة، وليست بديلاً عن المصدر الرسمي أو عن استشارة مختص.</p></details>
+  <details><summary>من أين تأتي الإجابات؟</summary><p>من مواد مؤهلة ومفهرسة في نسخة محددة من مكتبة التشريعات السعودية المفتوحة (مستودع saudi-legislation). يبحث الخادم عن المواد بقواعد لغوية ثابتة، ثم يُرسل المواد المختارة فقط إلى النموذج لصياغة الإجابة.</p></details>
+  <details><summary>لماذا لم أجد المادة التي أبحث عنها؟</summary><p>المكتبة لا تشمل بالضرورة كل الأنظمة ولا أحدث تعديلاتها، وعدم ظهور مادة في الإجابة لا يعني عدم وجودها أو عدم وجود حكم نظامي للمسألة. جرّب تحديد رقم المادة أو اسم النظام، أو ابحث في المكتبة مباشرة.</p></details>
+  <details><summary>هل تُستخدم الأحكام القضائية في الإجابات؟</summary><p>لا. الأحكام معروضة للتصفح والاطلاع فقط، ولا يُستشهد بها في الإجابات.</p></details>
+  <details><summary>كيف أعرف أن النص ساري المفعول؟</summary><p>تعرض الإجابة رمز نسخة المكتبة وتاريخ النفاذ المسجل متى وُجد، لكن وجود النص أو مضي تاريخ نفاذه لا يثبت سريانه على واقعتك. راجع المصدر الرسمي وحدد تاريخ الواقعة وصفة الأطراف.</p></details>
+  <details><summary>هل تُحفظ أسئلتي؟</summary><p>يُعالج الموقع طلبك عبر Cloudflare، ويُرسل السؤال والنصوص المختارة إلى Anthropic لتوليد الإجابة. سجلات البحث تحفظ معرّف الطلب والمواد المختارة دون نص السؤال. لا تُدخل معلومات شخصية أو بيانات سرية. التفاصيل في سياسة الخصوصية أسفل الصفحة.</p></details>
+  <details><summary>هل الخدمة مجانية؟</summary><p>لا توجد اشتراكات أو رسوم حالياً. ويُسمح بعدد محدود من الأسئلة في الدقيقة لكل زائر حمايةً للخدمة.</p></details>
+ </section>
+</main>
+
+<footer>
+ <nav class="footer-links" aria-label="روابط التذييل">
+  <a href="/about.html">عن المشروع</a>
+  <a href="/limits.html">حدود الإجابات</a>
+  <button type="button" data-policy="privacy">الخصوصية</button>
+  <button type="button" data-policy="terms">شروط الاستخدام</button>
+ </nav>
+ <p>المستشار النظامي · أداة بحثية مساعدة، وليست جهة رسمية أو بديلاً عن الاستشارة المتخصصة.</p>
+</footer>
 </div>
-
 
 <dialog class="policy" id="privacy" aria-labelledby="privacy-title">
   <div class="policy-head"><h2 id="privacy-title">الخصوصية</h2><button class="policy-close" type="button" data-close aria-label="إغلاق سياسة الخصوصية">إغلاق</button></div>
@@ -194,12 +150,6 @@ body:has(dialog[open]){overflow:hidden}
   <p>الموقع أداة بحثية للمساعدة في فهم النصوص المتاحة، وليس جهة حكومية أو مصدراً رسمياً للتشريعات.</p>
   <p>الإجابات آلية وقد تكون ناقصة أو غير دقيقة. راجع المصدر الرسمي وتاريخ نفاذ النص، واستعن بمختص قبل اتخاذ إجراء يرتب حقوقاً أو التزامات.</p>
   <p>استخدم الموقع للأسئلة النظامية، وتجنّب إرسال معلومات شخصية أو وثائق سرية.</p>
-</dialog>
-<dialog class="policy" id="limits" aria-labelledby="limits-title">
-  <div class="policy-head"><h2 id="limits-title">حدود الإجابات</h2><button class="policy-close" type="button" data-close aria-label="إغلاق حدود الإجابات">إغلاق</button></div>
-  <p>يعتمد البحث على المواد المؤهلة والمفهرسة في نسخة محددة من مكتبة التشريعات؛ لا تشمل النتائج بالضرورة جميع الأنظمة أو أحدث تعديلاتها.</p>
-  <p>أهلية النص للبحث لا تثبت انطباقه على واقعتك. راجع اسم الوثيقة ورقم المادة والمصدر، وحدد تاريخ الواقعة وصفة الأطراف عند الحاجة.</p>
-  <p>عدم ظهور مادة في الإجابة لا يعني عدم وجودها في المكتبة أو عدم وجود حكم نظامي للمسألة.</p>
 </dialog>
 
 <script type="module">
@@ -241,7 +191,7 @@ ask.disabled=true; status.textContent='جارٍ تحميل المكتبة…';
 fetch('source-manifest.json').then(r=>{if(!r.ok)throw new Error('source_unavailable');return r.json();}).then(d=>{
   if(d.repository!=='ahzh999-rgb/saudi-legislation'||!Number.isInteger(d.document_count)||!/^[a-f0-9]{40}$/.test(d.commit||''))throw new Error('source_unavailable');
   LIB={snapshot:d.commit};
-  $('count').textContent=d.document_count+' وثيقة تتضمن مواد مؤهلة للبحث';
+  $('st-docs').textContent=d.document_count;$('st-secs').textContent=d.section_count;$('st-snap').textContent=d.commit.slice(0,7);
   ask.disabled=false; status.textContent='';
   const sq=new URLSearchParams(location.search).get('q');
   if(sq){$('q').value=displayText(sq.slice(0,1500));grow();if(new URLSearchParams(location.search).get('draft')!=='1')$('f').requestSubmit();else $('q').focus();}
@@ -342,9 +292,16 @@ paint();
 themeBtn.addEventListener('click',()=>{root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme);}catch{}paint();});
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(!ask.disabled)$('f').requestSubmit();}});
 // الحقل يتمدد مع الكتابة الطويلة
-const grow=()=>{const q=$('q'),minimum=innerWidth<=560?190:260;q.style.height='auto';q.style.height=Math.max(minimum,Math.min(q.scrollHeight+2,innerHeight*0.6))+'px';};
+const grow=()=>{const q=$('q'),minimum=innerWidth<=640?110:120;q.style.height='auto';q.style.height=Math.max(minimum,Math.min(q.scrollHeight+2,innerHeight*0.6))+'px';};
 $('q').addEventListener('input',grow);
 $('clear').addEventListener('click',()=>{if(ctrl)ctrl.abort();$('q').value='';grow();$('out').hidden=true;$('q').focus();});
+// أرقام الأحكام: تُقرأ من بيان الأحكام المنشور مع الموقع، وتبقى «—» عند تعذر القراءة
+fetch('rulings/manifest.json').then(r=>r.ok?r.json():Promise.reject()).then(d=>{if(Number.isInteger(d.ruling_count))$('st-rul').textContent=d.ruling_count;}).catch(()=>{});
+// أمثلة الأسئلة: تملأ الحقل وترسل السؤال
+document.querySelectorAll('[data-q]').forEach(b=>b.addEventListener('click',()=>{
+  if(ask.disabled)return;
+  $('q').value=b.dataset.q;grow();$('f').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});$('f').requestSubmit();
+}));
 document.querySelectorAll('[data-policy]').forEach(button=>button.addEventListener('click',()=>{
   const dialog=document.getElementById(button.dataset.policy);if(dialog)dialog.showModal();
 }));

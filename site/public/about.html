@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>عن المشروع | المستشار النظامي</title>
+<meta name="description" content="المستشار النظامي أداة بحثية مستقلة تعرض نصوص الأنظمة السعودية مع مصادرها ونسخها المؤرشفة. تعرّف على مصدر النصوص وطريقة بناء الإجابة وحدودها.">
+<link rel="canonical" href="https://mustasher.com/about">
+<meta name="theme-color" content="#105c43">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="/library.css">
+<link rel="stylesheet" href="/home.css">
+</head>
+<body>
+<a class="skip" href="#main">انتقل إلى المحتوى</a>
+<div class="shell">
+<header class="topbar">
+ <a class="brand" href="/" aria-label="المستشار النظامي — الرئيسية"><span class="seal" aria-hidden="true">§</span><span>المستشار النظامي<small>للمتعاملين مع الجهات الحكومية</small></span></a>
+ <nav aria-label="التنقل الرئيسي"><a href="/">الاستفسار النظامي</a><a href="/library.html">المكتبة النظامية</a><a href="/rulings.html">الأحكام القضائية</a><a href="/about.html" aria-current="page">عن المشروع</a><a href="/limits.html">حدود الإجابات</a></nav>
+ <button class="quiet theme" id="theme" type="button" aria-label="تبديل الوضع الداكن">الوضع الداكن</button>
+</header>
+<main id="main"><article class="doc">
+<h1>عن المشروع</h1>
+<p class="lead">المستشار النظامي أداة بحثية مستقلة تساعد المتعاملين مع الجهات الحكومية على الوصول إلى نصوص الأنظمة واللوائح السعودية وفهمها، مع إبقاء النص الأصلي ومصدره أمام عينك.</p>
+
+<h2>ما هو؟ وما ليس هو؟</h2>
+<ul>
+<li>هو واجهة بحث وإجابة تستند إلى مواد مؤهلة من مكتبة تشريعات مفتوحة.</li>
+<li>ليس جهة حكومية، ولا مصدراً رسمياً للتشريعات.</li>
+<li>ليس استشارة قانونية، ولا بديلاً عن المصدر الرسمي أو عن مختص.</li>
+</ul>
+
+<h2>من أين تأتي النصوص؟</h2>
+<p>من مشروع <a href="https://github.com/ahzh999-rgb/saudi-legislation" target="_blank" rel="noopener noreferrer">saudi-legislation</a> المفتوح، وهو أرشيف موثّق لوثائق التشريع السعودي. كل وثيقة محفوظة بنسختها الأصلية ومعها بصمة (SHA-256) تتيح التحقق من أن الملف لم يتغير.</p>
+<p>لا تدخل في الإجابات إلا المواد المؤهلة: أي التي يُعرف نصها من نسخة رسمية موثقة أو اعتمدها مالك المشروع بعد المراجعة. المواد ذات النص غير المؤكد أو المتعارض تبقى في الأرشيف، ولا تُستخدم في الإجابة.</p>
+
+<h2>كيف تُبنى الإجابة؟</h2>
+<ul>
+<li>يختار الخادم المواد ذات الصلة بقواعد لغوية ثابتة، فلا يختارها النموذج ولا المتصفح.</li>
+<li>تُرسل المواد المختارة كاملة إلى النموذج، فإن اتسع السياق لأقل من ذلك ذُكر النقص صراحة.</li>
+<li>تُعرض المواد الفعلية التي وصلت إلى النموذج بعد الإجابة، مع روابط النص والنسخة المؤرشفة ورمز نسخة المكتبة.</li>
+<li>النصوص التي لم يحن تاريخ نفاذها المسجل تُستبعد من الجواب العادي.</li>
+</ul>
+
+<h2>الأحكام القضائية</h2>
+<p>الأحكام المعروضة منقولة حرفياً من ملفات ديوان المظالم الرسمية، وروجع كل حكم على صور صفحاته. الحكم الذي يظهر فيه خطأ في الملف الرسمي نفسه لا يُعرض. وهي للتصفح والاطلاع فقط، ولا تدخل في بناء الإجابات ولا يُستشهد بها فيها.</p>
+
+<h2>الخصوصية</h2>
+<p>لا تُدخل معلومات شخصية أو بيانات سرية في سؤالك. يُعالج الطلب عبر Cloudflare، ويُرسل السؤال والنصوص المختارة إلى Anthropic لتوليد الإجابة. سجلات البحث تحفظ معرّف الطلب والمواد المختارة دون نص السؤال.</p>
+
+<div class="callout">وجدت خطأً في نص أو مصدر؟ المكتبة مفتوحة للمراجعة في <a href="https://github.com/ahzh999-rgb/saudi-legislation" target="_blank" rel="noopener noreferrer">مستودع المشروع</a>، وتُصحَّح النصوص بعد مقارنتها بالأصل الرسمي.</div>
+</article></main>
+<footer>
+ <nav class="footer-links" aria-label="روابط التذييل"><a href="/about.html">عن المشروع</a><a href="/limits.html">حدود الإجابات</a><a href="/">الخصوصية وشروط الاستخدام</a></nav>
+ <p>المستشار النظامي · أداة بحثية مساعدة، وليست جهة رسمية أو بديلاً عن الاستشارة المتخصصة.</p>
+</footer>
+</div>
+<script>
+(function(){var r=document.documentElement,b=document.getElementById('theme');
+function dark(){return r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches}
+function paint(){b.textContent=dark()?'الوضع الفاتح':'الوضع الداكن'}
+try{var t=localStorage.getItem('theme');if(t)r.dataset.theme=t}catch(e){}
+paint();
+b.addEventListener('click',function(){r.dataset.theme=dark()?'light':'dark';try{localStorage.setItem('theme',r.dataset.theme)}catch(e){}paint()});
+})();
+</script>
+</body>
+</html>
