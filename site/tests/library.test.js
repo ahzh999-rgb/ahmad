@@ -89,3 +89,16 @@ test('ordinary question wording finds the governing direct-purchase article',()=
  const law=found.find(r=>r.doc.id==='SA-LAW-GTP-1440-001');
  assert.ok(law);assert.equal(law.matches[0].key,'32');
 });
+
+test('displayTitle separates numbers glued to words for display only',async()=>{
+ const {displayTitle}=await import('../public/library-core.js');
+ assert.equal(displayTitle('قرار وزير المالية977 بشأن نماذج المشتريات'),'قرار وزير المالية 977 بشأن نماذج المشتريات');
+ assert.equal(displayTitle('قرار465 بإضافة الفقرة4 إلى المادة2'),'قرار 465 بإضافة الفقرة 4 إلى المادة 2');
+ assert.equal(displayTitle('تعديل قرار العطل532 بالقرار13'),'تعديل قرار العطل 532 بالقرار 13');
+ assert.equal(displayTitle('إلغاء المادتين6 و7'),'إلغاء المادتين 6 و7');
+ assert.equal(displayTitle('نظام التأمينات الاجتماعية1445هـ وأداة إصداره'),'نظام التأمينات الاجتماعية 1445هـ وأداة إصداره');
+ assert.equal(displayTitle('قرار تحديث الجدول — شاهد2025-09'),'قرار تحديث الجدول — شاهد 2025-09');
+ assert.equal(displayTitle('مرسوم م/106'),'مرسوم م/106');
+ assert.equal(displayTitle('لائحة التأمينات230/تأمينات'),'لائحة التأمينات 230/تأمينات');
+ assert.equal(displayTitle('نظام المنافسات والمشتريات الحكومية (1448هـ)'),'نظام المنافسات والمشتريات الحكومية (1448هـ)');
+});
