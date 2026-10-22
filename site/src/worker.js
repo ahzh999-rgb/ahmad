@@ -10,6 +10,10 @@ let cachedCatalog;
 export default {
   async fetch(req, env) {
     const url = new URL(req.url);
+    // النطاق القديم (workers.dev) يُحوَّل دائماً إلى النطاق الرسمي؛ واجهة /api تبقى تعمل على النطاقين
+    if (url.hostname === 'ask.mustashar.workers.dev' && !url.pathname.startsWith('/api/') && (req.method === 'GET' || req.method === 'HEAD')) {
+      return Response.redirect('https://mustasher.com' + url.pathname + url.search, 301);
+    }
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
     if (req.method !== 'POST') return json({ error:'method' },405);
     if (env.LIMITER) {
