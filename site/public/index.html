@@ -254,7 +254,8 @@ $('f').addEventListener('submit', async e=>{
     $('basis').innerHTML=sourcesHTML(sources,res.evidence?.snapshot);
     lastBasis=displayText(sources.map(source=>source.title+'، '+referenceLabel(source.heading,source.instrument_id)).join('؛ '));
     lastText=displayText(body).replace(/\*\*/g,'').trim()+(lastBasis?'\n\nالنصوص المرفقة للإجابة: '+lastBasis:'')+'\n'+location.origin;
-    $('after').hidden=false; status.textContent='';
+    // لا نسخ ولا مشاركة لردّ بلا مصادر (سؤال توضيح أو «لا أدلة كافية»)
+    $('after').hidden=!sources.length; status.textContent='';
   }catch(err){
     status.textContent='';
     if(err.name==='AbortError'){$('answer').innerHTML=msg('أُوقفت الإجابة.','اضغط «اسأل» لإعادة المحاولة.','info');}

@@ -1,5 +1,5 @@
 import { checkedSection, checkedCatalog } from './source_guard.js';
-import { buildIndex, selectEvidence, RETRIEVAL_VERSION } from './retrieval.js';
+import { buildIndex, selectEvidence, RETRIEVAL_VERSION, DOMAIN_LABELS } from './retrieval.js';
 import { publisherLink } from '../public/answer-sources.js';
 import { referenceLabel } from '../public/library-core.js';
 
@@ -85,7 +85,11 @@ async function ask(question, body, req, env, diagnostic) {
     snapshot:manifest.commit, data_sha256:manifest.data_sha256, as_of:day,
     ids:trace.sources.map(s => s.id), domain:trace.domain, omitted:trace.omitted }));
   if (!entries.length) {
-    const answer = selection.clarification || 'لم تظهر أدلة كافية في المواد المؤهلة ضمن هذه النسخة للإجابة عن السؤال. هذا لا يثبت غياب الحكم أو الوثيقة من المكتبة. حدّد النظام أو نوع الوظيفة أو العهدة محل السؤال.\n\nهذه إجابة استرشادية وليست رأياً قانونياً.';
+    // إن كان نطاق السؤال محدداً فلا نطلب منه تحديده مرة أخرى؛ نذكر أن المواد المؤهلة في هذا النطاق لا تغطي سؤاله في هذه النسخة
+    const scope = DOMAIN_LABELS[selection.domain];
+    const answer = selection.clarification || (scope
+      ? `لم تظهر أدلة كافية في المواد المؤهلة ضمن هذه النسخة للإجابة عن السؤال، وقد فُهم نطاقه: ${scope}. هذا لا يثبت غياب الحكم أو الوثيقة من المكتبة؛ فقد لا تكون المواد ذات الصلة مفهرسة ضمن هذه النسخة. راجع النص الرسمي للنظام المعني، أو أعد صياغة السؤال بذكر المادة أو النظام تحديداً.\n\nهذه إجابة استرشادية وليست رأياً قانونياً.`
+      : 'لم تظهر أدلة كافية في المواد المؤهلة ضمن هذه النسخة للإجابة عن السؤال. هذا لا يثبت غياب الحكم أو الوثيقة من المكتبة. حدّد النظام أو نوع الوظيفة أو العهدة محل السؤال.\n\nهذه إجابة استرشادية وليست رأياً قانونياً.');
     return streamResponse(trace,new Response(
       'data: '+JSON.stringify({type:'content_block_delta',delta:{type:'text_delta',text:answer}})+'\n\n'+
       'data: '+JSON.stringify({type:'message_delta',delta:{stop_reason:'end_turn'}})+'\n\n'));

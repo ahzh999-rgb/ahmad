@@ -143,3 +143,25 @@ test('provider failures expose only status and stage, never provider details or 
     assert.ok(result.request_id);assert.ok(!JSON.stringify(result).includes('PRIVATE_PROVIDER_DETAIL'));
   }finally{globalThis.fetch=previous;}
 });
+
+test('explicit civil retirement wording is routed to the civil domain instead of a clarification',()=>{
+  for(const q of ['ما علاقة الإجازات الاستثنائية في التقاعد المدني؟','ما علاقه الاجازات الاستثنائيه في التقاعد المدني؟','كيف يحسب معاش التقاعد المدني؟','هل تحسب إجازة استثنائية في تقاعد الموظفين المدنيين؟']){
+    const result=selection(q);
+    assert.equal(result.domain,'civil',q);assert.equal(result.clarification,undefined,q);
+    assert.ok(result.rows.every(r=>r.domain==='civil'),q);
+  }
+  assert.equal(selection('ما معاش التقاعد العسكري؟').domain,'military');
+  const unspecified=selection('كيف يحسب المعاش التقاعدي؟');
+  assert.ok(unspecified.clarification);assert.equal(unspecified.rows.length,0);
+});
+
+test('a known scope without eligible evidence is named in the answer instead of asking the user to specify it again',async()=>{
+  const previous=globalThis.fetch;globalThis.fetch=async()=>{throw new Error('must not call provider');};
+  try{
+    const response=await worker.fetch(request('ما التزامات الموظف عند تسليم عهدة مالية؟'),envFor());
+    assert.equal(response.status,200);
+    const text=await response.text();
+    assert.ok(text.includes('لا يثبت غياب الحكم'));assert.ok(text.includes('المال العام'));
+    assert.ok(!text.includes('حدّد النظام'));
+  }finally{globalThis.fetch=previous;}
+});
