@@ -25,13 +25,16 @@ const CONCEPTS = [
 ];
 export function domainOf(id) {
   if (/^SA-(LAW|REG)-GTP-|local-content|procurement-|conflicts-of-interest/.test(id)) return 'procurement';
-  if (/^civil-service$|^hr-|^discipline-|^public-employees|^talent-/.test(id)) return 'civil';
+  if (/^civil-service$|^civil-retirement$|^hr-|^discipline-|^public-employees|^talent-/.test(id)) return 'civil';
   if (/^military-retirement$/.test(id)) return 'military';
   if (/^labour-|^maritime-|^agriculture-/.test(id)) return 'labour';
   if (/^privatization-/.test(id)) return 'privatization';
   if (/^public-money-|^budget-instructions/.test(id)) return 'money';
   return 'other';
 }
+// أسماء النطاقات لعرضها في رسالة «لا أدلة كافية» عندما يكون نطاق السؤال محدداً
+export const DOMAIN_LABELS = { procurement:'المنافسات والمشتريات الحكومية', civil:'الخدمة المدنية والموارد البشرية والتقاعد المدني',
+  military:'التقاعد العسكري', labour:'نظام العمل', privatization:'التخصيص', money:'المال العام والعهد' };
 export function routeQuestion(question) {
   const q = normalize(question);
   if (/تخصيص/.test(q)) return 'privatization';
@@ -39,6 +42,8 @@ export function routeQuestion(question) {
   if (/شراء|منافس|مشتريات/.test(q)) return 'procurement';
   if (/عسكري/.test(q)) return 'military';
   if (/نظام العمل|صاحب العمل|للعامل|العامل|عمال/.test(q)) return 'labour';
+  // السائل حدد الفئة صراحة (التقاعد المدني / الخدمة المدنية)، فلا يُسأل «هل تقصد العسكري أم المدني؟»
+  if (/(?:تقاعد|معاش)\S*\s+(?:لل|ال)?مدني|المدنيين|الخدمه\s+المدنيه/.test(q)) return 'civil';
   if (/موظف|ترقي|اعار|تكليف/.test(q)) return 'civil';
   return null;
 }
