@@ -165,3 +165,23 @@ test('a known scope without eligible evidence is named in the answer instead of 
     assert.ok(!text.includes('حدّد النظام'));
   }finally{globalThis.fetch=previous;}
 });
+
+test('civil retirement questions reach the model with the civil retirement articles, not a clarification',async()=>{
+  const previous=globalThis.fetch;const payloads=[];
+  globalThis.fetch=async(url,options)=>{
+    payloads.push(JSON.parse(options.body));
+    return new Response('data: '+JSON.stringify({type:'content_block_delta',delta:{type:'text_delta',text:'mock answer'}})+'\n\n');
+  };
+  try{
+    const response=await worker.fetch(request('ما علاقة الإجازات الاستثنائية في التقاعد المدني؟'),envFor());
+    assert.equal(response.status,200);
+    const events=(await response.text()).split('\n').filter(s=>s.startsWith('data:')).map(s=>JSON.parse(s.slice(5)));
+    assert.equal(payloads.length,1);
+    const evidence=events[0];assert.equal(evidence.type,'evidence');assert.equal(evidence.domain,'civil');
+    const keys=evidence.sources.map(s=>s.instrument_id+':'+s.legal_key);
+    assert.ok(keys.includes('civil-retirement:16'),keys.join());
+    assert.ok(keys.every(k=>!k.startsWith('military-retirement')));
+    const article16=index.rows[evidence.sources.find(s=>s.legal_key==='16'&&s.instrument_id==='civil-retirement').id].body;
+    assert.ok(payloads[0].messages[0].content.includes(article16));
+  }finally{globalThis.fetch=previous;}
+});
