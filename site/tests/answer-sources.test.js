@@ -28,9 +28,9 @@ test('old evidence still links the material and archive without inventing an off
   assert.equal(sourcesHTML(null,snapshot),'');
 });
 
-test('an HTML archive is explicitly labelled as an original documentation file',()=>{
+test('an HTML archive is explicitly labelled as an HTML source file',()=>{
   const links=sourceLinks({...source,source_url:source.source_url.replace('.pdf','.html')},snapshot);
-  assert.match(links[1].label,/HTML.*للتوثيق/);
+  assert.match(links[1].label,/HTML/);
   assert.ok(links[1].href.startsWith('https://github.com/'));
 });
 

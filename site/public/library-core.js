@@ -85,6 +85,17 @@ export function readableFileLink(snapshot,path) {
 export function latinDigits(value) {
   return String(value ?? '').replace(/[٠-٩۰-۹]/g,c=>String(c.charCodeAt(0)-(c>='۰'?1776:1632)));
 }
+// Presentation only: some archived titles glue numbers to words
+// («المالية977»). Add the missing space for display; stored titles, keys and
+// fingerprints stay untouched. One-letter prefixes (و، ب، ل، ك) stay attached,
+// and the Hijri marker «هـ» stays attached to its year.
+const ARABIC_LETTER=/[ء-ي]/;
+export function displayTitle(value) {
+  return latinDigits(value)
+    .replace(/([ء-ي])(?=\d)/g,(letter,_,offset,text)=>
+      /[وبلك]/.test(letter)&&(offset===0||!ARABIC_LETTER.test(text[offset-1]))?letter:letter+' ')
+    .replace(/(\d)(?=[ء-ي])(?!هـ)/g,'$1 ');
+}
 export function articleLabel(value) {
   return latinDigits(value).replace(/(\d+)-bis(?:-(\d+))?/g,(_,n,repeat)=>n+' مكرر'+(repeat?' '+repeat:''))
     .replace(/\bArticle\s*(\d+)/gi,'المادة $1')
@@ -122,7 +133,7 @@ export const DOCUMENT_TYPES=[
 ];
 export function fileLabel(file,issueNumber) {
   const name=(file.path||'').split('/').pop()||'';
-  if(!issueNumber){if(file.format==='pdf')return 'ملف القرار PDF';if(['png','jpg','jpeg','webp'].includes(file.format))return 'صورة المصدر';if(file.format==='html')return 'ملف HTML الأصلي (للتوثيق)';return 'الملف النصي الأصلي (للتوثيق)';}
+  if(!issueNumber){if(file.format==='pdf')return 'ملف القرار PDF';if(['png','jpg','jpeg','webp'].includes(file.format))return 'صورة المصدر';if(file.format==='html')return 'صفحة المصدر المحفوظة (HTML)';return 'الملف النصي المحفوظ';}
   const article=name.match(/article[-_]?(\d+)/i);
   const page=name.match(/page[-_]?(\d+)/i);
   const pages=name.match(/pages(\d+)(?:-and(\d+))?/i);
@@ -130,9 +141,9 @@ export function fileLabel(file,issueNumber) {
   if(/portal|widget|listing/i.test(name))return 'صورة من سجل النشر';
   if(pages)return 'مقتطف من الصفحة '+Number(pages[1])+(pages[2]?' والصفحة '+Number(pages[2]):'');
   if(page)return 'الصفحة '+Number(page[1])+' من العدد';
-  if(file.format==='pdf')return issueNumber?'ملف العدد ('+latinDigits(issueNumber)+')':'نسخة القرار المؤرشفة';
+  if(file.format==='pdf')return issueNumber?'ملف العدد ('+latinDigits(issueNumber)+')':'نسخة القرار المحفوظة (PDF)';
   if(['png','jpg','jpeg','webp'].includes(file.format))return issueNumber?'صورة شاهد للعدد ('+latinDigits(issueNumber)+')':'صورة المصدر';
-  if(file.format==='html')return 'ملف HTML الأصلي (للتوثيق)';
-  if(['txt','md'].includes(file.format))return 'الملف النصي الأصلي (للتوثيق)';
-  return 'المصدر المؤرشف';
+  if(file.format==='html')return 'صفحة المصدر المحفوظة (HTML)';
+  if(['txt','md'].includes(file.format))return 'الملف النصي المحفوظ';
+  return 'المصدر المحفوظ';
 }

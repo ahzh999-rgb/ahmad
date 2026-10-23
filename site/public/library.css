@@ -18,3 +18,4 @@
 .source-archive{margin-block:10px;font-size:.85rem;color:var(--muted)}
 .source-archive summary{cursor:pointer}
 .source-archive a{display:inline-block;margin-block:8px}
+.source-archive>p{margin:6px 0}.source-archive .record-source-fingerprint{display:block;margin-top:2px;color:var(--muted)}.record-panel>.primary{margin-bottom:6px}

@@ -139,7 +139,7 @@ function renderRuling(r, focus) {
   if (r.full_volume_page_start) row('الصفحة في المجلد الكامل', indic(r.full_volume_page_start));
   side.append(dl);
   const off = officialLink(r.official_url); if (off) side.append(external('الملف في موقع ديوان المظالم ↗', off));
-  const arc = archiveLink(manifest.commit, r.source_path); if (arc) side.append(external('النسخة المؤرشفة ↗', arc));
+  const arc = archiveLink(manifest.commit, r.source_path); if (arc) side.append(external('النسخة المحفوظة ↗', arc));
   document.title = t.label + ' · ' + caseLabel(r.case) + ' | الأحكام القضائية';
   if (focus) { $('ruling-title').focus({ preventScroll: true }); scrollTo(0, 0); }
 }
@@ -163,12 +163,12 @@ async function start() {
     $('statistics').replaceChildren();
     const stats = [[catalog.rulings.length, 'حكماً'], [catalog.collections.length, 'مجموعة'], [new Set(catalog.rulings.map(r => r.jurisdiction)).size, 'اختصاص']];
     for (const [v, label] of stats) { const s = el('span', null, 'stat'); s.append(el('b', number(v)), el('span', label)); $('statistics').append(s); }
-    $('snapshot').replaceChildren(document.createTextNode('نسخة الأرشيف: '), external(manifest.commit.slice(0, 12), 'https://github.com/ahzh999-rgb/saudi-legislation/tree/' + manifest.commit));
+    $('snapshot').replaceChildren(document.createTextNode('إصدار بيانات الأحكام: '), external(manifest.commit.slice(0, 12), 'https://github.com/ahzh999-rgb/saudi-legislation/tree/' + manifest.commit));
     $('load-state').hidden = true;
     render();
   } catch (e) {
     $('load-state').hidden = true; $('load-error').hidden = false;
-    $('load-error-message').textContent = e.message === 'source_integrity' ? 'لم تطابق بصمة بيانات الأحكام نسختها المسجلة. أعد تحميل الصفحة.' : 'تحقق من اتصالك ثم أعد المحاولة.';
+    $('load-error-message').textContent = e.message === 'source_integrity' ? 'تعذّر التحقق من سلامة بيانات الأحكام. أعد تحميل الصفحة.' : 'تحقق من اتصالك ثم أعد المحاولة.';
   }
 }
 
