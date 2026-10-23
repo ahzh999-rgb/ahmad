@@ -31,6 +31,16 @@ test('title and body search preserve field filters and report no match honestly'
  assert.equal(filterCatalog(docs,{query:'عبارةلنيردلهامطابق'}).length,0);
  assert.ok(filterCatalog(docs,{query:'نظام التقاعد العسكري'})[0].titleMatch);
 });
+test('a document whose title matches the search comes before one that only mentions it in article text',()=>{
+ const mk=(id,title,body)=>({id,title,category:'retirement-and-insurance',metadata_view:{},publisher_urls:[],secs:[['المادة (1)',body]]});
+ const catalog=buildCatalog({snapshot:'a'.repeat(40),docs:[
+  mk('civil-retirement','نظام التقاعد المدني','تسري أحكام نظام التقاعد العسكري على العسكريين'),
+  mk('military-retirement','نظام التقاعد العسكري','يسمى هذا النظام نظام التقاعد العسكري')]});
+ assert.deepEqual(catalog.map(d=>d.id),['civil-retirement','military-retirement']);
+ assert.deepEqual(filterCatalog(catalog,{query:'نظام التقاعد العسكري'}).map(r=>[r.doc.id,r.titleMatch]),
+  [['military-retirement',true],['civil-retirement',false]]);
+ assert.deepEqual(filterCatalog(catalog,{}).map(r=>r.doc.id),['civil-retirement','military-retirement']);
+});
 test('partial documents expose only eligible material and do not manufacture missing articles',()=>{
  const doc=docs.find(d=>d.id==='administrative-pleadings-law');
  assert.equal(doc.articles.length,7);assert.equal(matchingArticles(doc,'المادة 4').length,0);

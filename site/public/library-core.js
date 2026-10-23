@@ -56,11 +56,13 @@ export function matchingArticles(doc, query) {
 }
 export function filterCatalog(docs,{query='',category='all',type='all'}={}) {
   const terms=searchTerms(query);
-  return docs.filter(d=>(category==='all'||d.category===category)&&(type==='all'||d.documentType===type)).flatMap(doc=>{
+  const rows=docs.filter(d=>(category==='all'||d.category===category)&&(type==='all'||d.documentType===type)).flatMap(doc=>{
     const titleMatch=terms.length>0&&terms.every(t=>doc.searchableTitle.includes(t));
     const matches=matchingArticles(doc,query);
     return !query.trim()||titleMatch||matches.length ? [{doc,matches,titleMatch}] : [];
   });
+  // الوثيقة التي يطابق عنوانها البحث تتقدم على وثيقة ورد اسمها في متن موادها فقط (الترتيب الأصلي محفوظ داخل كل فئة)
+  return [...rows.filter(r=>r.titleMatch),...rows.filter(r=>!r.titleMatch)];
 }
 export function futureDate(doc,day) {
   const d=doc.metadata_view?.effectiveness;
