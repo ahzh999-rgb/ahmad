@@ -39,6 +39,18 @@ button.primary .spin{width:14px;height:14px;border-color:color-mix(in srgb,var(-
 .msg.info{border-inline-start-color:var(--gold)}
 .msg.info strong{color:var(--fg)}
 .err{color:var(--err)}
+/* المحادثة: الأدوار بالترتيب، والمربع أسفلها ثابت أثناء التمرير */
+#thread{display:flex;flex-direction:column}
+.turn{display:flex;flex-direction:column;gap:10px;margin-bottom:22px;scroll-margin-top:12px}
+.ubub{align-self:flex-start;max-width:88%;background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:8px 16px;white-space:pre-wrap;overflow-wrap:anywhere}
+.follow{margin:0;padding:10px 14px;border:1px dashed var(--gold);border-radius:12px;overflow-wrap:anywhere}
+.hero.chatting{padding-top:18px}
+.hero.chatting .eyebrow,.hero.chatting .lead{display:none}
+.hero.chatting h1{font-size:1.3rem;line-height:1.6;margin-bottom:6px;max-width:none}
+.hero.chatting form.composer{position:sticky;bottom:10px;z-index:5;padding:12px;gap:8px;box-shadow:0 8px 28px rgba(15,60,40,.16)}
+.hero.chatting .composer .hint{display:none}
+.hero.chatting .composer label{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hero.chatting textarea{min-height:64px;padding:10px 14px}
 .answer{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px 22px;min-width:0;overflow-wrap:anywhere}
 .answer h2,.answer h3{font-size:1.15rem;margin:16px 0 4px}
 .answer p{margin:6px 0}
@@ -129,6 +141,8 @@ body:has(dialog[open]){overflow:hidden}
   .hero .lead{font-size:.95rem;margin-bottom:18px}
   form.composer{padding:14px;border-radius:16px}
   textarea{min-height:110px;padding:13px;font-size:1rem}
+  .hero.chatting textarea{min-height:56px;padding:9px 12px}
+  .hero.chatting h1{font-size:1.1rem}
   .steps,.trust,.grid2{grid-template-columns:1fr}
   .band{padding-top:36px}
   .band>h2{font-size:1.35rem}

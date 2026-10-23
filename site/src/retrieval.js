@@ -35,6 +35,8 @@ export function domainOf(id) {
 // أسماء النطاقات لعرضها في رسالة «لا أدلة كافية» عندما يكون نطاق السؤال محدداً
 export const DOMAIN_LABELS = { procurement:'المنافسات والمشتريات الحكومية', civil:'الخدمة المدنية والموارد البشرية والتقاعد المدني',
   military:'التقاعد العسكري', labour:'نظام العمل', privatization:'التخصيص', money:'المال العام والعهد' };
+// العبارات المدنية التي ليست التقاعد المدني (المعاملات المدنية، القانون المدني…) لا تُعدّ تحديداً للفئة
+const NON_RETIREMENT_CIVIL = /(?:المعاملات|القانون|الاحوال|الدعوي|القضايا|الحقوق)\s+(?:ال)?مدني\S*/g;
 export function routeQuestion(question) {
   const q = normalize(question);
   if (/تخصيص/.test(q)) return 'privatization';
@@ -42,10 +44,32 @@ export function routeQuestion(question) {
   if (/شراء|منافس|مشتريات/.test(q)) return 'procurement';
   if (/عسكري/.test(q)) return 'military';
   if (/نظام العمل|صاحب العمل|للعامل|العامل|عمال/.test(q)) return 'labour';
-  // السائل حدد الفئة صراحة (التقاعد المدني / الخدمة المدنية)، فلا يُسأل «هل تقصد العسكري أم المدني؟»
-  if (/(?:تقاعد|معاش)\S*\s+(?:لل|ال)?مدني|المدنيين|الخدمه\s+المدنيه/.test(q)) return 'civil';
+  // السائل حدد الفئة صراحة (التقاعد المدني / الخدمة المدنية)، فلا يُسأل «هل تقصد العسكري أم المدني؟».
+  // في المحادثة يكفي أن يقول «المدني» جواباً عن سؤال التوضيح: نص البحث يضم سؤال التقاعد السابق إليه.
+  if (/الخدمه\s+المدنيه/.test(q) ||
+      (/مدني|مدنيين|مدنيه/.test(q.replace(NON_RETIREMENT_CIVIL, '')) && /تقاعد|معاش|عجز/.test(q))) return 'civil';
   if (/موظف|ترقي|اعار|تكليف/.test(q)) return 'civil';
   return null;
+}
+// ---- المحادثة: نص البحث لسؤال متابعة ----
+// سؤال يعتمد على ما قبله: يبدأ بأداة متابعة («وماذا عن…»)، أو قصير جداً بلا موضوع ولا نطاق يخصه («المدني»، «المادة 17؟»)،
+// أو يشير إلى سابق («هذه المادة») وهو قصير نسبياً. السؤال المستقل لا يُضم إلى شيء.
+const FOLLOW_MARKER = /^(?:(?:و|ف)(?:ماذا|كيف|هل|ما|لماذا|متي|اين|اذا|لو|ان|في)|ماذا عن|اذا|لو)(?=\s|$)/;
+// جواب مجرد عن سؤال التوضيح: «المدني»، «العسكري»، «أقصد التقاعد المدني»، «العامل الخاضع لنظام العمل»
+const SCOPE_REPLY = /^(?:(?:اقصد|المقصود|اعني)\s+)?(?:(?:ال)?تقاعد\s+)?(?:ال)?(?:عسكري\S*|مدني\S*|عامل\S*|(?:نظام\s+)?العمل|الخاضع\S*\s+لنظام\s+العمل)$/;
+const REFERS_BACK = /(?:^|\s)(?:هذا|هذه|ذلك|تلك|نفسه|نفسها|السابقه?|المذكوره?|اعلاه)(?=\s|$)/;
+export function dependsOnPrevious(question) {
+  const q = normalize(question).trim(), count = words(q).length;
+  if (FOLLOW_MARKER.test(q) || SCOPE_REPLY.test(q.replace(/[؟?.!،,\s]+$/u, ''))) return true;
+  if (count <= 6 && !routeQuestion(q) && !CONCEPTS.some(c => c.query.test(q))) return true;
+  return count <= 10 && REFERS_BACK.test(q);
+}
+// بلا سجل يعيد السؤال نفسه حرفياً، فلا يتغير سلوك السؤال المفرد.
+export function searchQuestion(question, history = []) {
+  let text = '';
+  for (const q of [...history.filter(m => m.role === 'user').map(m => m.content), question])
+    text = text && dependsOnPrevious(q) ? text + '\n' + q : q;
+  return text;
 }
 function validDay(value) {
   return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) &&
