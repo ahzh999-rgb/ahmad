@@ -34,6 +34,13 @@ test('paraphrases retain source evidence rather than relying on one question str
     assert.ok(selection(q).rows.some(r=>key(r)==='civil-service:29'));
 });
 
+test('exceptional leave questions retrieve the executive regulation and the retirement service rule together',()=>{
+  const keys=selection('ما علاقة الإجازات الاستثنائية في التقاعد المدني؟').rows.map(key);
+  for(const k of ['hr-executive:148','hr-executive:149','civil-retirement:16'])assert.ok(keys.includes(k),keys.join());
+  const plain=selection('كم مدة الإجازة الاستثنائية للموظف؟').rows.map(key);
+  assert.ok(plain.includes('hr-executive:148'),plain.join());
+});
+
 test('same-instrument references are expanded; external article numbers are not mapped to the regulation',()=>{
   const retirement=selection('ما الحالات التي يستحق فيها العسكري معاشًا تقاعديًا؟');
   assert.ok(retirement.rows.some(r=>key(r)==='military-retirement:4'));
