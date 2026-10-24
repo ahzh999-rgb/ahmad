@@ -45,7 +45,7 @@
    </div>
   </form>
 
-  <div class="chips" aria-label="أمثلة على الأسئلة">
+  <div class="chips" id="chips" aria-label="أمثلة على الأسئلة">
    <span class="label">جرّب سؤالاً:</span>
    <button type="button" class="chip" data-q="ما الشروط التي تجيز للجهة الحكومية اللجوء إلى الشراء المباشر؟">الشراء المباشر</button>
    <button type="button" class="chip" data-q="ما الفرق بين نقل الموظف وتكليفه وإعارته من حيث الشروط والآثار الوظيفية؟">نقل الموظف وتكليفه وإعارته</button>
@@ -55,15 +55,8 @@
 
   <p class="trust-line"><span aria-hidden="true">ⓘ</span><span><b>الإجابة استرشادية وليست رأياً قانونياً.</b> تُبنى من نصوص المكتبة، وراجِع النص الأصلي قبل أي إجراء. <a href="/limits.html">حدود الإجابات</a></span></p>
 
-  <section id="out" hidden aria-live="polite">
-   <div class="answer" id="answer"></div>
-   <div class="after" id="after" hidden>
-    <div class="basis" id="basis"></div>
-    <div class="actions">
-     <button type="button" class="copy" id="copy">نسخ</button>
-     <button type="button" class="copy" id="share">مشاركة</button>
-    </div>
-   </div>
+  <section id="out" hidden aria-live="polite" aria-label="المحادثة">
+   <div id="thread"></div>
   </section>
  </section>
 
@@ -122,7 +115,7 @@
   <details><summary>لماذا لم أجد المادة التي أبحث عنها؟</summary><p>المكتبة لا تشمل بالضرورة كل الأنظمة ولا أحدث تعديلاتها، وعدم ظهور مادة في الإجابة لا يعني عدم وجودها أو عدم وجود حكم نظامي للمسألة. جرّب تحديد رقم المادة أو اسم النظام، أو ابحث في المكتبة مباشرة.</p></details>
   <details><summary>هل تُستخدم الأحكام القضائية في الإجابات؟</summary><p>لا. الأحكام معروضة للتصفح والاطلاع فقط، ولا يُستشهد بها في الإجابات.</p></details>
   <details><summary>كيف أعرف أن النص ساري المفعول؟</summary><p>تعرض الإجابة تاريخ النفاذ المسجل متى وُجد، لكن وجود النص أو مضي تاريخ نفاذه لا يثبت سريانه على واقعتك. راجع المصدر الرسمي وحدد تاريخ الواقعة وصفة الأطراف.</p></details>
-  <details><summary>هل تُحفظ أسئلتي؟</summary><p>يُعالج الموقع طلبك عبر Cloudflare، ويُرسل السؤال والنصوص المختارة إلى Anthropic لتوليد الإجابة. سجلات البحث تحفظ معرّف الطلب والمواد المختارة دون نص السؤال. لا تُدخل معلومات شخصية أو بيانات سرية. التفاصيل في سياسة الخصوصية أسفل الصفحة.</p></details>
+  <details><summary>هل تُحفظ أسئلتي؟</summary><p>يُعالج الموقع طلبك عبر Cloudflare، ويُرسل السؤال والنصوص المختارة إلى Anthropic لتوليد الإجابة. وفي المحادثة يُرسل معه آخر ثلاثة أسئلة سابقة وإجاباتها ليفهم النموذج المتابعة؛ وتبقى المحادثة في صفحتك فقط ولا يحفظها الخادم، وتضيع بإغلاق الصفحة أو بزر «دردشة جديدة». سجلات البحث تحفظ معرّف الطلب والمواد المختارة دون نص السؤال. لا تُدخل معلومات شخصية أو بيانات سرية. التفاصيل في سياسة الخصوصية أسفل الصفحة.</p></details>
   <details><summary>هل الخدمة مجانية؟</summary><p>لا توجد اشتراكات أو رسوم حالياً. ويُسمح بعدد محدود من الأسئلة في الدقيقة لكل زائر حمايةً للخدمة.</p></details>
  </section>
 </main>
@@ -140,7 +133,7 @@
 
 <dialog class="policy" id="privacy" aria-labelledby="privacy-title">
   <div class="policy-head"><h2 id="privacy-title">الخصوصية</h2><button class="policy-close" type="button" data-close aria-label="إغلاق سياسة الخصوصية">إغلاق</button></div>
-  <p>يُعالج الموقع طلبك عبر Cloudflare، ويُرسل السؤال والنصوص النظامية المختارة إلى Anthropic لتوليد الإجابة. لا تُدخل معلومات شخصية أو بيانات سرية في سؤالك.</p>
+  <p>يُعالج الموقع طلبك عبر Cloudflare، ويُرسل السؤال والنصوص النظامية المختارة إلى Anthropic لتوليد الإجابة. وفي المحادثة يُرسل معه آخر ثلاثة أسئلة سابقة وإجاباتها لفهم المتابعة، ولا يحفظ الخادم المحادثة. لا تُدخل معلومات شخصية أو بيانات سرية في سؤالك.</p>
   <p>تخضع معالجة البيانات والسجلات التشغيلية والاحتفاظ بها لسياسات مقدمي الخدمة المشار إليها أدناه.</p>
   <p>يُحفظ تفضيل الوضع الفاتح أو الداكن محلياً في متصفحك.</p>
   <p>للتفاصيل: <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener noreferrer">خصوصية Cloudflare</a> و<a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener noreferrer">خصوصية Anthropic</a>.</p>
@@ -196,15 +189,15 @@ fetch('source-manifest.json').then(r=>{if(!r.ok)throw new Error('source_unavaila
   const sq=new URLSearchParams(location.search).get('q');
   if(sq){$('q').value=displayText(sq.slice(0,1500));grow();if(new URLSearchParams(location.search).get('draft')!=='1')$('f').requestSubmit();else $('q').focus();}
 }).catch(()=>{status.textContent='';$('out').hidden=false;
-  $('answer').innerHTML=msg('تعذر الوصول إلى مكتبة الأنظمة.','تحقق من اتصالك بالإنترنت، ثم اضغط «إعادة المحاولة».')+'<p><button type="button" class="ghost" onclick="location.reload()">إعادة المحاولة</button></p>';});
+  $('thread').innerHTML=msg('تعذر الوصول إلى مكتبة الأنظمة.','تحقق من اتصالك بالإنترنت، ثم اضغط «إعادة المحاولة».')+'<p><button type="button" class="ghost" onclick="location.reload()">إعادة المحاولة</button></p>';});
 
 async function post(path,body){
   const r=await fetch(path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:ctrl.signal});
   if(!r.ok){let e={};try{e=await r.json();}catch{}const err=new Error(e.error||'http');err.code=e.error||'http';throw err;}
   return r;
 }
-async function streamAnswer(q,onText){
-  const r=await post('/api/ask',{question:q,snapshot:LIB.snapshot});
+async function streamAnswer(q,history,onText){
+  const r=await post('/api/ask',history.length?{question:q,snapshot:LIB.snapshot,history}:{question:q,snapshot:LIB.snapshot});
   const rd=r.body.getReader(), dec=new TextDecoder(); let buf='', text='', stopReason='', evidence=null;
   for(;;){
     const {done,value}=await rd.read(); if(done)break;
@@ -237,52 +230,89 @@ function foldQuotes(el){
     b.replaceWith(d);d.appendChild(b);
   });
 }
+// ---------- المحادثة ----------
+// الذاكرة في هذه الصفحة فقط: الأدوار المكتملة {q,a,copyText}. يُرسل منها آخر 3 أسئلة مع إجاباتها، ولا يحفظ الخادم شيئاً.
+const MAX_TURNS=10, SEND_TURNS=3, MAX_ANSWER=8000;
+const hero=document.querySelector('.hero'), out=$('out'), thread=$('thread'), PLACEHOLDER=$('q').placeholder;
+const chat=[]; let generation=0;
+const reduced=()=>matchMedia('(prefers-reduced-motion:reduce)').matches;
+const historyPayload=()=>chat.slice(-SEND_TURNS).flatMap(t=>[{role:'user',content:t.q},{role:'assistant',content:t.a}]);
+function setChatting(on){
+  hero.classList.toggle('chatting',on);
+  $('chips').hidden=on;
+  $('composer-label').textContent=on?'اكتب سؤال المتابعة أو ردّك':'اكتب استفسارك النظامي وتفاصيله';
+  $('q').placeholder=on?'مثال: وماذا عن المادة 17؟':PLACEHOLDER;
+  $('clear').textContent=on?'دردشة جديدة':'سؤال جديد';
+  if(on)$('f').before(out);else hero.append(out);
+  grow();
+}
+function newTurn(q){
+  const el=document.createElement('article');el.className='turn';
+  el.innerHTML='<div class="ubub"></div><div class="answer"></div><div class="after" hidden><div class="basis"></div><div class="actions">'+
+    '<button type="button" class="copy" data-act="copy">نسخ</button><button type="button" class="copy" data-act="share">مشاركة</button></div></div><p class="follow" hidden></p>';
+  el.querySelector('.ubub').textContent=q;
+  thread.append(el);return el;
+}
 $('f').addEventListener('submit', async e=>{
   e.preventDefault();
   const q=$('q').value.trim(); if(!q||!LIB)return;
+  if(chat.length>=MAX_TURNS){
+    if(!thread.querySelector('.limit'))thread.insertAdjacentHTML('beforeend',msg('بلغت الحد الأقصى للمحادثة ('+MAX_TURNS+' أسئلة).','اضغط «دردشة جديدة» لبدء محادثة جديدة.','info').replace('class="msg','class="msg limit'));
+    return;
+  }
+  const gen=generation;
   ctrl=new AbortController(); ask.disabled=true; stop.hidden=false; ask.innerHTML='<span class="spin"></span>جاري…';
-  $('out').hidden=false; ['after'].forEach(id=>$(id).hidden=true); lastText=''; lastQ=q;
-  const t0=performance.now();
-  const loading=t=>{$('answer').innerHTML='<div class="loading" role="status"><span class="spin"></span>'+t+'</div>';};
+  out.hidden=false; setChatting(true);
+  const el=newTurn(q), ans=el.querySelector('.answer'), history=historyPayload();
+  $('q').value=''; grow();
+  el.scrollIntoView({behavior:reduced()?'auto':'smooth',block:'start'});
+  const loading=t=>{ans.innerHTML='<div class="loading" role="status"><span class="spin"></span>'+t+'</div>';};
   try{
     status.textContent=''; loading('جاري البحث في الأنظمة…');
-    const res=await streamAnswer(q,text=>{$('answer').innerHTML=md(splitFollow(text).body);});
-    const {body}=splitFollow(res.text);
-    $('answer').innerHTML=md(body)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
-    foldQuotes($('answer'));
+    const res=await streamAnswer(q,history,text=>{ans.innerHTML=md(splitFollow(text).body);});
+    const {body,follow}=splitFollow(res.text);
+    ans.innerHTML=md(body)+(res.truncated?'<p class="err">انقطعت الإجابة قبل اكتمالها.</p>':'');
+    foldQuotes(ans);
     const sources=res.evidence?.sources||[];
-    $('basis').innerHTML=sourcesHTML(sources,res.evidence?.snapshot);
-    lastBasis=displayText(sources.map(source=>source.title+'، '+referenceLabel(source.heading,source.instrument_id)).join('؛ '));
-    lastText=displayText(body).replace(/\*\*/g,'').trim()+(lastBasis?'\n\nالنصوص المرفقة للإجابة: '+lastBasis:'')+'\n'+location.origin;
+    el.querySelector('.basis').innerHTML=sourcesHTML(sources,res.evidence?.snapshot);
+    const basis=displayText(sources.map(source=>source.title+'، '+referenceLabel(source.heading,source.instrument_id)).join('؛ '));
+    const turn={q,a:(body.trim()+(follow?'\nسؤال متابعة: '+follow:'')).slice(0,MAX_ANSWER),
+      copyText:displayText(body).replace(/\*\*/g,'').trim()+(basis?'\n\nالنصوص المرفقة للإجابة: '+basis:'')+'\n'+location.origin};
+    el._turn=turn;
+    if(gen===generation&&turn.a)chat.push(turn);
     // لا نسخ ولا مشاركة لردّ بلا مصادر (سؤال توضيح أو «لا أدلة كافية»)
-    $('after').hidden=!sources.length; status.textContent='';
+    el.querySelector('.after').hidden=!sources.length;
+    if(follow){const f=el.querySelector('.follow');f.textContent='سؤال متابعة: '+displayText(follow);f.hidden=false;}
+    status.textContent='';
   }catch(err){
     status.textContent='';
-    if(err.name==='AbortError'){$('answer').innerHTML=msg('أُوقفت الإجابة.','اضغط «اسأل» لإعادة المحاولة.','info');}
-    else if(err.code==='rate_limited'){$('answer').innerHTML=msg('أرسلت أسئلة كثيرة في وقت قصير.','انتظر دقيقة ثم أعد المحاولة.');}
-    else if(err.code==='source_snapshot_changed'){$('answer').innerHTML=msg('تحدّثت مكتبة النصوص.','أعد تحميل الصفحة للبحث في النسخة الجديدة.');}
-    else if(err.code==='ineligible_source'||err.code==='source_integrity'||err.code==='source_unavailable'){$('answer').innerHTML=msg('تعذر التحقق من النصوص المختارة.','لم تُنشأ إجابة. أعد تحميل الصفحة وحاول مجدداً.');}
-    else if(err.code==='context_too_large'){$('answer').innerHTML=msg('النصوص المرتبطة واسعة.','حدد المسألة أو رقم المادة في سؤال أقصر.');}
-    else if(err.code==='busy'){$('answer').innerHTML=msg('الخدمة مشغولة الآن.','حاول بعد قليل.');}
-    else if(!navigator.onLine){$('answer').innerHTML=msg('لا يوجد اتصال بالإنترنت.','تحقق من الاتصال ثم أعد المحاولة.');}
-    else {$('answer').innerHTML=msg('تعذرت الإجابة الآن.','حاول مرة أخرى بعد قليل. وإن تكرر الخطأ فأعد تحميل الصفحة.');}
-  }finally{ ask.disabled=!LIB; stop.hidden=true; ask.textContent='اسأل'; }
+    if(gen===generation&&!$('q').value)$('q').value=q;  // لا نضيّع ما كتبه المستخدم إن تعذّر الإرسال
+    if(err.name==='AbortError'){ans.innerHTML=msg('أُوقفت الإجابة.','اضغط «اسأل» لإعادة المحاولة.','info');}
+    else if(err.code==='rate_limited'){ans.innerHTML=msg('أرسلت أسئلة كثيرة في وقت قصير.','انتظر دقيقة ثم أعد المحاولة.');}
+    else if(err.code==='source_snapshot_changed'){ans.innerHTML=msg('تحدّثت مكتبة النصوص.','أعد تحميل الصفحة للبحث في النسخة الجديدة.');}
+    else if(err.code==='ineligible_source'||err.code==='source_integrity'||err.code==='source_unavailable'){ans.innerHTML=msg('تعذر التحقق من النصوص المختارة.','لم تُنشأ إجابة. أعد تحميل الصفحة وحاول مجدداً.');}
+    else if(err.code==='context_too_large'){ans.innerHTML=msg('النصوص المرتبطة واسعة.','حدد المسألة أو رقم المادة في سؤال أقصر.');}
+    else if(err.code==='bad_history'){ans.innerHTML=msg('تعذر إكمال المحادثة.','اضغط «دردشة جديدة» وأعد السؤال.');}
+    else if(err.code==='busy'){ans.innerHTML=msg('الخدمة مشغولة الآن.','حاول بعد قليل.');}
+    else if(!navigator.onLine){ans.innerHTML=msg('لا يوجد اتصال بالإنترنت.','تحقق من الاتصال ثم أعد المحاولة.');}
+    else {ans.innerHTML=msg('تعذرت الإجابة الآن.','حاول مرة أخرى بعد قليل. وإن تكرر الخطأ فأعد تحميل الصفحة.');}
+  }finally{ if(gen===generation){ask.disabled=!LIB; stop.hidden=true; ask.textContent='اسأل'; $('q').focus({preventScroll:true});} }
 });
 stop.addEventListener('click',()=>ctrl&&ctrl.abort());
-let lastText='', lastQ='', lastBasis='';
-// المشاركة: رابط يفتح الموقع بالسؤال نفسه، أو نص جاهز
-$('share').addEventListener('click',async()=>{
-  const url=location.origin+'/?q='+encodeURIComponent(lastQ), b=$('share');
-  const text='سؤال: '+displayText(lastQ)+'\n\n'+lastText.replace(location.origin,'').trim();
+// نسخ الإجابة ومشاركتها: لكل دور في المحادثة. المشاركة رابط يفتح الموقع بسؤال هذا الدور، أو نص جاهز.
+const flash=(b,done,idle,ms)=>{b.textContent=done;setTimeout(()=>{b.textContent=idle;},ms);};
+thread.addEventListener('click',async ev=>{
+  const b=ev.target.closest('button[data-act]'), t=b&&b.closest('.turn')?._turn; if(!t)return;
+  if(b.dataset.act==='copy'){
+    try{await navigator.clipboard.writeText(t.copyText);}
+    catch{const x=document.createElement('textarea');x.value=t.copyText;document.body.appendChild(x);x.select();try{document.execCommand('copy');}catch{}x.remove();}
+    flash(b,'نُسخت ✓','نسخ',1800);return;
+  }
+  const url=location.origin+'/?q='+encodeURIComponent(t.q);
+  const text='سؤال: '+displayText(t.q)+'\n\n'+t.copyText.replace(location.origin,'').trim();
   if(navigator.share){try{await navigator.share({title:'المستشار النظامي',text,url});return;}catch(e){if(e.name==='AbortError')return;}}
   try{await navigator.clipboard.writeText(text+'\n'+url);}catch{}
-  b.textContent='نُسخ الرابط والنص ✓';setTimeout(()=>{b.textContent='مشاركة';},2000);
-});
-$('copy').addEventListener('click',async()=>{
-  const b=$('copy');
-  try{await navigator.clipboard.writeText(lastText);}
-  catch{const t=document.createElement('textarea');t.value=lastText;document.body.appendChild(t);t.select();try{document.execCommand('copy');}catch{}t.remove();}
-  b.textContent='نُسخت ✓';setTimeout(()=>{b.textContent='نسخ';},1800);
+  flash(b,'نُسخ الرابط والنص ✓','مشاركة',2000);
 });
 // الوضع الداكن
 const root=document.documentElement, themeBtn=$('theme');
@@ -293,9 +323,9 @@ paint();
 themeBtn.addEventListener('click',()=>{root.dataset.theme=isDark()?'light':'dark';try{localStorage.setItem('theme',root.dataset.theme);}catch{}paint();});
 $('q').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();if(!ask.disabled)$('f').requestSubmit();}});
 // الحقل يتمدد مع الكتابة الطويلة
-const grow=()=>{const q=$('q'),minimum=innerWidth<=640?110:120;q.style.height='auto';q.style.height=Math.max(minimum,Math.min(q.scrollHeight+2,innerHeight*0.6))+'px';};
+const grow=()=>{const q=$('q'),minimum=hero.classList.contains('chatting')?64:innerWidth<=640?110:120;q.style.height='auto';q.style.height=Math.max(minimum,Math.min(q.scrollHeight+2,innerHeight*0.6))+'px';};
 $('q').addEventListener('input',grow);
-$('clear').addEventListener('click',()=>{if(ctrl)ctrl.abort();$('q').value='';grow();$('out').hidden=true;$('q').focus();});
+$('clear').addEventListener('click',()=>{generation++;if(ctrl)ctrl.abort();chat.length=0;thread.innerHTML='';$('q').value='';out.hidden=true;setChatting(false);ask.disabled=!LIB;stop.hidden=true;ask.textContent='اسأل';$('q').focus();});
 // أرقام الأحكام: تُقرأ من بيان الأحكام المنشور مع الموقع، وتبقى «—» عند تعذر القراءة
 fetch('rulings/manifest.json').then(r=>r.ok?r.json():Promise.reject()).then(d=>{if(Number.isInteger(d.ruling_count))$('st-rul').textContent=d.ruling_count;}).catch(()=>{});
 // أمثلة الأسئلة: تملأ الحقل وترسل السؤال

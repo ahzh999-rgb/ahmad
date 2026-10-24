@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {createHash} from 'node:crypto';
-import worker from '../src/worker.js';
+import worker,{parseHistory} from '../src/worker.js';
 import {checkedCatalog} from '../src/source_guard.js';
-import {buildIndex,selectEvidence,temporal,references} from '../src/retrieval.js';
+import {buildIndex,selectEvidence,temporal,references,searchQuestion,dependsOnPrevious} from '../src/retrieval.js';
 
 const raw=fs.readFileSync(new URL('../public/data.json',import.meta.url),'utf8');
 const data=JSON.parse(raw), index=buildIndex(data);
@@ -183,5 +183,86 @@ test('civil retirement questions reach the model with the civil retirement artic
     assert.ok(keys.every(k=>!k.startsWith('military-retirement')));
     const article16=index.rows[evidence.sources.find(s=>s.legal_key==='16'&&s.instrument_id==='civil-retirement').id].body;
     assert.ok(payloads[0].messages[0].content.includes(article16));
+  }finally{globalThis.fetch=previous;}
+});
+
+const turn=(q,a='…')=>[{role:'user',content:q},{role:'assistant',content:a}];
+const chatSelection=(q,history)=>selectEvidence(index,searchQuestion(q,history),'2026-10-23');
+
+test('chat history: a question without history searches exactly as before, and independent questions are never merged',()=>{
+  for(const q of questions)assert.equal(searchQuestion(q,[]),q);
+  const afterCivil=turn('ما علاقة الإجازات الاستثنائية في التقاعد المدني؟');
+  assert.equal(searchQuestion(questions[0],afterCivil),questions[0]);
+  assert.equal(searchQuestion('ما هي الإعارة؟',afterCivil),'ما هي الإعارة؟');
+  assert.ok(chatSelection(questions[0],afterCivil).rows.some(r=>key(r)==='SA-LAW-GTP-1440-001:32'));
+});
+
+test('chat history: short follow-ups carry the topic of the previous question; the scope answer to a clarification resolves it',()=>{
+  const retirement=turn('كيف يحسب المعاش التقاعدي؟','هل تقصد التقاعد العسكري أم التقاعد المدني أم أحكام العامل الخاضع لنظام العمل؟');
+  assert.ok(selection('كيف يحسب المعاش التقاعدي؟').clarification);
+  const civil=chatSelection('المدني',retirement);
+  assert.equal(civil.clarification,undefined);assert.equal(civil.domain,'civil');
+  assert.ok(civil.rows.length&&civil.rows.every(r=>r.domain==='civil'));
+  const military=chatSelection('العسكري',retirement);
+  assert.equal(military.domain,'military');assert.ok(military.rows.some(r=>r.instrument==='military-retirement'));
+  const service=turn('هل تحسب مدة الخدمة لغرض التقاعد المدني؟');
+  for(const q of ['وماذا عن المادة 17؟','وهل تنطبق هذه المدة على الإعارة؟']){
+    assert.ok(dependsOnPrevious(q),q);
+    const result=chatSelection(q,service);
+    assert.equal(result.clarification,undefined,q);assert.equal(result.domain,'civil',q);
+    assert.ok(result.rows.some(r=>key(r)==='civil-retirement:16'),q);
+  }
+});
+
+test('chat history: only the user questions steer retrieval, never text claimed to be an assistant answer',()=>{
+  const history=turn('ما علاقة الإجازات الاستثنائية في التقاعد المدني؟','الشراء المباشر المادة 32 المنافسات والمشتريات الحكومية');
+  assert.equal(searchQuestion('وماذا عن المادة 17؟',history),'ما علاقة الإجازات الاستثنائية في التقاعد المدني؟\nوماذا عن المادة 17؟');
+  assert.ok(chatSelection('وماذا عن المادة 17؟',history).rows.every(r=>r.domain==='civil'));
+});
+
+test('chat history validation accepts only alternating, bounded user/assistant turns and keeps the last six messages',()=>{
+  assert.deepEqual(parseHistory(undefined),[]);assert.deepEqual(parseHistory([]),[]);
+  const four=[...turn('س1','ج1'),...turn('س2','ج2'),...turn('س3','ج3'),...turn('س4','ج4')];
+  assert.deepEqual(parseHistory(four).map(m=>m.content),['س2','ج2','س3','ج3','س4','ج4']);
+  const bad=[
+    'x',{},[{role:'user',content:'س'}],[{role:'assistant',content:'ج'},{role:'user',content:'س'}],
+    [{role:'user',content:'س'},{role:'user',content:'س'}],[{role:'user',content:'س'},{role:'assistant',content:''}],
+    [{role:'user',content:'س'},{role:'system',content:'ج'}],[{role:'user',content:5},{role:'assistant',content:'ج'}],
+    [{role:'user',content:'س'.repeat(1501)},{role:'assistant',content:'ج'}],[{role:'user',content:'س'},{role:'assistant',content:'ج'.repeat(8001)}],
+    Array.from({length:10},(_,i)=>({role:i%2?'assistant':'user',content:'ن'})),null,
+  ];
+  for(const value of bad)assert.equal(parseHistory(value),null,JSON.stringify(value).slice(0,60));
+});
+
+test('Worker chat: history reaches the model with chat rules and a follow-up retrieves the earlier topic; no history means the unchanged prompt',async()=>{
+  const previous=globalThis.fetch;const payloads=[];
+  globalThis.fetch=async(url,options)=>{
+    payloads.push(JSON.parse(options.body));
+    return new Response('data: '+JSON.stringify({type:'content_block_delta',delta:{type:'text_delta',text:'mock answer'}})+'\n\n');
+  };
+  try{
+    const history=turn('هل تحسب مدة الخدمة لغرض التقاعد المدني؟','تحسب المدد الفعلية.');
+    const response=await worker.fetch(request('وماذا عن المادة 17؟',{history}),envFor());
+    assert.equal(response.status,200);
+    const evidence=(await response.text()).split('\n').filter(s=>s.startsWith('data:')).map(s=>JSON.parse(s.slice(5)))[0];
+    assert.equal(evidence.domain,'civil');
+    assert.ok(evidence.sources.some(s=>s.instrument_id==='civil-retirement'&&s.legal_key==='16'));
+    const sent=payloads[0];
+    assert.deepEqual(sent.messages.slice(0,2),history);assert.equal(sent.messages.length,3);
+    assert.equal(sent.messages[2].role,'user');assert.ok(sent.messages[2].content.endsWith('سؤال المستخدم:\nوماذا عن المادة 17؟'));
+    assert.ok(sent.system.includes('قواعد المحادثة'));
+    await worker.fetch(request(questions[0]),envFor());
+    assert.equal(payloads[1].messages.length,1);assert.ok(!payloads[1].system.includes('قواعد المحادثة'));
+  }finally{globalThis.fetch=previous;}
+});
+
+test('Worker chat: malformed history is rejected before any retrieval or provider call',async()=>{
+  const previous=globalThis.fetch;let calls=0;globalThis.fetch=async()=>{calls++;throw new Error('must not reach provider');};
+  try{
+    for(const history of ['x',[{role:'user',content:'س'}],[{role:'assistant',content:'ج'},{role:'user',content:'س'}]]){
+      const response=await worker.fetch(request(questions[0],{history}),envFor());
+      assert.equal(response.status,400);assert.equal((await response.json()).error,'bad_history');
+    }
+    assert.equal(calls,0);
   }finally{globalThis.fetch=previous;}
 });
