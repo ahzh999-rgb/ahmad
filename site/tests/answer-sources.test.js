@@ -28,10 +28,10 @@ test('old evidence still links the material and archive without inventing an off
   assert.equal(sourcesHTML(null,snapshot),'');
 });
 
-test('an HTML archive is explicitly labelled as an HTML source file',()=>{
+test('an archived HTML page never sends the reader to the GitHub repository',()=>{
   const links=sourceLinks({...source,source_url:source.source_url.replace('.pdf','.html')},snapshot);
-  assert.match(links[1].label,/HTML/);
-  assert.ok(links[1].href.startsWith('https://github.com/'));
+  assert.deepEqual(links.map(l=>l.kind),['article','official','official']);
+  assert.ok(links.every(l=>!/github/.test(l.href)));
 });
 
 test('unsafe URLs, lookalike domains, credentials and unexpected archive revisions are rejected',()=>{

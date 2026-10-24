@@ -36,7 +36,10 @@ export function sourceLinks(source, snapshot) {
   if (archive) {
     const path=decodeURIComponent(new URL(archive).pathname.split('/').slice(5).join('/'));
     const direct=readableFileLink(snapshot,path);
-    links.push({href:direct||archive,label:direct?'فتح ملف المصدر المستخدم':/\.html$/i.test(path)?'صفحة المصدر المحفوظة (HTML)':'النسخة المحفوظة المستخدمة',kind:'archive'});
+    // Archived HTML only exists as a GitHub code page; it is not a reader-facing source.
+    // The article page and the publisher link serve readers instead. PDFs/images open directly.
+    if (direct) links.push({href:direct,label:'فتح ملف المصدر المستخدم',kind:'archive'});
+    else if (!/\.html?$/i.test(path)) links.push({href:archive,label:'النسخة المحفوظة المستخدمة',kind:'archive'});
   }
   for (const value of Array.isArray(source.publisher_urls) ? source.publisher_urls : []) {
     const link = publisherLink(value);

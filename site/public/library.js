@@ -73,7 +73,7 @@ async function loadSection(doc,article){
   source.replaceChildren();
   const verified=el('p');verified.append(badge('النص مطابق لمصدره المحفوظ'));source.append(verified);
   source.append(el('p',section.body_kind==='OWNER_ACCEPTED'?'نوع المتن: مقبول من صاحب المشروع ضمن نطاقه المسجل.':'نوع المتن: نص مقابل ضمن النسخة والنطاق المسجلين.'));
-  const href=readableFileLink(manifest.commit,section.source_path)||sourceLink(manifest.commit,section.source_path);
+  const href=readableFileLink(manifest.commit,section.source_path)||(/\.html?$/i.test(section.source_path)?null:sourceLink(manifest.commit,section.source_path));
   if(href){const format=section.source_path.split('.').pop().toLowerCase();source.append(external(fileLabel({path:section.source_path,format})+' ↗',href));}
   source.append(sourceDetails(section),el('p','المطابقة تثبت سلامة نقل النص، ولا تثبت حداثة الحكم أو انطباقه على حالتك.','muted small'));
  }catch{
