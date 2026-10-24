@@ -44,7 +44,9 @@ test('a document whose title matches the search comes before one that only menti
 test('partial documents expose only eligible material and do not manufacture missing articles',()=>{
  const doc=docs.find(d=>d.id==='administrative-pleadings-law');
  assert.equal(doc.articles.length,7);assert.equal(matchingArticles(doc,'المادة 4').length,0);
- assert.ok(!docs.find(d=>d.id==='hr-executive'));
+ const hr=docs.find(d=>d.id==='hr-executive');
+ assert.equal(hr.articles.length,261);
+ assert.ok(matchingArticles(hr,'إجازة استثنائية').some(a=>a.key==='148'));
 });
 test('a future badge requires a single valid recorded date and verified dimension, never calculated or ambiguous candidates',()=>{
  const doc=docs.find(d=>d.id==='SA-LAW-GTP-1448-001');

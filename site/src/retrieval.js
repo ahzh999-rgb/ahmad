@@ -21,6 +21,9 @@ const CONCEPTS = [
   { id:'disability', query:/عجز/, body:/عجز|لياق.{0,20}طبي/ },
   { id:'service', query:/مده الخدمه|المدد المستبعد/, body:/مده الخدمه|مده خدمته|لاغراض التقاعد|مدد الخدمه/ },
   { id:'worker_leaving', query:/ترك العمل|دون اشعار/, body:/يترك العمل دون اشعار|ترك العمل دون اشعار/ },
+  // boost: لا تُقصي المواد التي لا تحوي اللفظ، بل ترفع ما يحويه وتخصص له موضعاً في الأدلة
+  { id:'exceptional_leave', boost:true, query:/اجاز\S*\s+(?:ال)?استثنا/, body:/اجاز\S*\s+(?:ال)?استثنا/ },
+  { id:'leave_in_retirement_service', boost:true, query:/^(?=.*اجاز)(?=.*(?:تقاعد|معاش))/, body:/مده الخدمه التي تحسب|مدد الخدمه|لاغراض التقاعد|بدون راتب/ },
   { id:'custody', query:/عهده|عهدته/, body:/عهده|العهد|بعهدته/ },
 ];
 export function domainOf(id) {
@@ -127,7 +130,7 @@ export function references(row, index) {
 }
 export function selectEvidence(index, question, day, { maxArticles=12, maxBodyChars=30000 } = {}) {
   const q = normalize(question), domain = routeQuestion(question);
-  const concepts = CONCEPTS.filter(c => c.query.test(q));
+  const concepts = CONCEPTS.filter(c => c.query.test(q)), required = concepts.filter(c => !c.boost);
   const queryTerms = [...new Set(words(question).filter(t => !STOP.has(t)).map(stem))];
   const comparison = /1448|م\s*\/\s*76|النظام الجديد|النظامين|مقارنه/.test(q);
   if (!domain && /عجز|معاش|التقاعد/.test(q)) return { rows:[], domain,
@@ -140,7 +143,7 @@ export function selectEvidence(index, question, day, { maxArticles=12, maxBodyCh
       future.set(row.instrument,{title:row.title,...dates});continue;
     }
     const matched = concepts.filter(c => c.body.test(row.normalized));
-    if (concepts.length && !matched.length) continue;
+    if (required.length && !matched.some(c => !c.boost)) continue;
     let score = 0, common = 0;
     for (const term of queryTerms) {
       const tf = row.terms.get(term) || 0;
@@ -148,7 +151,7 @@ export function selectEvidence(index, question, day, { maxArticles=12, maxBodyCh
       const df = index.df.get(term) || 0;
       score += Math.log(1+(index.rows.length-df+.5)/(df+.5))*(tf*2.2)/(tf+1.2*(.25+.75*row.length/(index.average || 1)));
     }
-    if (!concepts.length && common < Math.min(2,queryTerms.length || 2)) continue;
+    if (!required.length && !matched.length && common < Math.min(2,queryTerms.length || 2)) continue;
     score += matched.length * 30;
     score += matched.filter(c => c.body.test(row.normalized.slice(0,100))).length * 12;
     if (row.title.startsWith('نظام') && /شروط|الشروط|حالات|الحالات|يجوز|تجيز/.test(q)) score += 15;
@@ -168,6 +171,11 @@ export function selectEvidence(index, question, day, { maxArticles=12, maxBodyCh
   for (const concept of concepts) {
     const top = candidates.find(r => r.matched.includes(concept.id));
     if (top) add(top,'concept:'+concept.id);
+  }
+  // A law and its executive regulation answer the same facet differently: keep the best of each.
+  for (const concept of concepts) {
+    const seen = new Set(), tops = candidates.filter(r => r.matched.includes(concept.id) && !seen.has(r.instrument) && seen.add(r.instrument));
+    for (const row of tops.slice(1,3)) add(row,'concept:'+concept.id);
   }
   for (const row of candidates.slice(0,6)) add(row,'ranked');
   for (const row of [...selected.values()]) for (const ref of references(row,index)) {
